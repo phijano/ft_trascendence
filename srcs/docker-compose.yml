@@ -1,0 +1,66 @@
+services:
+
+  nginx:
+    depends_on:
+      - gunicorn
+    image: nginx:42.version.1.0
+    container_name: nginx
+    env_file:
+      - .env
+    build: ./requeriments/nginx/.
+    ports:
+      - 8080:8080
+    networks:
+      - trascendencenet
+    restart: always
+
+  gunicorn:
+    #    depends_on:
+    #      - postgree
+    image: gunicorn:42.version.1.0
+    container_name: gunicorn
+    env_file:
+      - .env
+    build: ./requeriments/gunicorn/.
+    expose:
+      - 8081    
+# remove ports option when development end(keep expose port)
+    ports:
+      - 8082:8082
+    networks:
+      - trascendencenet
+    volumes:
+      - backend:${BACKEND_PATH}
+    restart: always
+
+  postgre:
+    image: postgree:42.version.1.0
+    container_name: postgre
+    env_file:
+      - .env
+    build: ./requeriments/postgre/.
+    expose:
+      - 5432
+    networks:
+      - trascendencenet
+    volumes:
+      - database:${DATABASE_PATH}
+    restart: always
+
+
+networks:
+  trascendencenet:
+
+volumes:
+  backend:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${HOST_BACKEND_PATH}
+      o: bind
+  database:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${HOST_DATABASE_PATH}
+      o: bind

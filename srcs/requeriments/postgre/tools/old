@@ -1,0 +1,11 @@
+#!/bin/sh
+
+pg_ctl start -D /var/lib/postgresql/data
+
+psql --command="CREATE ROLE dbmaster WITH LOGIN PASSWORD 'masterpass';"
+psql --command="CREATE DATABASE trascendence;"
+psql --command="ALTER DATABASE trascendence OWNER TO dbmaster;"
+
+pg_ctl stop -D /var/lib/postgresql/data
+
+exec postmaster -D /var/lib/postgresql/data
