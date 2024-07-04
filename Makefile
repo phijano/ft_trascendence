@@ -1,4 +1,10 @@
+include srcs/.env
+export $(shell sed 's/=.*//' srcs/.env)
+
 all:
+	mkdir -p $(HOST_FRONTEND_PATH)
+	mkdir -p $(HOST_BACKEND_PATH)
+	mkdir -p $(HOST_DATABASE_PATH)
 	docker compose -f ./srcs/docker-compose.yml up --build -d
 
 clean:
@@ -6,9 +12,9 @@ clean:
 
 fclean: clean
 	docker system prune -af --volumes
-#	rm -rf /home/phijano-/data/frontend/*
-#	rm -rf /home/phijano-/data/backend/*
-#	rm -rf /home/phijano-/data/database/*
+	rm -rf $(HOST_FRONTEND_PATH)/*
+	rm -rf $(HOST_BACKEND_PATH)/*
+	rm -rf $(HOST_DATABASE_PATH)/*
 
 re: fclean all
 
