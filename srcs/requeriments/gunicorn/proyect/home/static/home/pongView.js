@@ -5,6 +5,8 @@ const tournament = new Tournament();
 let gameMode;
 let opponent;
 let difficulty;
+let playAI;
+let msAIcalcRefresh = 1000;
 
 function setTournament() {
 
@@ -158,7 +160,7 @@ function startPong()
 	document.getElementById("board").style.visibility = "visible";
 	document.getElementById("dMatchPlayers").hidden = false;
 	document.getElementById("dWinner").hidden = true;
-	start();
+	start(playAI, msAIcalcRefresh);
 }
 
 function advance() {
@@ -189,11 +191,13 @@ function setOpponent() {
 	if (opponent)
 	{
 		sDifficulty.style.visibility = "visible";
+		playAI = true;
 		setDifficulty();
 	}
 	else
 	{
 		sDifficulty.style.visibility = "hidden";
+		playAI = false;
 		document.getElementById("lRightPlayer").innerHTML = "Player 2";	
 	}
 	console.log(opponent);
@@ -204,16 +208,24 @@ function setDifficulty() {
 	difficulty = Number(document.getElementById("sDifficulty").value);
 	switch (difficulty) {
 		case 0:
-			document.getElementById("lRightPlayer").innerHTML = "IA - Easy";	
+			document.getElementById("lRightPlayer").innerHTML = "AI - Easy";
+			msAIcalcRefresh = 1200;
 			break;
 		case 1:
-			document.getElementById("lRightPlayer").innerHTML = "IA - Medium";	
+			document.getElementById("lRightPlayer").innerHTML = "AI - Medium";
+			msAIcalcRefresh = 1000;
 			break;
 		case 2:
-			document.getElementById("lRightPlayer").innerHTML = "IA - Hard";	
+			document.getElementById("lRightPlayer").innerHTML = "AI - Hard";
+			msAIcalcRefresh = 750;	
+			break;
+		case 3:
+			document.getElementById("lRightPlayer").innerHTML = "AI - Impossible";	
+			msAIcalcRefresh = 100;
 			break;
 		default:
-			document.getElementById("lRightPlayer").innerHTML = "IA - Impossible";	
+			document.getElementById("lRightPlayer").innerHTML = "AI - Medium";
+			msAIcalcRefresh = 1000;
 			break;
 	}
 	showPlayers();

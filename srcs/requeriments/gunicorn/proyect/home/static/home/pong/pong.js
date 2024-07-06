@@ -1,10 +1,7 @@
 //frame id
-
 let id;
 
-
 // Board
-
 let board;
 let context;
 
@@ -14,8 +11,9 @@ const xMargin = 10; // Margin from paddle to side of board
 
 const ballSide = 10;
 
-const startSpeed = 6;
-const speedUpMultiple = 1.035;
+const startSpeed = 7.5;
+const speedUpMultiple = 1.02;
+const serveSpeedMultiple = 0.4;
 
 let startRadAngle = getRandomBetween((-Math.PI/4), (Math.PI/4));
 
@@ -56,7 +54,7 @@ let Lplayer =
     height : playerHeight,
     speed : 0,
     score: 0
-}
+};
 
 // Right player
 let Rplayer =
@@ -67,20 +65,16 @@ let Rplayer =
     height : playerHeight,
     speed : 0,
     score : 0
-}
+};
 
-function initGame()
-{
-	Lplayer.score = 0;
-	Rplayer.score = 0;
-}
+let gameEnded = false;
 
-function start()
+let AImargin;
+let predictedY;
+let playAI = true;
+
+function start(playAI, msAIcalcRefresh)
 {
-	//-----------initgame--------
-	initGame();
-	
-	//
     board = document.getElementById("board");
     board.width = boardWidth;
     board.height = boardHeight;
@@ -94,6 +88,12 @@ function start()
     requestAnimationFrame(update);
     document.addEventListener("keydown", keyDownHandler);
     document.addEventListener("keyup", keyUpHandler);
+
+    if (playAI)
+    {
+        setInterval(function() 
+        { predictedY = predictFinalYPos(ball); }, msAIcalcRefresh);
+    }
 }
 
 //To be able to use it with buttons
@@ -101,6 +101,9 @@ window.start = start;
 
 function update()
 {
+    if (gameEnded)
+        return;
+
     id = requestAnimationFrame(update);
     context.clearRect(0, 0, board.width, board.height);
     context.fillStyle = "turquoise";
@@ -119,8 +122,8 @@ function update()
     context.fillStyle = "white";
     if (ball.serve)
     {
-        ball.x += ball.xVel/2;
-        ball.y += ball.yVel/2;
+        ball.x += ball.xVel * serveSpeedMultiple;
+        ball.y += ball.yVel * serveSpeedMultiple;
     }
     else
     {
@@ -137,16 +140,33 @@ function update()
     if (ball.y <= 0 || (ball.y + ball.height >= board.height))
         ball.yVel *= -1;
 
+    if (playAI)
+        simulateAIInput();
+
     // Point scored, player who conceded serves
     if (ball.x < 0)
     {
         Rplayer.score++;
+        if (Rplayer.score >= 5) 
+        {
+            stop();
+            endMatch(Lplayer.score, Rplayer.score);
+            gameEnded = true;
+            return;
+        }
         resetGame(-1);
     }
 
     if (ball.x + ball.width > board.width)
     {
         Lplayer.score++;
+        if (Lplayer.score >= 5) 
+        {
+            stop();
+            endMatch(Lplayer.score, Rplayer.score);
+            gameEnded = true;
+            return;
+        }
         resetGame(1);
     }
 
@@ -157,15 +177,6 @@ function update()
     // Draw middle line
     for (let i = 10; i < board.height; i+=25)
         context.fillRect(board.width/2 - 10, i, 5, 5);
-
-	//------------END GAME------------
-	if (Rplayer.score == 1 || Lplayer.score == 1)
-	{
-		stop();
-		endMatch(Lplayer.score, Rplayer.score);
-	}
-	//--------------------------------
-	console.log("frame");
 }
 
 function stop() {
@@ -317,4 +328,66 @@ function getRandomEitherOr(value1, value2)
         return (value1);
     else
         return (value2);
+}
+
+function predictFinalYPos(ball)
+{
+    // AImargin is used in simulateAIinput
+    // The calculation is put into this function 
+    // to avoid constant recalculation of a random value and thus the AI jittering
+    // Randomness (AImargin) makes the AI hit at different angles
+    // If you want it to sometimes miss, change the min value to negative
+    // For it to regularly miss, the multiple has to be 0.3 or below
+    // If getRandom returns -0.1 it only misses for very straight shots
+    AImargin = playerHeight * getRandomBetween(-0.1, 0.45);
+
+    if (ball.xVel < 0) // If ball is going away from AI
+        return (boardHeight / 2 - ballSide / 2); // Prompt AI to go back to middle
+
+    // Amount of times the screen refreshes before ball reaches other side: Length / xVel
+    let refreshes = (boardWidth - xMargin - playerWidth - ball.x) / ball.xVel;
+    let yMovement = (ball.yVel * refreshes) % (boardHeight*2);
+    
+    let distanceToBottom = boardHeight - ball.y;
+    let distanceToTop = ball.y;
+    let finalYPos = ball.y;
+
+    for (let i = 0; i < 2; i++) 
+    {
+        // Bounce off top
+        if (yMovement < 0 && yMovement < -distanceToTop)
+        {
+            yMovement += distanceToTop;
+            yMovement *= -1; 
+            finalYPos = 0;
+        }
+        // Bounce off bottom
+        else if (yMovement > 0 && yMovement > distanceToBottom)
+        {
+            yMovement -= distanceToBottom;
+            yMovement *= -1;
+            finalYPos = boardHeight;
+        }
+    }
+    finalYPos += yMovement;
+    return (finalYPos);
+}
+
+function simulateAIInput() 
+{
+    if (predictedY < Rplayer.y + playerHeight - AImargin && predictedY > Rplayer.y + AImargin)
+    {
+        keyUpHandler({ code: "ArrowUp" });
+        keyUpHandler({ code: "ArrowDown" });
+    }
+    else if (predictedY < Rplayer.y + playerHeight/2)
+    {
+        keyDownHandler({ code: "ArrowUp" });
+        keyUpHandler({ code: "ArrowDown" });
+    } 
+    else if (predictedY > Rplayer.y + playerHeight/2) 
+    {
+        keyDownHandler({ code: "ArrowDown" });
+        keyUpHandler({ code: "ArrowUp" });
+    }
 }
