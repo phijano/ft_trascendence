@@ -67,14 +67,16 @@ let Rplayer =
     score : 0
 };
 
-let gameEnded = false;
 
 let AImargin;
 let predictedY;
-let playAI = true;
+let playAI = true; // Weird behaviour, doesnt work otherwise
 
 function start(playAI, msAIcalcRefresh)
 {
+    Lplayer.score = 0;
+    Rplayer.score = 0;
+
     board = document.getElementById("board");
     board.width = boardWidth;
     board.height = boardHeight;
@@ -101,9 +103,6 @@ window.start = start;
 
 function update()
 {
-    if (gameEnded)
-        return;
-
     id = requestAnimationFrame(update);
     context.clearRect(0, 0, board.width, board.height);
     context.fillStyle = "turquoise";
@@ -147,26 +146,12 @@ function update()
     if (ball.x < 0)
     {
         Rplayer.score++;
-        if (Rplayer.score >= 5) 
-        {
-            stop();
-            endMatch(Lplayer.score, Rplayer.score);
-            gameEnded = true;
-            return;
-        }
         resetGame(-1);
     }
 
     if (ball.x + ball.width > board.width)
     {
         Lplayer.score++;
-        if (Lplayer.score >= 5) 
-        {
-            stop();
-            endMatch(Lplayer.score, Rplayer.score);
-            gameEnded = true;
-            return;
-        }
         resetGame(1);
     }
 
@@ -177,6 +162,12 @@ function update()
     // Draw middle line
     for (let i = 10; i < board.height; i+=25)
         context.fillRect(board.width/2 - 10, i, 5, 5);
+
+    if (Rplayer.score == 5 || Lplayer.score == 5)
+    {
+        stop();
+        endMatch(Lplayer.score, Rplayer.score);
+    }
 }
 
 function stop() {
