@@ -73,11 +73,19 @@ let AImargin;
 let predictedY;
 let playAI; // Weird behaviour, doesnt work otherwise
 
-function start(playAIparam, msAIcalcRefresh)
+function initGame(playAIparam)
 {
     playAI = playAIparam;
     Lplayer.score = 0;
     Rplayer.score = 0;
+    resetGame(getRandomEitherOr(-1, 1));
+    Lplayer.y = boardHeight/2 - playerHeight/2;
+    Rplayer.y = boardHeight/2 - playerHeight/2;
+}
+
+function start(playAIparam, msAIcalcRefresh)
+{
+    initGame(playAIparam); // To restart all values that are changed in previous games
 
     board = document.getElementById("board");
     board.width = boardWidth;

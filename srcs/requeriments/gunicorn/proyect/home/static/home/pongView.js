@@ -11,6 +11,7 @@ let msAIcalcRefresh = 1000;
 function setTournament() {
 
 	stop();
+	playAIparam = false;
 	gameMode = "tournament";
 	document.getElementById("dOneVsOneSettings").hidden = true;
 	document.getElementById("bNormalGame").disabled = false;
