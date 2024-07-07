@@ -1,5 +1,6 @@
 //frame id
 let id;
+let aiIntervalId;
 
 // Board
 let board;
@@ -92,10 +93,13 @@ function start(playAIparam, msAIcalcRefresh)
     document.addEventListener("keydown", keyDownHandler);
     document.addEventListener("keyup", keyUpHandler);
 
-    if (playAI)
+    if (playAI) 
     {
-        setInterval(function() 
-        { predictedY = predictFinalYPos(ball); }, msAIcalcRefresh);
+        if (aiIntervalId) 
+            clearInterval(aiIntervalId);
+        aiIntervalId = 
+        setInterval(function () 
+        {predictedY = predictFinalYPos(ball);}, msAIcalcRefresh);
     }
 }
 
@@ -175,6 +179,8 @@ function stop() {
 
 	if (id)
 		cancelAnimationFrame(id);
+    if (aiIntervalId) 
+        clearInterval(aiIntervalId);
 }
 
 window.stop = stop;
@@ -329,7 +335,7 @@ function predictFinalYPos(ball)
     // to avoid constant recalculation of a random value and thus the AI jittering
     // Randomness (AImargin) makes the AI hit at different angles
     // If you want it to sometimes miss, change the min value to negative
-    // For it to regularly miss, the multiple has to be 0.3 or below
+    // For it to regularly miss, the multiple has to be -0.3 or below
     // If getRandom returns -0.1 it only misses for very straight shots
     AImargin = playerHeight * getRandomBetween(-0.1, 0.45);
 
