@@ -70,10 +70,11 @@ let Rplayer =
 
 let AImargin;
 let predictedY;
-let playAI = true; // Weird behaviour, doesnt work otherwise
+let playAI; // Weird behaviour, doesnt work otherwise
 
-function start(playAI, msAIcalcRefresh)
+function start(playAIparam, msAIcalcRefresh)
 {
+    playAI = playAIparam;
     Lplayer.score = 0;
     Rplayer.score = 0;
 
@@ -163,7 +164,7 @@ function update()
     for (let i = 10; i < board.height; i+=25)
         context.fillRect(board.width/2 - 10, i, 5, 5);
 
-    if (Rplayer.score == 5 || Lplayer.score == 5)
+    if (Rplayer.score == 2 || Lplayer.score == 2) // Games to 2 for faster debugging
     {
         stop();
         endMatch(Lplayer.score, Rplayer.score);

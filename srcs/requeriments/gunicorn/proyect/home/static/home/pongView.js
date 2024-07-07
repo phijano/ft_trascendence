@@ -5,7 +5,7 @@ const tournament = new Tournament();
 let gameMode;
 let opponent;
 let difficulty;
-let playAI;
+let playAIparam;
 let msAIcalcRefresh = 1000;
 
 function setTournament() {
@@ -160,7 +160,7 @@ function startPong()
 	document.getElementById("board").style.visibility = "visible";
 	document.getElementById("dMatchPlayers").hidden = false;
 	document.getElementById("dWinner").hidden = true;
-	start(playAI, msAIcalcRefresh);
+	start(playAIparam, msAIcalcRefresh);
 }
 
 function advance() {
@@ -191,13 +191,13 @@ function setOpponent() {
 	if (opponent)
 	{
 		sDifficulty.style.visibility = "visible";
-		playAI = true;
+		playAIparam = true;
 		setDifficulty();
 	}
 	else
 	{
 		sDifficulty.style.visibility = "hidden";
-		playAI = false;
+		playAIparam = false;
 		document.getElementById("lRightPlayer").innerHTML = "Player 2";	
 	}
 	console.log(opponent);
