@@ -9,5 +9,4 @@ urlpatterns = [
         path("pong", views.index, name='pong'),
         path("pong/", views.index, name='pong'),
         path("templates/<str:html>", views.templates, name='templates'),
-        path("sections/<int:num>", views.section, name='section'),
 ]
