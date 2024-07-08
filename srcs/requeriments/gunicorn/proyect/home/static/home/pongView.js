@@ -19,6 +19,8 @@ function setTournament() {
 	document.getElementById("board").style.visibility = "hidden";
 	document.getElementById("dTournamentSettings").hidden = false;
 	document.getElementById("dMatchPlayers").hidden = true;
+	document.getElementById("dStartGame").hidden = true;
+	document.getElementById("dWinner").hidden = true;
 	document.getElementById("sNumPlayers").style.visibility = "visible";
 	document.getElementById("lNickWarning").style.visibility = "hidden";
 	document.getElementById("iNick").style.visibility = "visible";
