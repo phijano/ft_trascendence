@@ -12,15 +12,14 @@ const xMargin = 10; // Margin from paddle to side of board
 
 const ballSide = 10;
 
-const startSpeed = 7.5;
-const speedUpMultiple = 1.02;
+// Variables changed by game customization meny
+let playAI;
+let startSpeed = 7.5;
+let speedUpMultiple = 1.02;
+let playerSpeed = 5;
+let playerHeight = 50;
+
 const serveSpeedMultiple = 0.4;
-
-let startRadAngle = getRandomBetween((-Math.PI/4), (Math.PI/4));
-
-let xStartVel = startSpeed * Math.cos(startRadAngle) * getRandomEitherOr(-1, 1);
-let yStartVel = startSpeed * Math.sin(startRadAngle);
-
 
 let ball = 
 {
@@ -28,9 +27,9 @@ let ball =
     y : boardHeight / 2 - ballSide / 2,
     width : ballSide,
     height : ballSide,
-    xVel : xStartVel,
-    yVel : yStartVel,
-    speed : startSpeed,
+    xVel : 0,
+    yVel : 0,
+    speed : 0,
     serve : true
 }
 
@@ -42,9 +41,7 @@ let keyState =
     down: false // ArrowDown
 };
 
-const playerHeight = 50;
 const playerWidth = 10;
-const playerSpeed = 5;
 
 // Left player
 let Lplayer =
@@ -71,21 +68,35 @@ let Rplayer =
 
 let AImargin;
 let predictedY;
-let playAI; // Weird behaviour, doesnt work otherwise
 
-function initGame(playAIparam)
+function initGame(gameConfig)
 {
-    playAI = playAIparam;
+    playAI = gameConfig.playAI;
+    startSpeed = gameConfig.startSpeed;
+    speedUpMultiple = gameConfig.speedUpMultiple;
+    playerSpeed = gameConfig.playerSpeed;
+    playerHeight = gameConfig.playerHeight;
+
+    Lplayer.height = playerHeight;
+    Rplayer.height = playerHeight;
+
     Lplayer.score = 0;
     Rplayer.score = 0;
-    resetGame(getRandomEitherOr(-1, 1));
+
+    ball.speed = startSpeed;
+    let startRadAngle = getRandomBetween((-Math.PI/4), (Math.PI/4));
+    ball.xVel = startSpeed * Math.cos(startRadAngle) * getRandomEitherOr(-1, 1);
+    ball.yVel = startSpeed * Math.sin(startRadAngle);
+
     Lplayer.y = boardHeight/2 - playerHeight/2;
     Rplayer.y = boardHeight/2 - playerHeight/2;
+
+    resetGame(getRandomEitherOr(-1, 1));
 }
 
-function start(playAIparam, msAIcalcRefresh)
+function start(gameConfig)
 {
-    initGame(playAIparam); // To restart all values that are changed in previous games
+    initGame(gameConfig); // To restart all values that are changed in previous games
 
     board = document.getElementById("board");
     board.width = boardWidth;
@@ -101,13 +112,15 @@ function start(playAIparam, msAIcalcRefresh)
     document.addEventListener("keydown", keyDownHandler);
     document.addEventListener("keyup", keyUpHandler);
 
+    if (playAI)
+        console.log("play AI = true");
+    console.log(gameConfig);
     if (playAI) 
     {
         if (aiIntervalId) 
             clearInterval(aiIntervalId);
-        aiIntervalId = 
-        setInterval(function () 
-        {predictedY = predictFinalYPos(ball);}, msAIcalcRefresh);
+        aiIntervalId = setInterval(function () 
+        {predictedY = predictFinalYPos(ball);}, gameConfig.msAIcalcRefresh);
     }
 }
 
@@ -183,7 +196,8 @@ function update()
     }
 }
 
-function stop() {
+function stop()
+{
 
 	if (id)
 		cancelAnimationFrame(id);
@@ -309,9 +323,9 @@ function handlePaddleHit(ball, player)
 
 function resetGame(direction)
 {
-    startRadAngle = getRandomBetween((-Math.PI/4), (Math.PI/4));
-    xStartVel = startSpeed * Math.cos(startRadAngle) * direction;
-    yStartVel = startSpeed * Math.sin(startRadAngle);
+    let startRadAngle = getRandomBetween((-Math.PI/4), (Math.PI/4));
+    let xStartVel = startSpeed * Math.cos(startRadAngle) * direction;
+    let yStartVel = startSpeed * Math.sin(startRadAngle);
 
     ball = 
     {

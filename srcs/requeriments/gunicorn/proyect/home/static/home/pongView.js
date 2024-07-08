@@ -5,13 +5,53 @@ const tournament = new Tournament();
 let gameMode;
 let opponent;
 let difficulty;
-let playAIparam;
-let msAIcalcRefresh = 1000;
+
+let gameConfig = // Initialize to normal settings
+{
+	playAI : false,
+	msAIcalcRefresh: 1000,
+	playerHeight: 50,
+	startSpeed: 7.5,
+	speedUpMultiple: 1.02,
+	playerSpeed: 5,
+}
+
+function showCustomizationOptions() {
+    document.getElementById("dCustomizationOptions").hidden = false;
+}
+
+function hideCustomizationOptions() {
+    document.getElementById("dCustomizationOptions").hidden = true;
+}
+
+function applySettings() {
+    const playerSize = document.getElementById("playerSize").value;
+    const ballSpeed = document.getElementById("ballSpeed").value;
+    const playerSpeed = document.getElementById("playerSpeed").value;
+    const ballSpeedUp = document.getElementById("ballSpeedUp").value;
+
+    gameConfig.playerHeight = playerSize;
+    gameConfig.startSpeed = ballSpeed;
+    gameConfig.playerSpeed = playerSpeed;
+    gameConfig.speedUpMultiple = ballSpeedUp;
+}
+
+function startOneVsOne() {
+    applySettings();
+    hideCustomizationOptions();
+    setOneVsOne();
+}
+
+function startTournamentMode() {
+    applySettings();
+    hideCustomizationOptions();
+    setTournament();
+}
 
 function setTournament() {
 
 	stop();
-	playAIparam = false;
+	gameConfig.playAI = false;
 	gameMode = "tournament";
 	document.getElementById("dOneVsOneSettings").hidden = true;
 	document.getElementById("bNormalGame").disabled = false;
@@ -47,7 +87,7 @@ function addPlayer() {
 	const showPlayers = document.getElementById("tPlayers");
 	const register = document.getElementById("bRegisterPlayer");
 	const numPlayers = document.getElementById("sNumPlayers");
-	const lNickWarning =document.getElementById("lNickWarning");
+	const lNickWarning = document.getElementById("lNickWarning");
 
 	//validate nick
 	if (nick.value.length < 3)
@@ -163,7 +203,7 @@ function startPong()
 	document.getElementById("board").style.visibility = "visible";
 	document.getElementById("dMatchPlayers").hidden = false;
 	document.getElementById("dWinner").hidden = true;
-	start(playAIparam, msAIcalcRefresh);
+	start(gameConfig);
 }
 
 function advance() {
@@ -171,7 +211,7 @@ function advance() {
 	showPlayers(tournament.matchPlayers);
 }
 
-function oneVsOne() {
+function setOneVsOne() {
 	stop();
 	document.getElementById("bNormalGame").disabled = true;
 	document.getElementById("bTournament").disabled = false;
@@ -194,16 +234,15 @@ function setOpponent() {
 	if (opponent)
 	{
 		sDifficulty.style.visibility = "visible";
-		playAIparam = true;
+		gameConfig.playAI = true;
 		setDifficulty();
 	}
 	else
 	{
 		sDifficulty.style.visibility = "hidden";
-		playAIparam = false;
+		gameConfig.playAI = false;
 		document.getElementById("lRightPlayer").innerHTML = "Player 2";	
 	}
-	console.log(opponent);
 	showPlayers();
 }
 
@@ -212,29 +251,29 @@ function setDifficulty() {
 	switch (difficulty) {
 		case 0:
 			document.getElementById("lRightPlayer").innerHTML = "AI - Easy";
-			msAIcalcRefresh = 1200;
+			gameConfig.msAIcalcRefresh = 1200;
 			break;
 		case 1:
 			document.getElementById("lRightPlayer").innerHTML = "AI - Medium";
-			msAIcalcRefresh = 1000;
+			gameConfig.msAIcalcRefresh = 1000;
 			break;
 		case 2:
 			document.getElementById("lRightPlayer").innerHTML = "AI - Hard";
-			msAIcalcRefresh = 750;	
+			gameConfig.msAIcalcRefresh = 750;	
 			break;
 		case 3:
 			document.getElementById("lRightPlayer").innerHTML = "AI - Impossible";	
-			msAIcalcRefresh = 100;
+			gameConfig.msAIcalcRefresh = 100;
 			break;
 		default:
 			document.getElementById("lRightPlayer").innerHTML = "AI - Medium";
-			msAIcalcRefresh = 1000;
+			gameConfig.msAIcalcRefresh = 1000;
 			break;
 	}
 	showPlayers();
 }
 
-window.oneVsOne = oneVsOne;
+window.setOneVsOne = setOneVsOne;
 window.setOpponent = setOpponent;
 window.setDifficulty = setDifficulty;
 window.endMatch = endMatch;
@@ -245,3 +284,7 @@ window.startTournament = startTournament;
 window.startPong = startPong;
 window.advance = advance;
 window.endTournament = endTournament;
+
+window.applySettings = applySettings;
+window.startOneVsOne = startOneVsOne;
+window.startTournamentMode = startTournamentMode;
