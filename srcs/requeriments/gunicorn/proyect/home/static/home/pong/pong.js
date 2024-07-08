@@ -201,8 +201,11 @@ function fixOutOfBounds(player, yMax)
         player.y = yMax;
 }
 
-function keyDownHandler(event)
+function keyDownHandler(event, isAI = false)
 {
+    if (!isAI && ["KeyW", "KeyS", "ArrowUp", "ArrowDown"].includes(event.code)) 
+        event.preventDefault(); // To avoid page moving up & down when using arrows
+
     if (event.code == "KeyW")
     {
         Lplayer.speed = -playerSpeed;
@@ -213,21 +216,24 @@ function keyDownHandler(event)
         Lplayer.speed = playerSpeed;
         keyState.s = true;
     }
-    if (event.code == "ArrowUp")
+    else if (event.code == "ArrowUp" && (isAI || !playAI)) // To avoid tampering with AI
     {
         Rplayer.speed = -playerSpeed;
         keyState.up = true;
     }
-    else if (event.code == "ArrowDown")
+    else if (event.code == "ArrowDown" && (isAI || !playAI))
     {
         Rplayer.speed = playerSpeed;
         keyState.down = true;
     }
 }
 
-// Player stops when button is released/no longer pressed down FIX DOUBLE HOLD DOWN RELEASE
-function keyUpHandler(event)
+// Player stops when button is released/no longer pressed down
+function keyUpHandler(event, isAI = false)
 {
+    if (!isAI && ["KeyW", "KeyS", "ArrowUp", "ArrowDown"].includes(event.code)) 
+        event.preventDefault(); // To avoid page moving up & down when using arrows
+
     if (event.code == "KeyW")
     {
         keyState.w = false;
@@ -236,8 +242,7 @@ function keyUpHandler(event)
         else
             Lplayer.speed = 0;
     }
-
-    if (event.code == "KeyS")
+    else if (event.code == "KeyS")
     {
         keyState.s = false;
         if (keyState.w == true)
@@ -245,8 +250,7 @@ function keyUpHandler(event)
         else
             Lplayer.speed = 0;
     }
-
-    if (event.code == "ArrowUp")
+    else if (event.code == "ArrowUp" && (isAI || !playAI)) // To avoid tampering with AI
     {
         keyState.up = false;
         if (keyState.down == true)
@@ -254,8 +258,7 @@ function keyUpHandler(event)
         else
             Rplayer.speed = 0;
     }
-
-    if (event.code == "ArrowDown")
+    else if (event.code == "ArrowDown" && (isAI || !playAI))
     {
         keyState.down = false;
         if (keyState.up == true)
@@ -383,17 +386,17 @@ function simulateAIInput()
 {
     if (predictedY < Rplayer.y + playerHeight - AImargin && predictedY > Rplayer.y + AImargin)
     {
-        keyUpHandler({ code: "ArrowUp" });
-        keyUpHandler({ code: "ArrowDown" });
+        keyUpHandler({ code: "ArrowUp" }, true);
+        keyUpHandler({ code: "ArrowDown" }, true);
     }
     else if (predictedY < Rplayer.y + playerHeight/2)
     {
-        keyDownHandler({ code: "ArrowUp" });
-        keyUpHandler({ code: "ArrowDown" });
+        keyDownHandler({ code: "ArrowUp" }, true);
+        keyUpHandler({ code: "ArrowDown" }, true);
     } 
     else if (predictedY > Rplayer.y + playerHeight/2) 
     {
-        keyDownHandler({ code: "ArrowDown" });
-        keyUpHandler({ code: "ArrowUp" });
+        keyDownHandler({ code: "ArrowDown" }, true);
+        keyUpHandler({ code: "ArrowUp" }, true);
     }
 }
