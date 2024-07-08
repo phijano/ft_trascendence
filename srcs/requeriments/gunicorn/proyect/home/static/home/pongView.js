@@ -25,10 +25,10 @@ function hideCustomizationOptions() {
 }
 
 function applySettings() {
-    const playerSize = document.getElementById("playerSize").value;
-    const ballSpeed = document.getElementById("ballSpeed").value;
-    const playerSpeed = document.getElementById("playerSpeed").value;
-    const ballSpeedUp = document.getElementById("ballSpeedUp").value;
+    let playerSize = parseFloat(document.getElementById("playerSize").value);
+    let ballSpeed = parseFloat(document.getElementById("ballSpeed").value);
+    let playerSpeed = parseFloat(document.getElementById("playerSpeed").value);
+    let ballSpeedUp = parseFloat(document.getElementById("ballSpeedUp").value);
 
     gameConfig.playerHeight = playerSize;
     gameConfig.startSpeed = ballSpeed;

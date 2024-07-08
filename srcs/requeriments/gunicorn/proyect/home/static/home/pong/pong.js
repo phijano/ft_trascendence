@@ -12,26 +12,19 @@ const xMargin = 10; // Margin from paddle to side of board
 
 const ballSide = 10;
 
-// Variables changed by game customization meny
-let playAI;
+// Variables provided by user (initialized to standard values)
+let playAI; 
 let startSpeed = 7.5;
 let speedUpMultiple = 1.02;
-let playerSpeed = 5;
 let playerHeight = 50;
+let playerSpeed = 5;
 
 const serveSpeedMultiple = 0.4;
 
-let ball = 
-{
-    x : boardWidth / 2 - ballSide / 2,
-    y : boardHeight / 2 - ballSide / 2,
-    width : ballSide,
-    height : ballSide,
-    xVel : 0,
-    yVel : 0,
-    speed : 0,
-    serve : true
-}
+// To set in the global scope
+let ball = {};
+let Lplayer = {};
+let Rplayer = {};
 
 let keyState = 
 {
@@ -42,29 +35,6 @@ let keyState =
 };
 
 const playerWidth = 10;
-
-// Left player
-let Lplayer =
-{
-    x : xMargin,
-    y : boardHeight/2 - playerHeight/2,
-    width : playerWidth,
-    height : playerHeight,
-    speed : 0,
-    score: 0
-};
-
-// Right player
-let Rplayer =
-{
-    x : boardWidth - playerWidth - xMargin,
-    y : boardHeight/2 - playerHeight/2,
-    width : playerWidth,
-    height : playerHeight,
-    speed : 0,
-    score : 0
-};
-
 
 let AImargin;
 let predictedY;
@@ -77,21 +47,48 @@ function initGame(gameConfig)
     playerSpeed = gameConfig.playerSpeed;
     playerHeight = gameConfig.playerHeight;
 
-    Lplayer.height = playerHeight;
-    Rplayer.height = playerHeight;
+    // Left player
+    Lplayer =
+    {
+        x : xMargin,
+        y : boardHeight/2 - playerHeight/2,
+        width : playerWidth,
+        height : playerHeight,
+        speed : 0,
+        score: 0
+    };
 
-    Lplayer.score = 0;
-    Rplayer.score = 0;
+    // Right player
+    Rplayer =
+    {
+        x : boardWidth - playerWidth - xMargin,
+        y : boardHeight/2 - playerHeight/2,
+        width : playerWidth,
+        height : playerHeight,
+        speed : 0,
+        score : 0
+    };
 
-    ball.speed = startSpeed;
     let startRadAngle = getRandomBetween((-Math.PI/4), (Math.PI/4));
-    ball.xVel = startSpeed * Math.cos(startRadAngle) * getRandomEitherOr(-1, 1);
-    ball.yVel = startSpeed * Math.sin(startRadAngle);
 
-    Lplayer.y = boardHeight/2 - playerHeight/2;
-    Rplayer.y = boardHeight/2 - playerHeight/2;
+    let xStartVel = startSpeed * Math.cos(startRadAngle) * getRandomEitherOr(-1, 1);
+    let yStartVel = startSpeed * Math.sin(startRadAngle);
+
+    ball = 
+    {
+        x : boardWidth / 2 - ballSide / 2,
+        y : boardHeight / 2 - ballSide / 2,
+        width : ballSide,
+        height : ballSide,
+        xVel : xStartVel,
+        yVel : yStartVel,
+        speed : startSpeed,
+        serve : true
+    };
 
     resetGame(getRandomEitherOr(-1, 1));
+    Lplayer.y = boardHeight/2 - playerHeight/2;
+    Rplayer.y = boardHeight/2 - playerHeight/2;
 }
 
 function start(gameConfig)
@@ -112,14 +109,12 @@ function start(gameConfig)
     document.addEventListener("keydown", keyDownHandler);
     document.addEventListener("keyup", keyUpHandler);
 
-    if (playAI)
-        console.log("play AI = true");
-    console.log(gameConfig);
     if (playAI) 
     {
         if (aiIntervalId) 
             clearInterval(aiIntervalId);
-        aiIntervalId = setInterval(function () 
+        aiIntervalId = 
+        setInterval(function () 
         {predictedY = predictFinalYPos(ball);}, gameConfig.msAIcalcRefresh);
     }
 }
@@ -196,8 +191,7 @@ function update()
     }
 }
 
-function stop()
-{
+function stop() {
 
 	if (id)
 		cancelAnimationFrame(id);
@@ -227,7 +221,7 @@ function keyDownHandler(event, isAI = false)
     }
     else if (event.code == "KeyS")
     {
-        Lplayer.speed = playerSpeed;
+        Lplayer.speed = playerSpeed + 0;
         keyState.s = true;
     }
     else if (event.code == "ArrowUp" && (isAI || !playAI)) // To avoid tampering with AI
@@ -237,7 +231,7 @@ function keyDownHandler(event, isAI = false)
     }
     else if (event.code == "ArrowDown" && (isAI || !playAI))
     {
-        Rplayer.speed = playerSpeed;
+        Rplayer.speed = playerSpeed + 0;
         keyState.down = true;
     }
 }
@@ -252,7 +246,7 @@ function keyUpHandler(event, isAI = false)
     {
         keyState.w = false;
         if (keyState.s == true)
-            Lplayer.speed = playerSpeed;
+            Lplayer.speed = playerSpeed + 0;
         else
             Lplayer.speed = 0;
     }
@@ -268,7 +262,7 @@ function keyUpHandler(event, isAI = false)
     {
         keyState.up = false;
         if (keyState.down == true)
-            Rplayer.speed = playerSpeed;
+            Rplayer.speed = playerSpeed + 0;
         else
             Rplayer.speed = 0;
     }
