@@ -25,14 +25,7 @@ const serveSpeedMultiple = 0.4;
 let ball = {};
 let Lplayer = {};
 let Rplayer = {};
-
-let keyState = 
-{
-    w: false,
-    s: false,
-    up: false,  // ArrowUp
-    down: false // ArrowDown
-};
+let keyState = {};
 
 const playerWidth = 10;
 
@@ -47,6 +40,14 @@ function initGame(gameConfig)
     playerSpeed = gameConfig.playerSpeed;
     playerHeight = gameConfig.playerHeight;
 
+    keyState = 
+    {
+        w: false,
+        s: false,
+        up: false,  // ArrowUp
+        down: false // ArrowDown
+    };
+    
     // Left player
     Lplayer =
     {
@@ -221,7 +222,7 @@ function keyDownHandler(event, isAI = false)
     }
     else if (event.code == "KeyS")
     {
-        Lplayer.speed = playerSpeed + 0;
+        Lplayer.speed = playerSpeed + 0; // FIXED BUG WITH BS
         keyState.s = true;
     }
     else if (event.code == "ArrowUp" && (isAI || !playAI)) // To avoid tampering with AI
@@ -231,7 +232,7 @@ function keyDownHandler(event, isAI = false)
     }
     else if (event.code == "ArrowDown" && (isAI || !playAI))
     {
-        Rplayer.speed = playerSpeed + 0;
+        Rplayer.speed = playerSpeed + 0; // FIXED BUG WITH BS 
         keyState.down = true;
     }
 }
@@ -246,7 +247,7 @@ function keyUpHandler(event, isAI = false)
     {
         keyState.w = false;
         if (keyState.s == true)
-            Lplayer.speed = playerSpeed + 0;
+            Lplayer.speed = playerSpeed + 0; // FIXED BUG WITH BS
         else
             Lplayer.speed = 0;
     }
@@ -262,7 +263,7 @@ function keyUpHandler(event, isAI = false)
     {
         keyState.up = false;
         if (keyState.down == true)
-            Rplayer.speed = playerSpeed + 0;
+            Rplayer.speed = playerSpeed + 0; // FIXED BUG WITH BS
         else
             Rplayer.speed = 0;
     }
