@@ -18,7 +18,7 @@ let startSpeed = 7.5;
 let speedUpMultiple = 1.02;
 let playerHeight = 50;
 let playerSpeed = 5;
-let allowPowerUp = true;
+let allowPowerUp;
 
 const serveSpeedMultiple = 0.4;
 
@@ -35,7 +35,7 @@ let predictedY;
 
 function initGame(gameConfig)
 {
-    //AllowPowerUp = gameConfig.allowPowerUp
+    allowPowerUp = gameConfig.allowPowerUp
     playAI = gameConfig.playAI;
     startSpeed = gameConfig.startSpeed;
     speedUpMultiple = gameConfig.speedUpMultiple;

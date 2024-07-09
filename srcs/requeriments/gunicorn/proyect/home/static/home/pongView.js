@@ -14,6 +14,7 @@ let gameConfig = // Initialize to normal settings
 	startSpeed: 7.5,
 	speedUpMultiple: 1.02,
 	playerSpeed: 5,
+	allowPowerUp: false
 }
 
 function showCustomizationOptions() {
@@ -34,11 +35,13 @@ function applySettings() {
     let ballSpeed = parseFloat(document.getElementById("ballSpeed").value);
     let playerSpeed = parseFloat(document.getElementById("playerSpeed").value);
     let ballSpeedUp = parseFloat(document.getElementById("ballSpeedUp").value);
+	let allowPowerUp = document.getElementById("allowFreezeFlip").checked;
 
     gameConfig.playerHeight = playerSize;
     gameConfig.startSpeed = ballSpeed;
     gameConfig.playerSpeed = playerSpeed;
     gameConfig.speedUpMultiple = ballSpeedUp;
+	gameConfig.allowPowerUp = allowPowerUp;
 }
 
 function startOneVsOne() {
