@@ -17,10 +17,15 @@ let gameConfig = // Initialize to normal settings
 }
 
 function showCustomizationOptions() {
+	stop();
+	document.getElementById("bSettings").disabled = true;
     document.getElementById("dCustomizationOptions").hidden = false;
+	hideTournament();
+	hideOneVsOne();
 }
 
 function hideCustomizationOptions() {
+	document.getElementById("bSettings").disabled = false;
     document.getElementById("dCustomizationOptions").hidden = true;
 }
 
@@ -38,29 +43,40 @@ function applySettings() {
 
 function startOneVsOne() {
     applySettings();
+	hideTournament();
     hideCustomizationOptions();
     setOneVsOne();
 }
 
 function startTournamentMode() {
     applySettings();
+	hideOneVsOne();
     hideCustomizationOptions();
     setTournament();
 }
+
+function hideTournament() {
+	document.getElementById("bTournament").disabled = false;
+	document.getElementById("dTournamentSettings").hidden = true;
+}
+
+function hideOneVsOne() {
+	document.getElementById("dOneVsOneSettings").hidden = true;
+	document.getElementById("bNormalGame").disabled = false;
+	document.getElementById("board").style.visibility = "hidden";
+	document.getElementById("dMatchPlayers").hidden = true;
+	document.getElementById("dStartGame").hidden = true;
+	document.getElementById("dWinner").hidden = true;
+}
+
 
 function setTournament() {
 
 	stop();
 	gameConfig.playAI = false;
 	gameMode = "tournament";
-	document.getElementById("dOneVsOneSettings").hidden = true;
-	document.getElementById("bNormalGame").disabled = false;
 	document.getElementById("bTournament").disabled = true;
-	document.getElementById("board").style.visibility = "hidden";
 	document.getElementById("dTournamentSettings").hidden = false;
-	document.getElementById("dMatchPlayers").hidden = true;
-	document.getElementById("dStartGame").hidden = true;
-	document.getElementById("dWinner").hidden = true;
 	document.getElementById("sNumPlayers").style.visibility = "visible";
 	document.getElementById("lNickWarning").style.visibility = "hidden";
 	document.getElementById("iNick").style.visibility = "visible";
@@ -214,8 +230,6 @@ function advance() {
 function setOneVsOne() {
 	stop();
 	document.getElementById("bNormalGame").disabled = true;
-	document.getElementById("bTournament").disabled = false;
-	document.getElementById("dTournamentSettings").hidden = true;
 	document.getElementById("dOneVsOneSettings").hidden = false;
 	document.getElementById("dMatchPlayers").hidden = false;
 	document.getElementById("dStartGame").hidden = false;
@@ -285,6 +299,6 @@ window.startPong = startPong;
 window.advance = advance;
 window.endTournament = endTournament;
 
-window.applySettings = applySettings;
+window.showCustomizationOptions = showCustomizationOptions;
 window.startOneVsOne = startOneVsOne;
 window.startTournamentMode = startTournamentMode;
