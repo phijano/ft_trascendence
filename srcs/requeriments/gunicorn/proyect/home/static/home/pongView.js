@@ -152,6 +152,7 @@ function endTournament() {
 	document.getElementById("dEndTournament").hidden = true;
 	document.getElementById("dMatchPlayers").hidden = true;
 	document.getElementById("dWinner").hidden = true;
+	document.getElementById("dStartGame").hidden = true;
 	document.getElementById("dAdvance").hidden = true;
 	document.getElementById("dChampion").hidden = true;
 }
