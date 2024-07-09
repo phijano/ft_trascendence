@@ -18,6 +18,7 @@ let startSpeed = 7.5;
 let speedUpMultiple = 1.02;
 let playerHeight = 50;
 let playerSpeed = 5;
+let allowPowerUp = true;
 
 const serveSpeedMultiple = 0.4;
 
@@ -34,6 +35,7 @@ let predictedY;
 
 function initGame(gameConfig)
 {
+    //AllowPowerUp = gameConfig.allowPowerUp
     playAI = gameConfig.playAI;
     startSpeed = gameConfig.startSpeed;
     speedUpMultiple = gameConfig.speedUpMultiple;
@@ -45,7 +47,10 @@ function initGame(gameConfig)
         w: false,
         s: false,
         up: false,  // ArrowUp
-        down: false // ArrowDown
+        down: false, // ArrowDown
+        lPowerUpUsed : false,
+        rPowerUpUsed : false,
+        powerUpInUse : false
     };
     
     // Left player
@@ -140,13 +145,16 @@ function update()
     context.fillRect(Rplayer.x, Rplayer.y, Rplayer.width, Rplayer.height);
 
     // ball
-    context.fillStyle = "white";
-    if (ball.serve)
+    if (keyState.powerUpInUse)
+        context.fillStyle = "red";
+    else
+        context.fillStyle = "white";
+    if (ball.serve && !keyState.powerUpInUse)
     {
         ball.x += ball.xVel * serveSpeedMultiple;
         ball.y += ball.yVel * serveSpeedMultiple;
     }
-    else
+    else if (!keyState.powerUpInUse)
     {
         ball.x += ball.xVel;
         ball.y += ball.yVel;
@@ -177,13 +185,13 @@ function update()
         resetGame(1);
     }
 
+    for (let i = 10; i < board.height; i+=25)
+        context.fillRect(board.width/2 - 10, i, 5, 5);
+
+    context.fillStyle = "white";
     context.font = "45px sans-serif";
     context.fillText(Lplayer.score, board.width/5, 45);
     context.fillText(Rplayer.score, board.width/5 * 4 -45, 45);
-
-    // Draw middle line
-    for (let i = 10; i < board.height; i+=25)
-        context.fillRect(board.width/2 - 10, i, 5, 5);
 
     if (Rplayer.score == 2 || Lplayer.score == 2) // Games to 2 for faster debugging
     {
@@ -212,7 +220,7 @@ function fixOutOfBounds(player, yMax)
 
 function keyDownHandler(event, isAI = false)
 {
-    if (!isAI && ["KeyW", "KeyS", "ArrowUp", "ArrowDown"].includes(event.code)) 
+    if (!isAI && ["KeyW", "KeyS", "ArrowUp", "ArrowDown", "KeyD", "ArrowLeft"].includes(event.code)) 
         event.preventDefault(); // To avoid page moving up & down when using arrows
 
     if (event.code == "KeyW")
@@ -235,12 +243,28 @@ function keyDownHandler(event, isAI = false)
         Rplayer.speed = playerSpeed + 0; // FIXED BUG WITH BS 
         keyState.down = true;
     }
+    else if (event.code == "KeyD")
+    {
+        if (allowPowerUp && ball.xVel > 0 && !keyState.lPowerUpUsed)
+        {
+            keyState.lPowerUpUsed = true;
+            freezeAndChangeDir();
+        }
+    }  
+    else if (event.code == "ArrowLeft")
+    {
+        if (allowPowerUp && ball.xVel < 0 && !keyState.rPowerUpUsed && (isAI || !playAI))
+        {
+            keyState.rPowerUpUsed = true;
+            freezeAndChangeDir();
+        }
+    }
 }
 
 // Player stops when button is released/no longer pressed down
 function keyUpHandler(event, isAI = false)
 {
-    if (!isAI && ["KeyW", "KeyS", "ArrowUp", "ArrowDown"].includes(event.code)) 
+    if (!isAI && ["KeyW", "KeyS", "ArrowUp", "ArrowDown", "KeyD", "ArrowLeft"].includes(event.code)) 
         event.preventDefault(); // To avoid page moving up & down when using arrows
 
     if (event.code == "KeyW")
@@ -277,8 +301,22 @@ function keyUpHandler(event, isAI = false)
     }
 }
 
+function freezeAndChangeDir()
+{
+    keyState.powerUpInUse = true;
+
+    ball.yVel *= -1;
+    setTimeout(() => 
+    {
+        keyState.powerUpInUse = false;
+    }, 750);
+}
+
 function handlePaddleHit(ball, player)
 {
+    if (keyState.powerUpInUse) // To avoid glitch with multiple speed ups at once
+        return ;
+
     if ((ball.x < player.x + player.width) &&  // The ball's top left corner doesn't reach the paddles top right corner
         (ball.x + ball.width > player.x) &&    // The ball's top right corner passes the paddles top left corner
         (ball.y < player.y + player.height) && // The ball's top left corner doesn't reach the paddles bottom left corner
@@ -333,6 +371,9 @@ function resetGame(direction)
         speed : startSpeed,
         serve : true
     }
+
+    keyState.lPowerUpUsed = false;
+    keyState.rPowerUpUsed = false;
 }
 
 function getRandomBetween(min, max) 
@@ -358,6 +399,12 @@ function predictFinalYPos(ball)
     // For it to regularly miss, the multiple has to be -0.3 or below
     // If getRandom returns -0.1 it only misses for very straight shots
     AImargin = playerHeight * getRandomBetween(-0.1, 0.45);
+
+    // As AI can only refresh its view every time predicFinalYPos is called the AI uses its PowerUp here
+    // ball.yVel > 3 as its only logical to use the powerUp when the ball is moving at a steep angle 
+    // ball.x checks are that so the power up is only used on opponents side but not too close to opponent
+    if (allowPowerUp && !keyState.rPowerUpUsed && ball.xVel < 0 && !ball.serve && ball.x < boardWidth/2 && ball.x > boardWidth/7 && ball.yVel > 3)
+        keyDownHandler({ code : "ArrowLeft" }, true);
 
     if (ball.xVel < 0) // If ball is going away from AI
         return (boardHeight / 2 - ballSide / 2); // Prompt AI to go back to middle
