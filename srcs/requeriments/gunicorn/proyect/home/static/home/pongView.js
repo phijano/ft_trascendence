@@ -146,7 +146,7 @@ function startTournament() {
 }
 
 function endTournament() {
-
+	stop();
 	document.getElementById("board").style.visibility = "hidden";
 	document.getElementById("dStartOptions").hidden = false;
 	document.getElementById("dEndTournament").hidden = true;
