@@ -8,8 +8,6 @@ let context;
 
 const xMargin = 10; // Margin from paddle to side of board
 
-const ballSide = 10;
-
 // Variables provided by user (initialized to standard values)
 let playAI; 
 let startSpeed = 7.5;
@@ -19,6 +17,8 @@ let playerSpeed = 5;
 let allowPowerUp;
 let boardWidth = 700;
 let boardHeight = 500;
+let pointsToWin = 3;
+let ballSide = 10;
 
 const serveSpeedMultiple = 0.4;
 
@@ -43,6 +43,8 @@ function initGame(gameConfig)
     playerHeight = gameConfig.playerHeight;
     boardWidth = gameConfig.boardWidth;
     boardHeight = gameConfig.boardHeight;
+    pointsToWin = gameConfig.pointsToWin;
+    ballSide = gameConfig.ballSide;
 
     keyState = 
     {
@@ -111,7 +113,7 @@ function initGame(gameConfig)
 
 function start(gameConfig)
 {
-    initGame(gameConfig); // To restart all values that are changed in previous games
+    initGame(gameConfig); // To restart all values that are changed in previous games & apply settings changes
 
     requestAnimationFrame(update);
     document.addEventListener("keydown", keyDownHandler);
@@ -195,9 +197,10 @@ function update()
     context.fillText(Lplayer.score, board.width/5, 45);
     context.fillText(Rplayer.score, board.width/5 * 4 -45, 45);
 
-    if (Rplayer.score == 2 || Lplayer.score == 2) // Games to 2 for faster debugging
+    if (Rplayer.score == pointsToWin || Lplayer.score == pointsToWin)
     {
         stop();
+        predictedY = boardHeight / 2;
         endMatch(Lplayer.score, Rplayer.score);
     }
 }

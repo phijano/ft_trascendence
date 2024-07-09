@@ -14,6 +14,8 @@ let gameConfig = // Initialize to normal settings
 	startSpeed: 7.5,
 	speedUpMultiple: 1.02,
 	playerSpeed: 5,
+	pointsToWin: 3,
+	ballSide: 10,
 	allowPowerUp: false,
 	boardWidth: 700,
 	boardHeight: 500
@@ -33,19 +35,15 @@ function hideCustomizationOptions() {
 }
 
 function applySettings() {
-    let playerSize = parseFloat(document.getElementById("playerSize").value);
-    let ballSpeed = parseFloat(document.getElementById("ballSpeed").value);
-    let playerSpeed = parseFloat(document.getElementById("playerSpeed").value);
-    let ballSpeedUp = parseFloat(document.getElementById("ballSpeedUp").value);
-	let allowPowerUp = document.getElementById("allowFreezeFlip").checked;
+    gameConfig.playerHeight = parseFloat(document.getElementById("playerSize").value);
+    gameConfig.startSpeed = parseFloat(document.getElementById("ballSpeed").value);
+    gameConfig.playerSpeed = parseFloat(document.getElementById("playerSpeed").value);
+    gameConfig.speedUpMultiple = parseFloat(document.getElementById("ballSpeedUp").value);
+	gameConfig.pointsToWin = parseInt(document.getElementById("pointsToWin").value);
+	gameConfig.ballSide = parseFloat(document.getElementById("ballSize").value);
+	gameConfig.allowPowerUp = document.getElementById("allowFreezeFlip").checked;
+
 	let boardSize = document.getElementById("boardSize").value;
-
-    gameConfig.playerHeight = playerSize;
-    gameConfig.startSpeed = ballSpeed;
-    gameConfig.playerSpeed = playerSpeed;
-    gameConfig.speedUpMultiple = ballSpeedUp;
-	gameConfig.allowPowerUp = allowPowerUp;
-
 	switch (boardSize) 
 	{
         case "small":

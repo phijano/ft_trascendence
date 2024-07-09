@@ -70,7 +70,7 @@
 		<h2>Game Customization</h2>
 		<form id="customizationForm">
 			<div class="container py-3">
-				<div class="row">
+				<div class="row py-3">
 					<div class="col-sm"></div>
 					<div class="col-sm text-start">
 						<label for="playerSize">Player Size:</label>
@@ -107,13 +107,38 @@
 						</select>
 					</div>
 					<div class="col-sm text-start">
-						<label for="ballSpeedUp">Ball Speed Up:</label>
+						<label for="ballSpeedUp">Ball speed up:</label>
 					</div>
 					<div class="col-sm text-start">
 						<select id="ballSpeedUp">
 							<option value=1>None</option>
 							<option value=1.02 selected>Normal</option>
 							<option value=1.05>Fast</option>
+						</select>
+					</div>
+					<div class="col-sm"></div>
+				</div>
+				<div class="row py-3">
+					<div class="col-sm"></div>
+					<div class="col-sm text-start">
+						<label for="pointsToWin">Points to win:</label>
+					</div>
+					<div class="col-sm text-start">
+						<select id="pointsToWin">
+							<option value=1>1</option>
+							<option value=3 selected>3</option>
+							<option value=5>5</option>
+							<option value=10>10</option>
+						</select>
+					</div>
+					<div class="col-sm text-start">
+						<label for="ballSize">Ball size:</label>
+					</div>
+					<div class="col-sm text-start">
+						<select id="ballSize">
+							<option value=8>Small</option>
+							<option value=10 selected>Normal</option>
+							<option value=13>Big</option>
 						</select>
 					</div>
 					<div class="col-sm"></div>
@@ -140,7 +165,7 @@
 				</div>
 			</div>
 		</form>
-	</div>	
+	</div>			
 	<p>
 		<div class="mt-4" hidden id="dMatchPlayers">
 			<div class="d-inline-flex flex-row align-self-center">
