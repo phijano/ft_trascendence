@@ -6,8 +6,6 @@ let aiIntervalId;
 let board;
 let context;
 
-const boardWidth = 700;
-const boardHeight = 500;
 const xMargin = 10; // Margin from paddle to side of board
 
 const ballSide = 10;
@@ -19,6 +17,8 @@ let speedUpMultiple = 1.02;
 let playerHeight = 50;
 let playerSpeed = 5;
 let allowPowerUp;
+let boardWidth = 700;
+let boardHeight = 500;
 
 const serveSpeedMultiple = 0.4;
 
@@ -41,6 +41,8 @@ function initGame(gameConfig)
     speedUpMultiple = gameConfig.speedUpMultiple;
     playerSpeed = gameConfig.playerSpeed;
     playerHeight = gameConfig.playerHeight;
+    boardWidth = gameConfig.boardWidth;
+    boardHeight = gameConfig.boardHeight;
 
     keyState = 
     {
@@ -95,11 +97,6 @@ function initGame(gameConfig)
     resetGame(getRandomEitherOr(-1, 1));
     Lplayer.y = boardHeight/2 - playerHeight/2;
     Rplayer.y = boardHeight/2 - playerHeight/2;
-}
-
-function start(gameConfig)
-{
-    initGame(gameConfig); // To restart all values that are changed in previous games
 
     board = document.getElementById("board");
     board.width = boardWidth;
@@ -110,6 +107,11 @@ function start(gameConfig)
     context.fillStyle = "turquoise";
     context.fillRect(Lplayer.x, Lplayer.y, Lplayer.width, Lplayer.height);
     context.fillRect(Rplayer.x, Rplayer.y, Rplayer.width, Rplayer.height);
+}
+
+function start(gameConfig)
+{
+    initGame(gameConfig); // To restart all values that are changed in previous games
 
     requestAnimationFrame(update);
     document.addEventListener("keydown", keyDownHandler);

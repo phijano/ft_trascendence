@@ -14,7 +14,9 @@ let gameConfig = // Initialize to normal settings
 	startSpeed: 7.5,
 	speedUpMultiple: 1.02,
 	playerSpeed: 5,
-	allowPowerUp: false
+	allowPowerUp: false,
+	boardWidth: 700,
+	boardHeight: 500
 }
 
 function showCustomizationOptions() {
@@ -36,12 +38,33 @@ function applySettings() {
     let playerSpeed = parseFloat(document.getElementById("playerSpeed").value);
     let ballSpeedUp = parseFloat(document.getElementById("ballSpeedUp").value);
 	let allowPowerUp = document.getElementById("allowFreezeFlip").checked;
+	let boardSize = document.getElementById("boardSize").value;
 
     gameConfig.playerHeight = playerSize;
     gameConfig.startSpeed = ballSpeed;
     gameConfig.playerSpeed = playerSpeed;
     gameConfig.speedUpMultiple = ballSpeedUp;
 	gameConfig.allowPowerUp = allowPowerUp;
+
+	switch (boardSize) 
+	{
+        case "small":
+            gameConfig.boardWidth = 500;
+            gameConfig.boardHeight = 400;
+            break;
+        case "normal":
+            gameConfig.boardWidth = 700;
+            gameConfig.boardHeight = 500;
+            break;
+        case "big":
+            gameConfig.boardWidth = 900;
+            gameConfig.boardHeight = 700;
+            break;
+        default:
+            gameConfig.boardWidth = 700;
+            gameConfig.boardHeight = 500;
+            break;
+    }
 }
 
 function startOneVsOne() {
