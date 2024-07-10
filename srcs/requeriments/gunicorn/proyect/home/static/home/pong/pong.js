@@ -421,7 +421,11 @@ function predictFinalYPos(ball)
     // As AI can only refresh its view every time predicFinalYPos is called the AI uses its PowerUp here
     // ball.yVel > 3 as its only logical to use the powerUp when the ball is moving at a steep angle 
     // ball.x checks are that so the power up is only used on opponents side but not too close to opponent
-    if (allowPowerUp && !keyState.rPowerUpUsed && ball.xVel < 0 && !ball.serve && ball.x < boardWidth/2 && ball.x > boardWidth/7 && ball.yVel > 3)
+    // ball.y checks are because the powerUp is pretty useless close to the bottom & top as its gonna bounce anyway
+    if (allowPowerUp && !keyState.rPowerUpUsed && ball.xVel < 0 && !ball.serve
+        && ball.x < boardWidth/2 && ball.x > boardWidth/7 
+        && ball.y > boardHeight/6 && ball.y < 5*boardHeight/6
+        && ball.yVel > 3)
         keyDownHandler({ code : "ArrowLeft" }, true);
 
     if (ball.xVel < 0) // If ball is going away from AI
