@@ -6,7 +6,9 @@ let aiIntervalId;
 let board;
 let context;
 
-const xMargin = 10; // Margin from paddle to side of board
+// Change both if the ball is wider
+let xMargin = 10; // Margin from paddle to side of board
+let playerWidth = 10;
 
 // Variables provided by user (initialized to standard values)
 let playAI; 
@@ -28,8 +30,6 @@ let Lplayer = {};
 let Rplayer = {};
 let keyState = {};
 
-const playerWidth = 10;
-
 let AImargin;
 let predictedY;
 
@@ -44,7 +44,13 @@ function initGame(gameConfig)
     boardWidth = gameConfig.boardWidth;
     boardHeight = gameConfig.boardHeight;
     pointsToWin = gameConfig.pointsToWin;
-    ballSide = gameConfig.ballSide;
+    ballSide = gameConfig.ballSide + 0;
+
+    // To avoid the ball transvering the paddle
+    if (ballSide > xMargin)
+        xMargin = ballSide;
+    if (ballSide > playerWidth)
+        playerWidth = ballSide;
 
     keyState = 
     {
