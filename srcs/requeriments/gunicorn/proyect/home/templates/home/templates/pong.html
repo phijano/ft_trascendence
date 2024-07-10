@@ -7,7 +7,25 @@
 	<link rel="stylesheet" href="{% static 'home/pong/pong.css' %}">
 </head>
 <body>
-	<h1 class="text-info">PONG</h1>
+	<div class="container">
+		<div class="row">
+			<div class="col text-start">
+				<button id="bRules" type="button" onclick="showRules()" onmouseover="setRules()">Rules ></button>
+			</div>
+			<div class="col">
+				<h1 class="text-info">PONG</h1>
+			</div>
+			<div class="col"></div>
+		</div>
+	</div>
+
+	<div hidden id="dSidePanel" class="sidepanel">
+  		<a href="javascript:void(0)" class="sideCloseButton text-black text-decoration-none" onclick="closeRules()">&times;</a>
+		<div id="dSidePanelContent" class="sideContent">
+			here goes Rules whatever...
+		</div>
+	</div>
+
 	<p>
 		<div id="dStartOptions">
 			<button id="bNormalGame" type="button" onclick="startOneVsOne()">1 vs 1 Game</button> 

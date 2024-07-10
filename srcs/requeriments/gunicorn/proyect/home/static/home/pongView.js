@@ -312,6 +312,29 @@ function setDifficulty() {
 	showPlayers();
 }
 
+
+function setRules() {
+	document.getElementById("dSidePanel").hidden = false;
+}
+
+function showRules() {
+
+	document.getElementById("dSidePanel").style.transition = "0.5s, border 0s";
+	document.getElementById("dSidePanel").style.borderWidth = "2px";
+	document.getElementById("dSidePanel").style.width = "250px";
+}
+
+function closeRules() {
+	document.getElementById("dSidePanel").style.width = "0";
+	document.getElementById("dSidePanel").style.transition = "0.5s, border 0.1s 0.5s";
+	document.getElementById("dSidePanel").style.borderWidth = "0px";
+} 
+
+
+window.setRules = setRules;
+window.showRules = showRules;
+window.closeRules = closeRules;
+
 window.setOneVsOne = setOneVsOne;
 window.setOpponent = setOpponent;
 window.setDifficulty = setDifficulty;

@@ -1,6 +1,38 @@
 #board
 {
-    background-color: black;
-    border-top: 5px solid turquoise;
-    border-bottom: 5px solid turquoise;
+	background-color: black;
+	border-top: 5px solid turquoise;
+	border-bottom: 5px solid turquoise;
 }
+
+.sidepanel {
+	height: 250px; /* Specify a height */
+	width: 0; /* 0 width - change this with JavaScript */
+	position: fixed; /* Stay in place */
+	z-index: 1; /* Stay on top */
+	top: 0;
+	left: 0;
+	background-color: #fff; /* Black*/
+	overflow-x: hidden; /* Disable horizontal scroll */
+	padding-top: 0px; /* Place content 60px from the top */
+	transition: width 0.5s, border 0.1s 0.5s; /* 0.5 second transition effect to slide in the sidepanel */
+	border-color: #0dcacc;
+	border-style: solid;
+	border-width: 0px;
+
+}
+
+.sidepanel .sideCloseButton {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+.sidepanel .sideContent {
+  padding: 48px 8px 8px 8px;
+}
+
+
+
