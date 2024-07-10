@@ -22,7 +22,8 @@ let boardHeight = 500;
 let pointsToWin = 3;
 let ballSide = 10;
 
-const serveSpeedMultiple = 0.4;
+let     yMax = boardHeight - playerHeight;   
+const   serveSpeedMultiple = 0.4;
 
 // To set in the global scope
 let ball = {};
@@ -44,13 +45,17 @@ function initGame(gameConfig)
     boardWidth = gameConfig.boardWidth;
     boardHeight = gameConfig.boardHeight;
     pointsToWin = gameConfig.pointsToWin;
-    ballSide = gameConfig.ballSide + 0;
+    ballSide = gameConfig.ballSide;
 
     // To avoid the ball transvering the paddle
+    // The paddle and margin increase in width if ball is bigger
     if (ballSide > xMargin)
         xMargin = ballSide;
     if (ballSide > playerWidth)
         playerWidth = ballSide;
+
+    // To avoid out of bounds
+    yMax = boardHeight - playerHeight;
 
     keyState = 
     {
@@ -129,8 +134,7 @@ function start(gameConfig)
     {
         if (aiIntervalId) 
             clearInterval(aiIntervalId);
-        aiIntervalId = 
-        setInterval(function () 
+        aiIntervalId = setInterval(function () 
         {predictedY = predictFinalYPos(ball);}, gameConfig.msAIcalcRefresh);
     }
 }
@@ -147,7 +151,6 @@ function update()
     Lplayer.y += Lplayer.speed;
     Rplayer.y += Rplayer.speed;
 
-    let yMax = board.height - playerHeight;
     fixOutOfBounds(Lplayer, yMax);
     fixOutOfBounds(Rplayer, yMax);
 
@@ -159,6 +162,7 @@ function update()
         context.fillStyle = "red";
     else
         context.fillStyle = "white";
+
     if (ball.serve && !keyState.powerUpInUse)
     {
         ball.x += ball.xVel * serveSpeedMultiple;
@@ -171,9 +175,13 @@ function update()
     }
     context.fillRect(ball.x, ball.y, ball.width, ball.height);
 
-    handlePaddleHit(ball, Lplayer);
-    if (handlePaddleHit(ball, Rplayer))
-        ball.xVel *= -1;
+    if (ball.xVel < 0)
+        handlePaddleHit(ball, Lplayer);
+    else
+    {
+        if (handlePaddleHit(ball, Rplayer))
+            ball.xVel *= -1;
+    }
         
     // Bounce of top & bottom
     if (ball.y <= 0 || (ball.y + ball.height >= board.height))
@@ -188,8 +196,7 @@ function update()
         Rplayer.score++;
         resetGame(-1);
     }
-
-    if (ball.x + ball.width > board.width)
+    else if (ball.x + ball.width > board.width)
     {
         Lplayer.score++;
         resetGame(1);
@@ -206,7 +213,7 @@ function update()
     if (Rplayer.score == pointsToWin || Lplayer.score == pointsToWin)
     {
         stop();
-        predictedY = boardHeight / 2;
+        predictedY = boardHeight / 2; // reset to middle for next game
         endMatch(Lplayer.score, Rplayer.score);
     }
 }
@@ -356,7 +363,7 @@ function handlePaddleHit(ball, player)
         // Speed increases with every hit
         ball.speed *= speedUpMultiple;
 
-        // x & y component calc, x speed is flipped for the ball to bounce
+        // x & y component calc, x speed is later flipped if necessary for the ball to bounce
         ball.xVel = ball.speed * Math.cos(radAngle);
         ball.yVel = ball.speed * Math.sin(radAngle);
         ball.serve = false;
