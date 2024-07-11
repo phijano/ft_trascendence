@@ -1,4 +1,5 @@
 import {Menu} from "./menu.js"
+import {registerMenu} from "./registerMenu.js"
 
 export function Header(){
 	const header = document.createElement("header");
@@ -7,6 +8,28 @@ export function Header(){
 	header.classList.add("text-center");
 	header.classList.add("p-4");
 	header.classList.add("mb-3");
-	header.appendChild(Menu());
+	
+	const row = document.createElement("div");
+	row.classList.add("row");
+	header.appendChild(row);
+
+	const colLeft = document.createElement("div");
+	colLeft.classList.add("col-sm");
+	row.appendChild(colLeft);
+
+	const colMiddle = document.createElement("div");	
+	colMiddle.classList.add("col-sm-auto");
+	colMiddle.appendChild(Menu());
+	row.appendChild(colMiddle);
+
+	const colRight = document.createElement("div");
+	colRight.classList.add("col-sm");
+	colRight.classList.add("text-end");
+	colRight.appendChild(registerMenu());
+	row.appendChild(colRight);
+
+//	header.appendChild(Menu());
+//	header.appendChild(registerMenu());
+	
 	return header;
 }
