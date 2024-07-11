@@ -7,8 +7,8 @@ let board;
 let context;
 
 // Change both if the ball is wider
-let xMargin = 10; // Margin from paddle to side of board
-let playerWidth = 10;
+let xMargin; // Margin from paddle to side of board
+let playerWidth;
 
 // Variables provided by user (initialized to standard values)
 let playAI; 
@@ -48,13 +48,11 @@ function initGame(gameConfig)
     ballSide = gameConfig.ballSide;
 
     // To avoid the ball transvering the paddle
-    // The paddle and margin increase in width if ball is bigger
-    if (ballSide > xMargin)
-        xMargin = ballSide;
-    if (ballSide > playerWidth)
-        playerWidth = ballSide;
+    // The paddle and margin are a little bit wider
+    xMargin = ballSide * 1.2;
+    playerWidth = ballSide * 1.2;
 
-    // To avoid out of bounds
+    // To avoid paddle moving out of bounds
     yMax = boardHeight - playerHeight;
 
     keyState = 
@@ -361,7 +359,8 @@ function handlePaddleHit(ball, player)
         let radAngle = (Math.PI/4) * collisionPoint;
 
         // Speed increases with every hit
-        ball.speed *= speedUpMultiple;
+        if (ball.speed < 20) // Max speed to avoid ball going through paddle glitch
+            ball.speed *= speedUpMultiple;
 
         // x & y component calc, x speed is later flipped if necessary for the ball to bounce
         ball.xVel = ball.speed * Math.cos(radAngle);
