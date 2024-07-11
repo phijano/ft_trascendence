@@ -298,7 +298,7 @@ function setDifficulty() {
 			break;
 		case 2:
 			document.getElementById("lRightPlayer").innerHTML = "AI - Hard";
-			gameConfig.msAIcalcRefresh = 750;	
+			gameConfig.msAIcalcRefresh = 700;	
 			break;
 		case 3:
 			document.getElementById("lRightPlayer").innerHTML = "AI - Impossible";	
