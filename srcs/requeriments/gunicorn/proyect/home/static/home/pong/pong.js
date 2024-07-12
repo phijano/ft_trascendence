@@ -428,7 +428,7 @@ function predictFinalYPos(ball)
         keyDownHandler({ code : "ArrowLeft" }, true);
 
     if (ball.xVel < 0) // If ball is going away from AI
-        return (boardHeight / 2 - ballSide / 2); // Prompt AI to go back to middle
+        return (boardHeight/2 - playerHeight/2); // Prompt AI to go back to middle
 
     // Amount of times the screen refreshes before ball reaches other side: Length / xVel
     let refreshes = (boardWidth - xMargin - playerWidth - ball.x) / ball.xVel;
