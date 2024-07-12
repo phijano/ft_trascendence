@@ -24,6 +24,11 @@ const URL = {
 		description: "This is pong game page",
 	},
 
+	"/login": {
+		template: "accounts/login/",
+		title: "Login",
+		description: "This is login page",
+	},
 };
 
 export default{

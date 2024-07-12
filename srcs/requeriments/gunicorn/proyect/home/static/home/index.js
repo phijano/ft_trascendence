@@ -7,11 +7,25 @@ if (location.endsWith("/"))
 
 document.addEventListener("click", (e) => {
 	const { target } = e;
+	if (target.matches("nav a")) {
+		e.preventDefault();
+		router();
+	}
+	else {
+	
+	}
+	return;
+});
+
+/*
+document.addEventListener("click", (e) => {
+	const { target } = e;
 	if (!target.matches("nav a")) {
 		return;
 	}
 	e.preventDefault();
 	router();
 });
+*/
 
 document.addEventListener("DOMContentLoaded", App);
