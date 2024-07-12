@@ -318,16 +318,20 @@ function setRules() {
 }
 
 function showRules() {
+	const sidePanel = document.getElementById("dSidePanel");
 
-	document.getElementById("dSidePanel").style.transition = "0.5s, border 0s";
-	document.getElementById("dSidePanel").style.borderWidth = "2px";
-	document.getElementById("dSidePanel").style.width = "250px";
+	sidePanel.style.transition = "0.5s, border 0s, color 0s 0.5s";
+	sidePanel.style.color = "black";
+	sidePanel.style.borderWidth = "2px";
+	sidePanel.style.width = "250px";
 }
 
 function closeRules() {
-	document.getElementById("dSidePanel").style.width = "0";
-	document.getElementById("dSidePanel").style.transition = "0.5s, border 0.1s 0.5s";
-	document.getElementById("dSidePanel").style.borderWidth = "0px";
+	const sidePanel = document.getElementById("dSidePanel");	
+	sidePanel.style.width = "0";
+	sidePanel.style.transition = "0.5s, border 0.1s 0.5s ,color 0s";
+	sidePanel.style.borderWidth = "0px";
+	sidePanel.style.color="white";
 } 
 
 
