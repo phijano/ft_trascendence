@@ -424,7 +424,7 @@ function predictFinalYPos(ball)
     if (allowPowerUp && !keyState.rPowerUpUsed && ball.xVel < 0 && !ball.serve
         && ball.x < boardWidth/2 && ball.x > boardWidth/7 
         && ball.y > boardHeight/6 && ball.y < 5*boardHeight/6
-        && ball.yVel > 3)
+        && Math.abs(ball.yVel) > 3.5)
         keyDownHandler({ code : "ArrowLeft" }, true);
 
     if (ball.xVel < 0) // If ball is going away from AI
