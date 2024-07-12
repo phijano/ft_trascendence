@@ -4,6 +4,8 @@ import { router } from "./component/router.js"
 
 
 export function App() {
+
+	console.log("new page");
 	const root = document.getElementById("root");
 	root.appendChild(Header());
 //	root.appendChild(Menu());
