@@ -133,7 +133,7 @@ function start(gameConfig)
         if (aiIntervalId) 
             clearInterval(aiIntervalId);
         aiIntervalId = setInterval(function () 
-        {predictedY = predictFinalYPos(ball);}, gameConfig.msAIcalcRefresh);
+        {predictedY = predictFinalYPos();}, gameConfig.msAIcalcRefresh);
     }
 }
 
@@ -174,10 +174,10 @@ function update()
     context.fillRect(ball.x, ball.y, ball.width, ball.height);
 
     if (ball.xVel < 0)
-        handlePaddleHit(ball, Lplayer);
+        handlePaddleHit(Lplayer);
     else
     {
-        if (handlePaddleHit(ball, Rplayer))
+        if (handlePaddleHit(Rplayer))
             ball.xVel *= -1;
     }
         
@@ -328,7 +328,7 @@ function freezeAndChangeDir()
     }, 750);
 }
 
-function handlePaddleHit(ball, player)
+function handlePaddleHit(player)
 {
     if (keyState.powerUpInUse) // To avoid glitch with multiple speed ups at once
         return ;
@@ -406,7 +406,7 @@ function getRandomEitherOr(value1, value2)
         return (value2);
 }
 
-function predictFinalYPos(ball)
+function predictFinalYPos()
 {
     // AImargin is used in simulateAIinput
     // The calculation is put into this function 
@@ -428,34 +428,33 @@ function predictFinalYPos(ball)
         keyDownHandler({ code : "ArrowLeft" }, true);
 
     if (ball.xVel < 0) // If ball is going away from AI
-        return (boardHeight/2 - playerHeight/2); // Prompt AI to go back to middle
+        return (boardHeight/2); // Prompt AI to go back to middle
 
     // Amount of times the screen refreshes before ball reaches other side: Length / xVel
     let refreshes = (boardWidth - xMargin - playerWidth - ball.x) / ball.xVel;
-    let yMovement = (ball.yVel * refreshes) % (boardHeight*2);
-    
-    let distanceToBottom = boardHeight - ball.y;
-    let distanceToTop = ball.y;
-    let finalYPos = ball.y;
+    let yMovement = (ball.yVel * refreshes);
+    let finalYPos = ball.y + ballSide / 2;
 
-    for (let i = 0; i < 2; i++) 
+    while (true) 
     {
-        // Bounce off top
-        if (yMovement < 0 && yMovement < -distanceToTop)
+        if (yMovement < 0 && finalYPos + yMovement < ballSide/2) // Bounce off top
         {
-            yMovement += distanceToTop;
-            yMovement *= -1; 
-            finalYPos = 0;
-        }
-        // Bounce off bottom
-        else if (yMovement > 0 && yMovement > distanceToBottom)
-        {
-            yMovement -= distanceToBottom;
+            yMovement += finalYPos - ballSide/2;
             yMovement *= -1;
-            finalYPos = boardHeight;
+            finalYPos = ballSide/2;
+        } 
+        else if (yMovement > 0 && finalYPos + yMovement > boardHeight - ballSide/2) // Bounce off bottom
+        {
+            yMovement -= (boardHeight - finalYPos - ballSide/2);
+            yMovement *= -1;
+            finalYPos = boardHeight - ballSide/2;
+        } 
+        else 
+        {
+            finalYPos += yMovement;
+            break;
         }
     }
-    finalYPos += yMovement;
     return (finalYPos);
 }
 
