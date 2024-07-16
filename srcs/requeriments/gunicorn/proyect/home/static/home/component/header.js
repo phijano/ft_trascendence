@@ -1,5 +1,6 @@
 import {Menu} from "./menu.js"
 import {registerMenu} from "./registerMenu.js"
+import {userMenu} from "./userMenu.js"
 
 export function Header(){
 	const header = document.createElement("header");
@@ -26,6 +27,7 @@ export function Header(){
 	colRight.classList.add("col-sm");
 	colRight.classList.add("text-end");
 	colRight.appendChild(registerMenu());
+	colRight.appendChild(userMenu());
 	row.appendChild(colRight);
 
 //	header.appendChild(Menu());

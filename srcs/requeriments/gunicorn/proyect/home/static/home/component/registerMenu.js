@@ -1,9 +1,9 @@
 export function registerMenu(){
-	const registerMenu = document.createElement("nav");
-
-	registerMenu.innerHTML = `
+	const menu = document.createElement("nav");
+	menu.id = "nRegister";
+	menu.innerHTML = `
 	<a class="px-3 text-white text-decoration-none" href="/">Sign up<a>
-	<a class="px-3 text-white text-decoration-none"href="/login">Login<a>
+	<a class="px-3 text-white text-decoration-none" href="/login">Login<a>
 	`;
-	return registerMenu;
+	return menu;
 }
