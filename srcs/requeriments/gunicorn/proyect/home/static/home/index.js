@@ -1,24 +1,24 @@
 import {App} from "./app.js";
 import {router} from "./component/router.js"
 
-const location = window.location.pathname;
-if (location.endsWith("/"))
-	window.history.pushState("", "", location.substring(0, location.length - 1));
-
 document.addEventListener("click", (ev) => {
 	const { target } = ev;
 	if (!target.matches("nav a")) {
 		return;
 	}
+	//test window browser
+	//ev = event || window.event;
 	ev.preventDefault();
-	router();
+	console.log("router: " + ev.target.href);
+	router(ev.target.href);
 });
-
+/*
 let user;
 let errors;
 document.addEventListener('submit', async ev => {
 	ev.preventDefault();
 	const data = new FormData(ev.target);
+	console.log("target " + ev.target.id);
 	console.log("submit " + ev.submitter.id + " data " + data);
 	const resp = await fetch('/test', {
 		method: 'POST',
@@ -29,23 +29,13 @@ document.addEventListener('submit', async ev => {
 	if (resp.ok) {
 		console.log("ok")
 		user = await resp.json();
-		window.history.pushState({}, "", "/");
+		router("/");
 	}
 	else {
 		console.log("error")
-		errors = await resp.json();
+		//errors = await resp.json();
+		router("/login");
 	}
-});
-
-/*
-document.addEventListener("click", (e) => {
-	const { target } = e;
-	if (!target.matches("nav a")) {
-		return;
-	}
-	e.preventDefault();
-	router();
 });
 */
-
 document.addEventListener("DOMContentLoaded", App);

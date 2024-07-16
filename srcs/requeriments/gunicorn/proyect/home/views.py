@@ -14,7 +14,7 @@ def index(request):
 def templates(request, html):
     return render(request, "home/templates/" + html)
 
-class UserView(View):
+class UserLogIn(View):
 
     def get(self, request):
         if not request.user.is_authenticated:
@@ -32,3 +32,12 @@ class UserView(View):
             return self.get(request)
         return http.JsonResponse(form.errors.get_json_data(), status=400)
 
+    def delete(self, request):
+        logout(request)
+        return http.HttpResponse(status=205)
+
+class UserLogOut(View):
+
+    def get(self, request):
+        logout(request)
+        return http.HttpResponse(status=205)

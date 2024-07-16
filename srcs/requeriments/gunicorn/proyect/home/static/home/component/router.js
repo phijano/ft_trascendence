@@ -1,14 +1,11 @@
 import routes from "./routes.js"
 
-export function router(event) {
-	event = event || window.event;
-	event.preventDefault();
-	console.log("router: " + event.target.href);
-	window.history.pushState({}, "", event.target.href);
+export function router(href) {
+	window.history.pushState({}, "", href);
 	locationHandler();
 };
 
-const locationHandler = async() => {
+export const locationHandler = async() => {
 	const location = window.location.pathname;
 	if (location.length == 0){
 		location = "/";
