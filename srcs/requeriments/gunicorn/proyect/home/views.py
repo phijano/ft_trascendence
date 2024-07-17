@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django import http
 from django.views.generic import View
 from django.views.decorators.csrf import csrf_protect
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 
 # Create your views here.
@@ -24,17 +24,12 @@ class UserLogIn(View):
             "username": request.user.get_username(),
             })
 
-  #  @csrf_protect
     def post(self, request):
         form = AuthenticationForm(request, request.POST)
         if form.is_valid():
             login(request, form.get_user())
             return self.get(request)
         return http.JsonResponse(form.errors.get_json_data(), status=400)
-
-    def delete(self, request):
-        logout(request)
-        return http.HttpResponse(status=205)
 
 class UserLogOut(View):
 
