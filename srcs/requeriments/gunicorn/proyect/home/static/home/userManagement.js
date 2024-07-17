@@ -15,17 +15,18 @@ async function logIn(data) {
 		method: 'POST',
 		body: data,
 		credentials: 'same-origin'
-//		headers: { 'X-CSRFToken':crsf_token },
-	})
+	});
 	if (resp.ok) {
 		console.log("ok")
-		user = await resp.json();	
+		user = await resp.json();
+		console.log(user);
 		setUser();
 		router("/");
 	}
 	else {
 		console.log("error")
-		//errors = await resp.json();
+		errors = await resp.json();
+		console.log(errors);
 		router("/login");
 	}
 }
@@ -34,9 +35,8 @@ async function logOut() {
 	console.log("log out pressed");
 	const resp = await fetch('/userLogout', {
 		credentials: 'same-origin'
-	})
-	//need fix
-	console.log(resp);
+	});
+	console.log(resp.ok);
 	if (resp.ok) {
 		unsetUser();
 		router("/");
