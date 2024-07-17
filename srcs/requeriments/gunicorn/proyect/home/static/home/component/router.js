@@ -1,14 +1,17 @@
 import routes from "./routes.js"
 
 export function router(href) {
-	window.history.pushState({}, "", href);
+	if (href != window.location.href) {
+		window.history.pushState({}, "", href);
+	}
 	locationHandler();
 };
 
 export const locationHandler = async() => {
-	const location = window.location.pathname;
-	if (location.length == 0){
-		location = "/";
+	let location = window.location.pathname;
+	if (location.length != 1 & location.endsWith('/')) {
+		location = location.substring(0, location.length - 1);
+		window.history.replaceState({}, "", location);
 	}
 	console.log("handler: " + location)
 	const route = routes.URL[location] || routes.URL["404"];

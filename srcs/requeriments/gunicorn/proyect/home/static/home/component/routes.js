@@ -24,6 +24,12 @@ const URL = {
 		description: "This is pong game page",
 	},
 
+	"/signup": {
+		template: "userManagement/signup/",
+		title: "Sign up",
+		description: "This is sign up page",
+	},
+
 	"/login": {
 		template: "accounts/login/",
 		title: "Login",
