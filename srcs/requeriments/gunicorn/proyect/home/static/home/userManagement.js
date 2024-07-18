@@ -1,17 +1,21 @@
 import {router} from "./component/router.js"
 
 let user;
-let errors;
+
 document.addEventListener('submit',async ev => {
+	ev.preventDefault();
 	if (ev.target.id == "fLogin") {
-		ev.preventDefault();
 		await logIn(new FormData(ev.target));
+	}
+	else if (ev.target.id == "fSignUp") {
+		await signUp(new FormData(ev.target));
 	}
 });
 
-async function logIn(data) {
+//fix
+async function SignUp(data) {
 	console.log("data" + data);
-	const resp = await fetch('/userLogin', {
+	const resp = await fetch('/userManagement', {
 		method: 'POST',
 		body: data,
 		credentials: 'same-origin'
@@ -31,9 +35,25 @@ async function logIn(data) {
 	}
 }
 
+async function logIn(data) {
+	console.log("data" + data);
+	const resp = await fetch('/userManagement/login', {
+		method: 'POST',
+		body: data,
+		credentials: 'same-origin'
+	});
+	if (resp.ok) {
+		setUser();
+		router("/");
+	}
+	else {
+		loginError();
+	}
+}
+
 async function logOut() {
 	console.log("log out pressed");
-	const resp = await fetch('/userLogout', {
+	const resp = await fetch('/userManagement/logout', {
 		credentials: 'same-origin'
 	});
 	console.log(resp.ok);
@@ -41,6 +61,13 @@ async function logOut() {
 		unsetUser();
 		router("/");
 	}
+}
+
+function loginError() {
+
+	document.getElementById("id_username").value = "";
+	document.getElementById("id_password").value = "";
+	document.getElementById("pError").hidden = false;
 }
 
 function setUser() {

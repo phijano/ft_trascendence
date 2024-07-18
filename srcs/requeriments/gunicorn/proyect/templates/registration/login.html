@@ -1,6 +1,5 @@
-  {% if form.errors %}
-    <p>Su nombre de usuario y contraseña no coinciden. Inténtalo de nuevo.</p>
-  {% endif %}
+
+	<p hidden id="pError">Su nombre de usuario y contraseña no coinciden. Inténtalo de nuevo.</p>
 
   {% if next %}
     {% if user.is_authenticated %}
@@ -11,7 +10,7 @@
     {% endif %}
   {% endif %}
 
-  <form method="post" id="fLogin" action="{% url 'login' %}">
+  <form method="post" id="fLogin">
     {% csrf_token %}
     <table>
       <tr>
@@ -24,7 +23,7 @@
       </tr>
     </table>
     <input type="submit" id="blogin" value="login">
-    <input type="hidden" name="next" value="{{ next }}">
+	<!--  <input type="hidden" name="next" value="{{ next }}"> -->
   </form>
 
   {# Asume que configura la vista de restablecimiento de contraseña en su URLconf #}

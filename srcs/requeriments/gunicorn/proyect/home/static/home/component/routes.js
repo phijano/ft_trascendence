@@ -25,13 +25,13 @@ const URL = {
 	},
 
 	"/signup": {
-		template: "userManagement/signup/",
+		template: "userManagement/signup/template",
 		title: "Sign up",
 		description: "This is sign up page",
 	},
 
 	"/login": {
-		template: "accounts/login/",
+		template: "accounts/login",
 		title: "Login",
 		description: "This is login page",
 	},
