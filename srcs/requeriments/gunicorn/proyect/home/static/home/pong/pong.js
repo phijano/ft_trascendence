@@ -23,7 +23,7 @@ let pointsToWin = 3;
 let ballSide = 10;
 
 let     yMax = boardHeight - playerHeight;   
-const   serveSpeedMultiple = 0.4;
+const   serveSpeedMultiple = 0.3;
 
 // To set in the global scope
 let ball = {};
@@ -124,17 +124,22 @@ function start(gameConfig)
 {
     initGame(gameConfig); // To restart all values that are changed in previous games & apply settings changes
 
+    if (playAI) 
+    {
+        predictedY = predictFinalYPos(ball); // Calls fn instantly so AI doesn't concede the serve
+    
+        if (aiIntervalId) 
+            clearInterval(aiIntervalId);
+    
+        aiIntervalId = setInterval(function () 
+        {
+            predictedY = predictFinalYPos();
+        }, gameConfig.msAIcalcRefresh);
+    }
+
     requestAnimationFrame(update);
     document.addEventListener("keydown", keyDownHandler);
     document.addEventListener("keyup", keyUpHandler);
-
-    if (playAI) 
-    {
-        if (aiIntervalId) 
-            clearInterval(aiIntervalId);
-        aiIntervalId = setInterval(function () 
-        {predictedY = predictFinalYPos();}, gameConfig.msAIcalcRefresh);
-    }
 }
 
 //To be able to use it with buttons
@@ -246,7 +251,7 @@ function keyDownHandler(event, isAI = false)
     }
     else if (event.code == "KeyS")
     {
-        Lplayer.speed = playerSpeed + 0; // FIXED BUG WITH BS
+        Lplayer.speed = playerSpeed;
         keyState.s = true;
     }
     else if (event.code == "ArrowUp" && (isAI || !playAI)) // To avoid tampering with AI
@@ -256,7 +261,7 @@ function keyDownHandler(event, isAI = false)
     }
     else if (event.code == "ArrowDown" && (isAI || !playAI))
     {
-        Rplayer.speed = playerSpeed + 0; // FIXED BUG WITH BS 
+        Rplayer.speed = playerSpeed;
         keyState.down = true;
     }
     else if (event.code == "KeyD")
@@ -287,7 +292,7 @@ function keyUpHandler(event, isAI = false)
     {
         keyState.w = false;
         if (keyState.s == true)
-            Lplayer.speed = playerSpeed + 0; // FIXED BUG WITH BS
+            Lplayer.speed = playerSpeed;
         else
             Lplayer.speed = 0;
     }
@@ -303,7 +308,7 @@ function keyUpHandler(event, isAI = false)
     {
         keyState.up = false;
         if (keyState.down == true)
-            Rplayer.speed = playerSpeed + 0; // FIXED BUG WITH BS
+            Rplayer.speed = playerSpeed;
         else
             Rplayer.speed = 0;
     }
