@@ -1,5 +1,6 @@
 from django.shortcuts import render
 
+from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views import generic
@@ -27,7 +28,7 @@ class LogIn(View):
         if form.is_valid():
             login(request, form.get_user())
             return self.get(request)
-        return http.HttpResponse(status=400)
+        return http.JsonResponse(form.errors.get_json_data(), status=400)
 
 
 class LogOut(View):
@@ -38,17 +39,20 @@ class LogOut(View):
 
 class SignUp(View):
 
+    def get(self, request):
+        return http.HttpResponseForbidden()
+
     def post(self, request):
-        form = UserCreationForm(request, request.POST)
+        form = UserCreationForm(request.POST)
         if form.is_valid():
-            #create user
+            user = form.save()
+            user.is_active = False
+            user.save()
             return http.HttpResponse(status=201)
-            #login(request, form.get_user())
-            #return self.get(request)
         return http.JsonResponse(form.errors.get_json_data(), status=400)
 
 
-class SignUpTemplate(generic.CreateView):
+class SignUpTemplate(generic.FormView):
     form_class = UserCreationForm
-    success_url = reverse_lazy("login")
+    #success_url = reverse_lazy("login")
     template_name = "registration/signup.html"

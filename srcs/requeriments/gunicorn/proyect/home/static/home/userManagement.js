@@ -1,39 +1,58 @@
 import {router} from "./component/router.js"
 
 let user;
+let errors;
 
 document.addEventListener('submit',async ev => {
+	console.log("submit");
+	console.log(ev.target);
 	ev.preventDefault();
-	if (ev.target.id == "fLogin") {
+	if (ev.target.id == "fLogin") {	
+		console.log("login form");
 		await logIn(new FormData(ev.target));
 	}
 	else if (ev.target.id == "fSignUp") {
+		console.log("submit form");
 		await signUp(new FormData(ev.target));
 	}
+	console.log("fuck");
 });
 
 //fix
-async function SignUp(data) {
+async function signUp(data) {
 	console.log("data" + data);
-	const resp = await fetch('/userManagement', {
+	const resp = await fetch('/userManagement/signup', {
 		method: 'POST',
 		body: data,
 		credentials: 'same-origin'
 	});
 	if (resp.ok) {
 		console.log("ok")
-		user = await resp.json();
-		console.log(user);
-		setUser();
-		router("/");
+	//	user = await resp.json();
+	//	console.log(user);
+	//	setUser();
+		router("/Confirmation");
 	}
 	else {
-		console.log("error")
+		console.log("error");
 		errors = await resp.json();
-		console.log(errors);
-		router("/login");
+		console.log (errors);
+		signUpError();
 	}
 }
+
+function signUpError() {
+
+	document.getElementById("id_username").value = "";
+	document.getElementById("id_password1").value = "";	
+	document.getElementById("id_password2").value = "";
+	//fix. Need to build error messages
+	document.getElementById("pError").innerHTML = errors.password2[0].message;
+	document.getElementById("pError").hidden = false;
+
+}
+
+
 
 async function logIn(data) {
 	console.log("data" + data);
