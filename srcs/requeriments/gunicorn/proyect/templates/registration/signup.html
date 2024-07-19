@@ -1,6 +1,7 @@
 <h2>Sign Up</h2>
-<form id="fSingUp" method="POST">
+<p hidden id="pError">Please enter a correct username and password. Note that both fields may be case-sensitive.</p>
+<form id="fSignUp" method="POST">
 	{% csrf_token %}
 	{{ form.as_p }}
-	<button type="submit">Sign Up</button>
+	<input type="submit" value="Sign Up">
 </form>
