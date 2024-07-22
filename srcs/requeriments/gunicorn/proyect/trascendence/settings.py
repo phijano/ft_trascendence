@@ -144,3 +144,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = '/'
 #LOGIN_URL = 'login'
 
+# Email settings
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'mvptrascendence42@gmail.com'
+EMAIL_HOST_PASSWORD = '+5uperPa5542+'
+EMAIL_PORT = 587
+
+
+

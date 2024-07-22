@@ -1,15 +1,18 @@
 from django.shortcuts import render
 
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
-from django.urls import reverse_lazy
 from django.views import generic
 
 from django import http
 from django.views.generic import View
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
-
+from .forms import SignUpForm
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 
 # Create your views here.
 
@@ -37,22 +40,44 @@ class LogOut(View):
         logout(request)
         return http.HttpResponse(status=205)
 
+
 class SignUp(View):
 
     def get(self, request):
         return http.HttpResponseForbidden()
 
     def post(self, request):
-        form = UserCreationForm(request.POST)
+        form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
             user.is_active = False
             user.save()
+            currentSite = get_current_site(request)
+            tokenGenerator = PasswordResetTokenGenerator()
+            mail_subject = 'Activate your account'
+            message = render_to_string('registration/accountActiveEmail.html', {
+                'user': user,
+                'domain': currentSite.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': tokenGenerator.make_token(user),
+            })
             return http.HttpResponse(status=201)
         return http.JsonResponse(form.errors.get_json_data(), status=400)
 
 
 class SignUpTemplate(generic.FormView):
-    form_class = UserCreationForm
-    #success_url = reverse_lazy("login")
+    form_class = SignUpForm
     template_name = "registration/signup.html"
+
+class ActivateUser(View):
+    def get(self, request, uidb64, token):
+        try:
+            uid = force_text(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+        tokenGenerator = PasswordResetTokenGenerator()
+        if user and tokenGenerator.check_token(user, token):
+            user.is_active = True
+            user.save()
+        return
