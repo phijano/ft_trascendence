@@ -13,6 +13,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
+from django.core.mail import EmailMessage
 
 # Create your views here.
 
@@ -61,6 +62,9 @@ class SignUp(View):
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                 'token': tokenGenerator.make_token(user),
             })
+            to_email = form.cleaned_data.get('email')
+            email = EmailMessage(mail_subject, message, to=[to_email])
+            email.send()
             return http.HttpResponse(status=201)
         return http.JsonResponse(form.errors.get_json_data(), status=400)
 
@@ -81,3 +85,10 @@ class ActivateUser(View):
             user.is_active = True
             user.save()
         return
+
+
+def profile(request):
+    #if request.user.is_authenticated:
+    return render(request, 'profile.html')
+    #else:
+    #    return http.HttpResponse(status=404)

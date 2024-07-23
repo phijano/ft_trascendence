@@ -1,6 +1,5 @@
 import {router} from "./component/router.js"
 
-let user;
 let errors;
 
 document.addEventListener('submit',async ev => {
@@ -18,7 +17,6 @@ document.addEventListener('submit',async ev => {
 	console.log("fuck");
 });
 
-//fix
 async function signUp(data) {
 	console.log("data" + data);
 	const resp = await fetch('/userManagement/signup', {
@@ -28,10 +26,7 @@ async function signUp(data) {
 	});
 	if (resp.ok) {
 		console.log("ok")
-	//	user = await resp.json();
-	//	console.log(user);
-	//	setUser();
-		router("/Confirmation");
+		document.getElementById("content").innerHTML = "You received an email to activate your account"
 	}
 	else {
 		console.log("error");
@@ -116,3 +111,4 @@ function hideUser() {
 }
 
 window.logOut = logOut;
+window.setUser = setUser

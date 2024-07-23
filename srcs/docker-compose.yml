@@ -24,9 +24,11 @@ services:
     build: ./requeriments/gunicorn/.
     expose:
       - 8081    
-# remove ports option when development end(keep expose port)
+# remove port 8082 when development end(keep expose port)
+# port 587 for smtp to send active email. Look for smtp service or whatever
     ports:
       - 8082:8082
+#      - 587:587
     networks:
       - trascendencenet
     volumes:

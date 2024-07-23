@@ -9,6 +9,7 @@ document.addEventListener("click", (ev) => {
 	//test window browser
 	//ev = event || window.event;
 	ev.preventDefault();
+	stop();
 	console.log("router: " + ev.target.href);
 	router(ev.target.href);
 });
