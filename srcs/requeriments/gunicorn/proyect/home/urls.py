@@ -11,5 +11,9 @@ urlpatterns = [
         path("signup/", views.index, name='login'),
         path("login", views.index, name='login'),
         path("login/", views.index, name='login'),
+        path("profile", views.index, name='login'),
+        path("profile/", views.index, name='login'),
+        path("friends/", views.index, name='login'),
+        path("friends/", views.index, name='login'),
         path("templates/<str:html>", views.templates, name='templates'),
 ]

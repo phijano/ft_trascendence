@@ -35,6 +35,27 @@ const URL = {
 		title: "Login",
 		description: "This is login page",
 	},
+
+	"/profile": {
+		template: "userManagement/profile",
+		title: "Profile",
+		description: "This is profile page",
+	},
+
+	"/friends": {
+		template: "userManagement/friends",
+		title: "Friends",
+		description: "This is friends page",
+	},
+
+	"/history": {
+		template: "userManagement/history",
+		title: "History",
+		description: "This is match history page",
+	},
+
+
+
 };
 
 export default{
