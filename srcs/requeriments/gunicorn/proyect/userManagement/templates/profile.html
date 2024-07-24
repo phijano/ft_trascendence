@@ -1,5 +1,24 @@
 {% if user.is_authenticated %}
-	<h1> PROFILE </h1> 
+	<h1 class="text-info"> PROFILE </h1> 
+	<div class="container text-center">
+		<div class="row">
+			<div class="col">
+				{% load static %}
+				<p><img src="{% static 'home/images/avatar.png' %}" class="img-fluid" width="30" height="30"></p>
+				<p>Nick</p>
+			</div>
+			<div class="col">
+				<button>Friends</button>
+				<button>Match History</button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+			Stats
+			<div>
+		</div>
+	</div>
+
 {% else %}
 	log in to have access to your account
 {% endif %}
