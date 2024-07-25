@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import LogIn, LogOut, SignUp, SignUpTemplate, ActivateUser, profile
+from .views import LogIn, LogOut, SignUp, SignUpTemplate, ActivateUser, profile, friends, History
 
 urlpatterns = [
 
@@ -9,4 +9,6 @@ urlpatterns = [
         path("signup/template", SignUpTemplate.as_view()),
         path('activate/<uidb64>/<token>/', ActivateUser.as_view(), name='activate'), 
         path("profile", profile, name='profile'),
+        path("friends", friends, name='friends'),
+        path("history", History.as_view(), name='history'),
 ]

@@ -13,7 +13,9 @@ urlpatterns = [
         path("login/", views.index, name='login'),
         path("profile", views.index, name='login'),
         path("profile/", views.index, name='login'),
+        path("friends", views.index, name='login'),
         path("friends/", views.index, name='login'),
-        path("friends/", views.index, name='login'),
+        path("history", views.index, name='login'),
+        path("history/", views.index, name='login'),
         path("templates/<str:html>", views.templates, name='templates'),
 ]

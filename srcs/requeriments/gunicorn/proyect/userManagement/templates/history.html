@@ -1,0 +1,45 @@
+{% if user.is_authenticated %}
+
+	<h1 class="text-info mb-3">MATCH HISTORY</h1>
+
+	{% if matches %}
+		<ul>
+			{% for match in matches %}
+				<li>
+					<p>
+					{{ match.player }} {{ match.player_score}}
+						{% if match.opponent %}
+							{{ match.opponent }}
+						{% else %}
+							{{ match.opponent_name }}
+						{% endif %}
+					{{match.opponent_score}}
+					{{match.match_type}}
+					{{match.date}}
+					</p>
+				</li>
+			{% endfor %}
+		</ul>
+	{% else %}
+		<p>You didnt play any match</p>
+	{% endif %}
+
+	{% if is_paginated %}
+		<div class="pagination">
+			<span class="page-links">
+				{% if page_obj.has_previous %}
+					<a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">anterior</a>
+				{% endif %}
+			<span class="page-current">
+				Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+			</span>
+				{% if page_obj.has_next %}
+					<a href="{{ request.path }}?page={{ page_obj.next_page_number }}">siguiente</a>
+				{% endif %}
+			</span>
+		</div>
+	{% endif %}
+
+{% else %}
+	log in to have access to your account
+{% endif %}

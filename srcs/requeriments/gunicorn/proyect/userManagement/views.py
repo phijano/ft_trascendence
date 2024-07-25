@@ -14,6 +14,8 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.core.mail import EmailMessage
+from .models import Match
+from django.db.models import Q
 
 # Create your views here.
 
@@ -86,9 +88,36 @@ class ActivateUser(View):
             user.save()
         return
 
-
 def profile(request):
     #if request.user.is_authenticated:
     return render(request, 'profile.html')
     #else:
     #    return http.HttpResponse(status=404)
+
+
+def friends(request):
+    #if request.user.is_authenticated:
+    return render(request, 'profile.html')
+    #else:
+    #    return http.HttpResponse(status=404)
+
+class History(generic.ListView):
+    #if request.user.is_authenticated:
+    model = Match
+    template_name = 'history.html'
+    paginated_by = 1
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs) 
+        context["matches"] = Match.objects.filter(Q(player__user_id=self.request.user)|Q(opponent__user_id=self.request.user)).order_by('-date')
+        return context
+
+#    return render(request, 'profile.html')
+    #else:
+    #    return http.HttpResponse(status=404)
+
+
+
+
+
+
