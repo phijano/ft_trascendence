@@ -20,7 +20,7 @@ class Profile(models.Model):
 
     nick = models.CharField(max_length=15,  help_text="Introduce your avatar name")
     
-#    avatar = models.ImageField(upload_to="avatars")
+    avatar = models.FileField(upload_to="avatars", blank=True)
 
     def __str__(self):
         """
@@ -34,11 +34,11 @@ class Match(models.Model):
     Model that represents a match
     """
 
-    player = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
+    player = models.ForeignKey(Profile, related_name='player', on_delete=models.SET_NULL, null=True)
 
-#    opponent = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
+    opponent = models.ForeignKey(Profile, related_name='opponent', on_delete=models.SET_NULL, null=True, blank=True)
 
-    opponent_name = models.CharField(max_length=15)
+    opponent_name = models.CharField(max_length=15, blank=True)
 
     player_score = models.IntegerField()
 
@@ -52,16 +52,22 @@ class Match(models.Model):
         """
         String that represents the particular instance of the model (for example in admin site)
         """
-        return self.nick
+        return self.player.nick + " - " + self.match_type 
 
 class Friendship(models.Model):
 #    class Status(models.IntegerChoices):
 #        FRIENDS = 0
 #        PENDING = 1
 
-    player = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
+    friend_giver = models.ForeignKey(Profile, related_name='friend_giver', on_delete=models.SET_NULL, null=True)
 
-#    friend = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
+    friend_accepter = models.ForeignKey(Profile, related_name='friend_accepter', on_delete=models.SET_NULL, null=True)
 
 #    status = models.IntegerField(choices=Status)
+    
+    def __str__(self):
+        """
+        String that represents the particular instance of the model (for example in admin site)
+        """
+        return self.friend_giver
 
