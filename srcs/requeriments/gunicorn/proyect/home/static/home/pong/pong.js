@@ -343,12 +343,6 @@ function handlePaddleHit(player)
         (ball.y < player.y + player.height) && // The ball's top left corner doesn't reach the paddles bottom left corner
         (ball.y + ball.height > player.y))     // The ball's bottom left corner passes the paddles top left corner
     {
-        // Push to closest edge of paddle when it hits the bottom of the paddle
-        if (ball.x < player.x)
-            ball.x = player.x - ball.width;
-        else if (ball.x + ball.width > player.x + player.width)
-            ball.x = player.x + player.width;
-
         // Position of the middle of the ball in relation to the middle of the paddle (-playerHeight/2 - ballSide/2 & playerHeight/2 + ballside/2)
         let collisionPoint = ball.y - player.y - playerHeight/2 + ballSide/2;
         if (collisionPoint > playerHeight/2)
