@@ -55,19 +55,19 @@ class Match(models.Model):
         return self.player.nick + " - " + self.match_type 
 
 class Friendship(models.Model):
-#    class Status(models.IntegerChoices):
-#        FRIENDS = 0
-#        PENDING = 1
 
-    friend_giver = models.ForeignKey(Profile, related_name='friend_giver', on_delete=models.SET_NULL, null=True)
+    # status 0=pending, 1=friends
 
-    friend_accepter = models.ForeignKey(Profile, related_name='friend_accepter', on_delete=models.SET_NULL, null=True)
+    giver = models.ForeignKey(Profile, related_name='giver', on_delete=models.SET_NULL, null=True)
 
-#    status = models.IntegerField(choices=Status)
+    accepter = models.ForeignKey(Profile, related_name='accepter', on_delete=models.SET_NULL, null=True)
+
+    status = models.IntegerField(default=0)
+
     
     def __str__(self):
         """
         String that represents the particular instance of the model (for example in admin site)
         """
-        return self.friend_giver
+        return self.giver.nick + " " + self.accepter.nick
 
