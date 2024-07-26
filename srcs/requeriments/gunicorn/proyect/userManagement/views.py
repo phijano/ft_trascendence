@@ -14,7 +14,7 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.core.mail import EmailMessage
-from .models import Match
+from .models import Match, Friendship, Profile
 from django.db.models import Q
 
 # Create your views here.
@@ -95,11 +95,21 @@ def profile(request):
     #    return http.HttpResponse(status=404)
 
 
-def friends(request):
+class Friends(generic.ListView):
     #if request.user.is_authenticated:
-    return render(request, 'profile.html')
-    #else:
-    #    return http.HttpResponse(status=404)
+    model = Friendship
+    template_name = 'friends.html'
+    paginated_by = 1
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs) 
+        #context["friends"] = Friendship.objects.filter(Q(friend_giver__user_id=self.request.user, status = 1)|Q(friend_accepter__user_id=self.request.user, status=1)) 
+        context["friends_accepted"] = Friendship.objects.filter(accepter__user_id=self.request.user, status = 1) 
+        context["friends_made"] = Friendship.objects.filter(giver__user_id=self.request.user, status = 1)
+        context["pending"] = Friendship.objects.filter(accepter__user_id=self.request.user, status=0)
+        context["invited"] = Friendship.objects.filter(giver__user_id=self.request.user, status = 0)
+
+        return context
 
 class History(generic.ListView):
     #if request.user.is_authenticated:
@@ -116,8 +126,13 @@ class History(generic.ListView):
     #else:
     #    return http.HttpResponse(status=404)
 
-
-
+class Search(generic.ListView):
+    model = Profile
+    template_name = "search_results.html"
+    def get(self, request):
+        query = self.request.GET.get("searchQuery")
+        objetl_list = "query"
+        return object_list
 
 
 
