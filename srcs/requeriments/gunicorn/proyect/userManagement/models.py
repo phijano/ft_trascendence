@@ -44,7 +44,7 @@ class Match(models.Model):
 
     opponent_score = models.IntegerField()
 
-    date = models.DateTimeField(auto_now=False, auto_now_add=False)
+    date = models.DateTimeField(auto_now=True, auto_now_add=False)
 
     match_type = models.CharField(max_length=20)
 
