@@ -198,27 +198,31 @@ function showPlayers(players) {
 function endMatch(lPlayerScore, rPlayerScore) {
 
 	const winner = document.getElementById("lWinner");
-
+	const lPlayer = document.getElementById("lLeftPlayer")
+	const rPlayer = document.getElementById("lRightPlayer")
+	let matchType;
 
 	console.log(lPlayerScore + " " + rPlayerScore)
 	console.log(lPlayerScore + " " + rPlayerScore)
 
 	if (lPlayerScore > rPlayerScore)
-		winner.innerHTML = document.getElementById("lLeftPlayer").innerHTML;
+		winner.innerHTML = lPlayer.innerHTML;
 	else
-		winner.innerHTML = document.getElementById("lRightPlayer").innerHTML;
+		winner.innerHTML = rPlayer.innerHTML;
 
 	document.getElementById("dMatchPlayers").hidden = true;
 	document.getElementById("dWinner").hidden = false;
 
 	if (gameMode == "normal")
 	{
+		matchType = "Single Match"
 		document.getElementById("sOpponent").disabled = false;
 		document.getElementById("sDifficulty").disabled = false;
 		document.getElementById("dStartGame").hidden = false;
 	}
 	else
 	{
+		matchType = "Tournament"
 		tournament.addResult(winner.innerHTML, lPlayerScore, rPlayerScore);
 		if (tournament.champion)
 		{
@@ -234,6 +238,8 @@ function endMatch(lPlayerScore, rPlayerScore) {
 			document.getElementById("dAdvance").hidden = false;
 		}
 	}
+	saveMatchResult(rPlayer.innerHTML, lPlayerScore, rPlayerScore, matchType);
+
 }
 
 function startPong()
@@ -332,7 +338,45 @@ function closeRules() {
 	sidePanel.style.transition = "0.5s, border 0.1s 0.5s ,color 0s";
 	sidePanel.style.borderWidth = "0px";
 	sidePanel.style.color="white";
-} 
+}
+
+
+async function saveMatchResult(opponent, pl_score, op_score, match_type ) {
+
+	const resp = await fetch('/userManagement/login', {
+			method: 'GET',
+			credentials: 'same-origin'
+	});
+	if (resp.ok) {
+
+		console.log("match saving");
+		const formdata = new FormData();
+
+		formdata.append("opponent_name", opponent);
+		formdata.append("player_score", pl_score);
+		formdata.append("opponent_score", op_score);
+		formdata.append("match_type", match_type);
+		formdata.append("csrfmiddlewaretoken", document.getElementsByName("csrfmiddlewaretoken")[0].value);
+
+		try {
+			//it should go in pong app
+			const response = await fetch("/userManagement/saveMatch", {
+				method: "POST",
+				credentials: 'same-origin',
+				body: formdata,
+	
+			});
+			if (response.ok) {
+				console.log("match saved?");
+			}
+			else{
+				console.log(await response.json());
+			}
+		} catch (e) {
+			console.error(e)
+		}
+	}
+}
 
 
 window.setRules = setRules;
