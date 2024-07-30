@@ -136,6 +136,26 @@ export default class Tournament {
 		else
 			return "";
 	}
+	get roundName()
+	{
+		switch (this.rounds[this.currentRound].length) {
+			case 1:
+				return "Final";
+				break;
+			case 2:
+				return "Semifinal";
+				break;
+			case 4:
+				return "Quarter-final";
+				break;
+			case 8:
+				return "Round of 16";
+				break;
+			default:
+				return "Match"
+				break;
+		}
+	}
 }
 
 function shuffle(array) {

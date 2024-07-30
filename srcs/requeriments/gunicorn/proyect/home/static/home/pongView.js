@@ -93,6 +93,14 @@ function hideOneVsOne() {
 	document.getElementById("dWinner").hidden = true;
 }
 
+function addRegisteredPlayer() {
+
+	const nick = document.getElementById("hNick").value;
+	if (nick) {
+		tournament.addPlayer(nick);
+		document.getElementById("tPlayers").value = nick;
+	}
+}
 
 function setTournament() {
 
@@ -109,7 +117,9 @@ function setTournament() {
 	document.getElementById("tPlayers").value = "";
 	document.getElementById("bCreate").style.visibility = "hidden";
 	tournament.reset();
+	addRegisteredPlayer();
 }
+
 
 function selectNumPlayers() {
 	const numPlayers = document.getElementById("sNumPlayers");
@@ -120,6 +130,7 @@ function selectNumPlayers() {
 	document.getElementById("bRegisterPlayer").style.visibility = "visible";
 	document.getElementById("bCreate").style.visibility = "hidden";
 	showPlayers.value = "";
+	addRegisteredPlayer();
 }
 
 function addPlayer() {
@@ -198,17 +209,17 @@ function showPlayers(players) {
 function endMatch(lPlayerScore, rPlayerScore) {
 
 	const winner = document.getElementById("lWinner");
-	const lPlayer = document.getElementById("lLeftPlayer")
-	const rPlayer = document.getElementById("lRightPlayer")
+	const lPlayer = document.getElementById("lLeftPlayer").innerHTML;
+	const rPlayer = document.getElementById("lRightPlayer").innerHTML;
 	let matchType;
 
 	console.log(lPlayerScore + " " + rPlayerScore)
 	console.log(lPlayerScore + " " + rPlayerScore)
 
 	if (lPlayerScore > rPlayerScore)
-		winner.innerHTML = lPlayer.innerHTML;
+		winner.innerHTML = lPlayer;
 	else
-		winner.innerHTML = rPlayer.innerHTML;
+		winner.innerHTML = rPlayer;
 
 	document.getElementById("dMatchPlayers").hidden = true;
 	document.getElementById("dWinner").hidden = false;
@@ -222,7 +233,7 @@ function endMatch(lPlayerScore, rPlayerScore) {
 	}
 	else
 	{
-		matchType = "Tournament"
+		matchType = "Tournament " + tournament.roundName;
 		tournament.addResult(winner.innerHTML, lPlayerScore, rPlayerScore);
 		if (tournament.champion)
 		{
@@ -238,7 +249,15 @@ function endMatch(lPlayerScore, rPlayerScore) {
 			document.getElementById("dAdvance").hidden = false;
 		}
 	}
-	saveMatchResult(rPlayer.innerHTML, lPlayerScore, rPlayerScore, matchType);
+	const nick = document.getElementById("hNick").value;
+	if (nick) {
+		if (nick == lPlayer) {
+			saveMatchResult(lPlayer, "", rPlayer, lPlayerScore, rPlayerScore, matchType);
+		}
+		else if (nick == rPlayer) {
+			saveMatchResult("", rPlayer, lPlayer, lPlayerScore, rPlayerScore, matchType);
+		}		
+	}
 
 }
 
@@ -275,15 +294,20 @@ function setOpponent() {
 	const sDifficulty = document.getElementById("sDifficulty");
 
 	opponent = Number(document.getElementById("sOpponent").value);
-	document.getElementById("lLeftPlayer").innerHTML = "Player 1";
-	if (opponent)
-	{
+	const nick = document.getElementById("hNick").value;
+	console.log(nick);
+	if (nick) {
+		document.getElementById("lLeftPlayer").innerHTML = nick;
+	}
+	else {
+		document.getElementById("lLeftPlayer").innerHTML = "Player 1";
+	}
+	if (opponent) {
 		sDifficulty.style.visibility = "visible";
 		gameConfig.playAI = true;
 		setDifficulty();
 	}
-	else
-	{
+	else {
 		sDifficulty.style.visibility = "hidden";
 		gameConfig.playAI = false;
 		document.getElementById("lRightPlayer").innerHTML = "Player 2";	
@@ -341,7 +365,7 @@ function closeRules() {
 }
 
 
-async function saveMatchResult(opponent, pl_score, op_score, match_type ) {
+async function saveMatchResult(lplayer, rplayer, opponent, pl_score, op_score, match_type ) {
 
 	const resp = await fetch('/userManagement/login', {
 			method: 'GET',
@@ -352,6 +376,8 @@ async function saveMatchResult(opponent, pl_score, op_score, match_type ) {
 		console.log("match saving");
 		const formdata = new FormData();
 
+		formdata.append("left_player", lplayer);
+		formdata.append("right_player", rplayer);
 		formdata.append("opponent_name", opponent);
 		formdata.append("player_score", pl_score);
 		formdata.append("opponent_score", op_score);
@@ -359,8 +385,7 @@ async function saveMatchResult(opponent, pl_score, op_score, match_type ) {
 		formdata.append("csrfmiddlewaretoken", document.getElementsByName("csrfmiddlewaretoken")[0].value);
 
 		try {
-			//it should go in pong app
-			const response = await fetch("/userManagement/saveMatch", {
+			const response = await fetch("/pongApp/saveMatch", {
 				method: "POST",
 				credentials: 'same-origin',
 				body: formdata,

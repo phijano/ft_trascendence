@@ -7,14 +7,15 @@ from django import http
 from django.views.generic import View
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
-from .forms import SignUpForm, MatchCreationForm
+from .forms import SignUpForm
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.core.mail import EmailMessage
-from .models import Match, Friendship, Profile
+from .models import Friendship, Profile
+from pong.models import Match
 from django.db.models import Q
 
 # Create your views here.
@@ -122,9 +123,6 @@ class History(generic.ListView):
         context["matches"] = Match.objects.filter(Q(player__user_id=self.request.user)|Q(opponent__user_id=self.request.user)).order_by('-date')
         return context
 
-#    return render(request, 'profile.html')
-    #else:
-    #    return http.HttpResponse(status=404)
 
 class Search(generic.ListView):
     model = Profile
@@ -133,15 +131,3 @@ class Search(generic.ListView):
         query = self.request.GET.get("searchQuery")
         objetl_list = "query"
         return object_list
-
-class SaveMatch(View):
-
-    def post(self, request):
-        form = MatchCreationForm(request.POST)
-
-        if form.is_valid():
-            match = form.save(commit="False")
-            match.player = Profile.objects.get(user_id=request.user.id)
-            match.save()
-            return http.HttpResponse(status=201)
-        return http.JsonResponse(form.errors.get_json_data(), status=400)

@@ -7,7 +7,12 @@
 	<link rel="stylesheet" href="{% static 'home/pong/pong.css' %}">
 </head>
 <body>
-	{% csrf_token %}
+	{% if user.is_authenticated %}
+		{% csrf_token %}
+		<input hidden id="hNick" value="{{profile}}">
+	{% else %}
+		<input hidden id="hNick" value="">
+	{% endif %}
 	<div class="container">
 		<div class="row">
 			<div class="col text-start">
