@@ -1,8 +1,7 @@
 from django.contrib import admin
-from .models import Profile, Match, Friendship
+from .models import Profile, Friendship
 
 # Register your models here.
 
 admin.site.register(Profile)
-admin.site.register(Match)
 admin.site.register(Friendship)

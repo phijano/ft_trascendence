@@ -22,6 +22,6 @@ urlpatterns = [
     path("", include("home.urls")),
     path('userManagement/', include("userManagement.urls")),
     path('accounts/', include("django.contrib.auth.urls")),
-    #    path('pong/', include("pong.urls")),
+    path('pongApp/', include("pong.urls")),
     path('chat/', include("chat.urls")),
 ]

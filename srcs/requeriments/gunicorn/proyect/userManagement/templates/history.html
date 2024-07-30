@@ -7,15 +7,23 @@
 			{% for match in matches %}
 				<li>
 					<p>
-					{{ match.player }} {{ match.player_score}}
+						{% if match.player %}
+							{{ match.player }}
+						{% else %}
+							{{ match.opponent_name}}
+						{% endif %}
+						
+						{{ match.player_score }}
+						
 						{% if match.opponent %}
 							{{ match.opponent }}
 						{% else %}
 							{{ match.opponent_name }}
 						{% endif %}
-					{{match.opponent_score}}
-					{{match.match_type}}
-					{{match.date}}
+						
+						{{match.opponent_score}}
+						{{match.match_type}}
+						{{match.date}}
 					</p>
 				</li>
 			{% endfor %}
