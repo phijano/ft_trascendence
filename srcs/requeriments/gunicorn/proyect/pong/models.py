@@ -26,4 +26,13 @@ class Match(models.Model):
         """
         String that represents the particular instance of the model (for example in admin site)
         """
-        return self.player.nick + " - " + self.match_type
+        text = ""
+        if self.player:
+            text = self.player.nick
+        else:
+            text = self.opponent_name
+        if self.opponent:
+            text = text + " VS " + self.opponent.nick
+        else:
+            text = text + " VS " + self.opponent_name
+        return text + " " + self.match_type + " " + str(self.date)
