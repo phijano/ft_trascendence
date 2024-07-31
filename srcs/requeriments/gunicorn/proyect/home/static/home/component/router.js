@@ -16,7 +16,7 @@ export const locationHandler = async() => {
 	console.log("handler: " + location)
 	const route = routes.URL[location] || routes.URL["404"];
 	console.log(route)
-	const html = await fetch(route.template).then((response) => response.text());	
+	const html = await fetch(route.template + window.location.search).then((response) => response.text());	
 	document.getElementById("content").innerHTML = html
 /*	
 	document.getElementById("content").remove();

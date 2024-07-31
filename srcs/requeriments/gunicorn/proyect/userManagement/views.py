@@ -17,6 +17,7 @@ from django.core.mail import EmailMessage
 from .models import Friendship, Profile
 from pong.models import Match
 from django.db.models import Q
+from django.core.paginator import Paginator
 
 # Create your views here.
 
@@ -112,16 +113,14 @@ class Friends(generic.ListView):
 
         return context
 
-class History(generic.ListView):
-    #if request.user.is_authenticated:
-    model = Match
-    template_name = 'history.html'
-    paginated_by = 1
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs) 
-        context["matches"] = Match.objects.filter(Q(player__user_id=self.request.user)|Q(opponent__user_id=self.request.user)).order_by('-date')
-        return context
+def matchListing(request):
+    if request.user.is_authenticated:
+        queryset = Match.objects.filter(Q(player__user_id=request.user)|Q(opponent__user_id=request.user)).order_by('-date')
+        paginator = Paginator(queryset, 10)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+        return render(request, "history.html", {"page_obj":page_obj})
+    return render(request, "history.html")
 
 
 class Search(generic.ListView):

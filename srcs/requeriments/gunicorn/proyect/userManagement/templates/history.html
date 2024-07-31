@@ -2,49 +2,60 @@
 
 	<h1 class="text-info mb-4">MATCH HISTORY</h1>
 
-	{% if matches %}
-		<ul>
-			{% for match in matches %}
-				<li>
-					<p>
+	{% if page_obj %}
+		<div class="mw-100 container mb-3">
+			{% for match in page_obj %}
+				<div class="row py-2">
+					<div class="col"></div>
+					<div class="col text-start">
 						{% if match.player %}
 							{{ match.player }}
 						{% else %}
 							{{ match.opponent_name}}
 						{% endif %}
-						
+					</div>
+					<div class="col fluid text-start">
 						{{ match.player_score }}
-						
+					</div>
+					<div class="col text-start">
 						{% if match.opponent %}
 							{{ match.opponent }}
 						{% else %}
 							{{ match.opponent_name }}
 						{% endif %}
-						
+					</div>
+					<div class="col text-start">
 						{{match.opponent_score}}
+					</div>
+					<div class="col-2 text-start">
 						{{match.match_type}}
+					</div>
+					<div class="col-2 text-start">
 						{{match.date}}
-					</p>
-				</li>
+					</div>
+					<div class="col"></div>
+				</div>
 			{% endfor %}
-		</ul>
+		</div>
 	{% else %}
 		<p>You didnt play any match</p>
 	{% endif %}
 
-	{% if is_paginated %}
-		<div class="pagination">
-			<span class="page-links">
-				{% if page_obj.has_previous %}
-					<a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">anterior</a>
-				{% endif %}
-			<span class="page-current">
-				Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-			</span>
-				{% if page_obj.has_next %}
-					<a href="{{ request.path }}?page={{ page_obj.next_page_number }}">siguiente</a>
-				{% endif %}
-			</span>
+	{% if page_obj.has_other_pages %}
+		<div class="text-justified">
+			<nav>
+				<span class="page-links">
+					{% if page_obj.has_previous %}
+						<a href="history?page={{ page_obj.previous_page_number }}">previous</a>
+					{% endif %}
+				<span class="page-current">
+					Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+				</span>
+					{% if page_obj.has_next %}
+						<a href="history?page={{ page_obj.next_page_number }}">next</a>
+					{% endif %}
+				</span>
+			</nav>
 		</div>
 	{% endif %}
 
