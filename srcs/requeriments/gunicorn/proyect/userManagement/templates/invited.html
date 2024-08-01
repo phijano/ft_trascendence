@@ -3,25 +3,21 @@
 	<h1 class="text-info mb-4">FRIENDS</h1>
 
 	<div class="mb-3">
-		<button onclick="router('/friends')" disabled>Friends</button></a>
+		<button onclick="router('/friends')">Friends</button></a>
 		<button onclick="router('/friends/pending')">Pending</button></a>
-		<button onclick="router('/friends/invited')">Invited</button></a>
+		<button onclick="router('/friends/invited')" disabled>Invited</button></a>
 		<button onclick="router('/friends/search')">Search</button></a>
 	</div>
 
 	{% if page_obj %}
 		<div class="mw-100 container mb-3">
-			{% for friend in page_obj %}
+			{% for invitation in page_obj %}
 				<div class="row py-2">
 					<div class="col"></div>
 					<div class="col"></div>
 					<div class="col"></div>
 					<div class="col text-start">
-						{% if profile == friend.giver %}
-							{{friend.accepter}}
-						{% else %}
-							{{friend.giver}}
-					{% endif %}
+						{{invitation.accepter}}
 					</div>
 					<div class="col text-end">
 						<button>Delete</button>
@@ -33,10 +29,8 @@
 			{% endfor %}
 		</div>
 	{% else %}
-		<p>You dont have any friend</p>
+		<p>No invitations sent</p>
 	{% endif %}
-
-
 
 	{% if page_obj.has_other_pages %}
 		<div class="text-justified">

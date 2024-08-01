@@ -15,8 +15,11 @@ export const locationHandler = async() => {
 	}
 	console.log("handler: " + location)
 	const route = routes.URL[location] || routes.URL["404"];
-	console.log(route)
-	const html = await fetch(route.template + window.location.search).then((response) => response.text());	
+	const origin = window.location.origin;
+	const search = window.location.search;
+	console.log(route);
+	console.log(route.template);
+	const html = await fetch(origin + route.template + search).then((response) => response.text());	
 	document.getElementById("content").innerHTML = html
 /*	
 	document.getElementById("content").remove();
@@ -34,5 +37,15 @@ export const locationHandler = async() => {
 		.setAttribute("content", route.description);
 */
 
-	window.onpopstate = locationHandler
 };
+
+function buttonRouter(ref)
+{
+	router(window.location.origin + ref);
+}
+
+window.router = buttonRouter
+window.onpopstate = locationHandler
+
+
+

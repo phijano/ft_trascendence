@@ -1,0 +1,87 @@
+{% if user.is_authenticated %}
+
+	<h1 class="text-info mb-4">FRIENDS</h1>
+
+	<div class="mb-3">
+		<button onclick="router('/friends')">Friends</button></a>
+		<button onclick="router('/friends/pending')">Pending</button></a>
+		<button onclick="router('/friends/invited')">Invited</button></a>
+		<button onclick="router('/friends/search')">Search</button></a>
+	</div>
+
+	<div id="dFriends">
+		{% if friends_accepted or friends_made %}
+			<ul>
+				{% for friend in friends_accepted %}
+					<li>
+						<p>
+						{{friend.giver}} <button>Delete</button>
+						</p>
+					</li>
+				{% endfor %}
+				{% for friend in friends_made %}
+					<li>
+						<p>
+						{{friend.accepter}} <button>Delete</button>
+						</p>
+					</li>
+				{% endfor %}		
+			</ul>
+		{% else %}
+			<p>Friends = 0 :P</p>
+		{% endif %}
+	</div>
+	<div hidden id="dPending">
+		{% if pending %}
+			<ul>
+				{% for invitation in pending %}
+					<li>
+						<p>
+						{{invitation.giver}} <button>Accept</button>
+						</p>
+					</li>
+				{% endfor %}		
+			</ul>
+		{% else %}
+			<p>No invitations recived</p>
+		{% endif %}
+	</div>
+	<div hidden id="dInvited">
+		{% if invited %}
+			<ul>
+				{% for invitation in invited %}
+					<li>
+						<p>
+						{{invitation.accepter}} <button>Delete</button>
+						</p>
+					</li>
+				{% endfor %}		
+			</ul>
+		{% else %}
+			<p>No invitations sent</p>
+		{% endif %}
+	</div>
+
+	{% if page_obj.has_other_pages %}
+		<div class="text-justified">
+			<nav>
+				<span class="page-links">
+					{% if page_obj.has_previous %}
+						<a href="history?page={{ page_obj.previous_page_number }}">previous</a>
+					{% endif %}
+				<span class="page-current">
+					Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+				</span>
+					{% if page_obj.has_next %}
+						<a href="history?page={{ page_obj.next_page_number }}">next</a>
+					{% endif %}
+				</span>
+			</nav>
+		</div>
+	{% endif %}
+
+
+
+{% else %}
+	log in to have access to your account
+{% endif %}
