@@ -25,31 +25,49 @@ const URL = {
 	},
 
 	"/signup": {
-		template: "userManagement/signup/template",
+		template: "/userManagement/signup/template",
 		title: "Sign up",
 		description: "This is sign up page",
 	},
 
 	"/login": {
-		template: "accounts/login",
+		template: "/accounts/login",
 		title: "Login",
 		description: "This is login page",
 	},
 
 	"/profile": {
-		template: "userManagement/profile",
+		template: "/userManagement/profile",
 		title: "Profile",
 		description: "This is profile page",
 	},
 
 	"/friends": {
-		template: "userManagement/friends",
+		template: "/userManagement/friends",
+		title: "Friends",
+		description: "This is friends page",
+	},
+
+	"/friends/pending": {
+		template: "/userManagement/friends/pending",
+		title: "Friends",
+		description: "This is friends page",
+	},
+
+	"/friends/invited": {
+		template: "/userManagement/friends/invited",
+		title: "Friends",
+		description: "This is friends page",
+	},
+
+	"/friends/search": {
+		template: "/userManagement/friends/search",
 		title: "Friends",
 		description: "This is friends page",
 	},
 
 	"/history": {
-		template: "userManagement/history",
+		template: "/userManagement/history",
 		title: "History",
 		description: "This is match history page",
 	},

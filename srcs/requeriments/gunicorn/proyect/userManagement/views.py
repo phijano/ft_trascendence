@@ -113,7 +113,36 @@ class Friends(generic.ListView):
 
         return context
 
-def matchListing(request):
+def friends(request):
+    if request.user.is_authenticated:
+        queryset = Friendship.objects.filter(Q(accepter__user_id=request.user, status = 1)|Q(giver__user_id=request.user, status = 1))
+        paginator = Paginator(queryset, 10)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+        userProfile = Profile.objects.filter(user_id=request.user.id)
+        return render(request, "friends.html", {"page_obj":page_obj, 'profile':userProfile[0]})
+    return render(request, "friends.html")
+
+
+def pending(request):
+    if request.user.is_authenticated:
+        queryset = Friendship.objects.filter(accepter__user_id=request.user, status=0)
+        paginator = Paginator(queryset, 10)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+        return render(request, "pending.html", {"page_obj":page_obj})
+    return render(request, "pending.html")
+
+def invited(request):
+    if request.user.is_authenticated:
+        queryset = Friendship.objects.filter(giver__user_id=request.user, status = 0)
+        paginator = Paginator(queryset, 10)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+        return render(request, "invited.html", {"page_obj":page_obj})
+    return render(request, "invited.html")
+
+def matches(request):
     if request.user.is_authenticated:
         queryset = Match.objects.filter(Q(player__user_id=request.user)|Q(opponent__user_id=request.user)).order_by('-date')
         paginator = Paginator(queryset, 10)
