@@ -1,12 +1,27 @@
 {% if user.is_authenticated %}
+	{% csrf_token %}
 
 	<h1 class="text-info mb-4">FRIENDS</h1>
 
-	<div class="mb-3">
-		<button onclick="router('/friends')">Friends</button></a>
-		<button onclick="router('/friends/pending')">Pending</button></a>
-		<button onclick="router('/friends/invited')" disabled>Invited</button></a>
-		<button onclick="router('/friends/search')">Search</button></a>
+	<div class="mw-100 container mb-3">
+		<form id="fSearchFriend">
+			<div class="row py-2">
+				<div class="col"></div>
+				<div class="col-4">
+					<button class="btn btn-dark" onclick="router('/friends')">Friends</button></a>
+					<button class="btn btn-dark" onclick="router('/friends/pending')">Pending</button></a>
+					<button class="btn btn-dark" onclick="router('/friends/invited')" disabled>Invited</button></a>
+				</div>
+				<div class="col-4">
+					<input class="form-control" type="search" placeholder="Search" aria-label="Search">
+				</div>
+				<div class="col">
+					<button class="btn btn-outline-info" type="submit">Search</button>
+				</div>
+				<div class="col">	
+				</div>
+			</div>
+		</form>
 	</div>
 
 	{% if page_obj %}
@@ -16,13 +31,17 @@
 					<div class="col"></div>
 					<div class="col"></div>
 					<div class="col"></div>
-					<div class="col text-start">
-						{{invitation.accepter}}
-					</div>
-					<div class="col text-end">
-						<button>Delete</button>
+					<div class="col-3 text-start">
+						<h5>
+							{{invitation.accepter}}
+						</h5>
 					</div>
 					<div class="col"></div>
+					<div class="col"></div>
+					<div class="col text-start">
+						<button class="btn btn-danger btn-sm" onclick="deleteFriend('{{invitation.id}}')">Delete</button>
+					</div>
+
 					<div class="col"></div>
 					<div class="col"></div>
 				</div>

@@ -14,7 +14,11 @@ document.addEventListener('submit',async ev => {
 		console.log("submit form");
 		await signUp(new FormData(ev.target));
 	}
-	console.log("fuck");
+	else if (ev.target.id == "fSearchFriend") {
+		console.log("search friend form");
+		await searchFriend(new FormData(ev.target));
+	}
+	console.log("submited");
 });
 
 async function signUp(data) {
