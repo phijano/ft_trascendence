@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import LogIn, LogOut, SignUp, SignUpTemplate, ActivateUser, profile, Search, friends, pending, invited, matches
+from .views import LogIn, LogOut, SignUp, SignUpTemplate, ActivateUser, profile, Search, friends, pending, invited, matches, DeleteFriend, AcceptFriend
 
 urlpatterns = [
 
@@ -13,6 +13,8 @@ urlpatterns = [
         path("friends/pending", pending, name='friends_pending'),
         path("friends/invited", invited, name='friends_invited'),
         path("friends/search", Search.as_view()),
+        path("acceptFriend", AcceptFriend.as_view()),
+        path("deleteFriend", DeleteFriend.as_view()),
         path("history", matches, name='history'),
 
 ]

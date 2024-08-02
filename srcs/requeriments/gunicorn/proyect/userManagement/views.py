@@ -159,3 +159,24 @@ class Search(generic.ListView):
         query = self.request.GET.get("searchQuery")
         objetl_list = "query"
         return object_list
+
+class AcceptFriend(View):
+
+    def post(self, request):
+        if request.user.is_authenticated:
+            friendship_id = request.POST.get("friendship_id")
+            friendship_to_accept = Friendship.objects.get(id=friendship_id)
+            friendship_to_accept.status = 1
+            friendship_to_accept.save()
+            return http.HttpResponse(status=201)
+        return http.HttpResponse(status=400)
+
+class DeleteFriend(View):
+
+    def post(self, request):
+        if request.user.is_authenticated:
+            friendship_id = request.POST.get("friendship_id")
+            friendship_to_delete = Friendship.objects.get(id=friendship_id)
+            friendship_to_delete.delete()
+            return http.HttpResponse(status=201)
+        return http.HttpResponse(status=400)
