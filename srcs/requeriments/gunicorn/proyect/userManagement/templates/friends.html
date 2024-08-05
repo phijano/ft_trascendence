@@ -4,24 +4,28 @@
 	<h1 class="text-info mb-4">FRIENDS</h1>
 
 	<div class="mw-100 container mb-3">
-		<form id="fSearchFriend">
-			<div class="row py-2">
-				<div class="col"></div>
-				<div class="col-4">
-					<button class="btn btn-dark" onclick="router('/friends')" disabled>Friends</button></a>
-					<button class="btn btn-dark" onclick="router('/friends/pending')">Pending</button></a>
-					<button class="btn btn-dark" onclick="router('/friends/invited')">Invited</button></a>
-				</div>
-				<div class="col-4">
-					<input class="form-control" type="search" placeholder="Search" aria-label="Search">
-				</div>
-				<div class="col">
-					<button class="btn btn-outline-info" type="submit">Search</button>
-				</div>
-				<div class="col">	
-				</div>
+		<div class="row py-2">
+			<div class="col"></div>
+			<div class="col"></div>
+			<div class="col-4">
+				<button class="btn btn-dark" onclick="router('/friends')" disabled>Friends</button></a>
+				<button class="btn btn-dark" onclick="router('/friends/pending')">Pending</button></a>
+				<button class="btn btn-dark" onclick="router('/friends/invited')">Invited</button></a>
 			</div>
-		</form>
+			<div class="col-6">
+				<form id="fSearchFriend">
+					<div class="row">
+						<div class="col-8">
+							<input id="iSearch" name="searchQuery" class="form-control" type="search" placeholder="Search">
+						</div>
+						<div class="col-2">
+							<button class="btn btn-outline-info" type="submit">Search</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="col"></div>
+		</div>
 	</div>
 
 	{% if page_obj %}
@@ -61,13 +65,13 @@
 			<nav>
 				<span class="page-links">
 					{% if page_obj.has_previous %}
-						<a href="history?page={{ page_obj.previous_page_number }}">previous</a>
+						<a href="friends?page={{ page_obj.previous_page_number }}">previous</a>
 					{% endif %}
 				<span class="page-current">
 					Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
 				</span>
 					{% if page_obj.has_next %}
-						<a href="history?page={{ page_obj.next_page_number }}">next</a>
+						<a href="friends?page={{ page_obj.next_page_number }}">next</a>
 					{% endif %}
 				</span>
 			</nav>
