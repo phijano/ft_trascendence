@@ -1,16 +1,13 @@
 
 async function searchFriend(data) {
 	console.log("data" + data);
-	const resp = await fetch('/userManagement/friends/search', {
-		method: 'POST',
-		body: data,
-		credentials: 'same-origin'
-	});
-	if (resp.ok) {
-		console.lig("ok");
+	console.log("query: " + data.get("searchQuery") + "<");
+	let query = data.get("searchQuery");
+	if (query) {
+		router("/friends/search?searchQuery=" + query);
 	}
 	else {
-		console.log("not ok");
+		document.getElementById("iSearch").style.borderColor="red";
 	}
 }
 
@@ -38,7 +35,7 @@ async function acceptFriend(friendship_id) {
 				console.log("friendship stablished");
 				router(window.location.pathname + window.location.search);
 			}
-			else{
+			else {
 				console.log("error");
 			}
 		} catch (e) {
@@ -48,7 +45,37 @@ async function acceptFriend(friendship_id) {
 
 }
 
-function sentInvitation() {
+function sendInvitation() {
+
+	const resp = await fetch('/userManagement/login', {
+			method: 'GET',
+			credentials: 'same-origin'
+	});
+	if (resp.ok) {
+
+		const formdata = new FormData();
+		formdata.append("friendship_id", friendship_id);
+		formdata.append("csrfmiddlewaretoken", document.getElementsByName("csrfmiddlewaretoken")[0].value);
+
+		try {
+			const response = await fetch("/userManagement/deleteFriend", {
+				method: "POST",
+				credentials: 'same-origin',
+				body: formdata,
+	
+			});
+			if (response.ok) {
+				console.log("friendship deleted");
+				router(window.location.pathname + window.location.search);
+			}
+			else{
+				console.log("error");
+			}
+		} catch (e) {
+			console.error(e)
+		}
+	}
+
 }
 
 async function deleteFriend(friendship_id) {
@@ -84,6 +111,6 @@ async function deleteFriend(friendship_id) {
 }
 
 window.acceptFriend = acceptFriend
-window.sentInvitation = sentInvitation
+window.sendInvitation = sendInvitation
 window.deleteFriend = deleteFriend
 window.searchFriend = searchFriend

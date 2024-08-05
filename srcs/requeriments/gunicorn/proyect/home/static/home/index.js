@@ -14,4 +14,11 @@ document.addEventListener("click", (ev) => {
 	router(ev.target.href);
 });
 
+
+window.addEventListener("keypress",function(ev){
+	if (event.keyCode == 13) {
+		event.preventDefault();
+	}
+}, false);
+
 document.addEventListener("DOMContentLoaded", App);

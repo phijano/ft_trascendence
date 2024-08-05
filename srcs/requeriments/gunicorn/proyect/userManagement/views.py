@@ -97,22 +97,6 @@ def profile(request):
     #    return http.HttpResponse(status=404)
 
 
-class Friends(generic.ListView):
-    #if request.user.is_authenticated:
-    model = Friendship
-    template_name = 'friends.html'
-    paginated_by = 1
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs) 
-        #context["friends"] = Friendship.objects.filter(Q(friend_giver__user_id=self.request.user, status = 1)|Q(friend_accepter__user_id=self.request.user, status=1)) 
-        context["friends_accepted"] = Friendship.objects.filter(accepter__user_id=self.request.user, status = 1) 
-        context["friends_made"] = Friendship.objects.filter(giver__user_id=self.request.user, status = 1)
-        context["pending"] = Friendship.objects.filter(accepter__user_id=self.request.user, status=0)
-        context["invited"] = Friendship.objects.filter(giver__user_id=self.request.user, status = 0)
-
-        return context
-
 def friends(request):
     if request.user.is_authenticated:
         queryset = Friendship.objects.filter(Q(accepter__user_id=request.user, status = 1)|Q(giver__user_id=request.user, status = 1))
@@ -152,13 +136,25 @@ def matches(request):
     return render(request, "history.html")
 
 
-class Search(generic.ListView):
-    model = Profile
-    template_name = "search_results.html"
-    def get(self, request):
-        query = self.request.GET.get("searchQuery")
-        objetl_list = "query"
-        return object_list
+def search(request):
+    if request.user.is_authenticated:
+        query = request.GET.get("searchQuery")
+        if not query:
+            return render(request,"search.html")
+        userProfile = Profile.objects.filter(user_id=request.user.id)
+        friendships = Friendship.objects.filter(Q(accepter__user_id=request.user)|Q(giver__user_id=request.user))
+        queryset = Profile.objects.filter(nick__icontains=query).exclude(nick=userProfile[0].nick)
+        friends= []
+        for friend in friendships:
+            if friend.accepter != userProfile[0]:
+                friends.append(friend.accepter)
+            else:
+                friends.append(friend.giver)        
+        paginator = Paginator(queryset, 10)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+        return render(request, "search.html", {"page_obj":page_obj,'friends':friends, 'query':query})
+    return render(request, "search.html")
 
 class AcceptFriend(View):
 
@@ -180,3 +176,18 @@ class DeleteFriend(View):
             friendship_to_delete.delete()
             return http.HttpResponse(status=201)
         return http.HttpResponse(status=400)
+
+class SendInvitation(View):
+
+    def post(self, request):
+        if request.user.is_authenticated:
+            form = FriendshipCreationForm(request.POST)
+            if form.is_valid():
+                friendship = form.save(commit="False")
+
+            return http.HttpResponse(status=201)
+        return http.HttpResponse(status=400)
+
+
+
+
