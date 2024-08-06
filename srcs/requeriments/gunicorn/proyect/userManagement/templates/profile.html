@@ -16,11 +16,97 @@
 					 <button>Match History</button> -->
 			</div>
 		</div>
+	</div>
+	<div class="container">
+		<br>
 		<div class="row">
-			<div class="col">
-			Stats
-			<div>
 		</div>
+		<div class="row text-center bg-info text-white">
+			<h4>STATS</h4>
+		</div>
+		<div class="row">
+			<div class="col"></div>
+			<div class="col text-start">
+				Matches:
+			</div>
+			<div class="col text-start">
+				{{num_matches}}
+			</div>
+			<div class="col"></div>
+			<div class="col"></div>
+		</div>
+		<div class="row">
+			<div class="col"></div>
+			<div class="col text-start text-success">
+				Won:
+			</div>
+			<div class="col text-start text-success">
+				{{total_win}}
+			</div>
+			<div class="col text-start text-success">
+				Percentage:
+			</div>	
+			<div class="col text-start text-success">
+				{{percent_win|floatformat:1}}%
+			</div>
+		</div>
+		<div class="row">
+			<div class="col"></div>
+			<div class="col text-start text-danger">
+				Lost:
+			</div>
+			<div class="col text-start text-danger">
+				{{total_lose}}
+			</div>	
+			<div class="col text-start text-danger">
+				Percentage:
+			</div>	
+			<div class="col text-start text-danger">
+				{{percent_lose|floatformat:1}}%
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col"></div>
+			<div class="col text-start">
+				Points:
+			</div>
+			<div class="col text-start">
+				{{total_points}}
+			</div>	
+			<div class="col"></div>
+			<div class="col"></div>
+		</div>
+		<div class="row">
+			<div class="col"></div>
+			<div class="col text-start text-success">
+				Won:
+			</div>
+			<div class="col text-start text-success">
+				{{points_win}}
+			</div>	
+			<div class="col text-start text-success">
+				Percentage:
+			</div>	
+			<div class="col text-start text-success">
+				{{percent_points_win|floatformat:1}}%
+			</div>
+		</div>
+		<div class="row">
+			<div class="col"></div>
+			<div class="col text-start text-danger">
+				Lost:
+			</div>
+			<div class="col text-start text-danger">
+				{{points_lose}}
+			</div>	
+			<div class="col text-start text-danger">
+				Percentage:
+			</div>	
+			<div class="col text-start text-danger">
+				{{percent_points_lose|floatformat:1}}%
+			</div>
+		</div>
+		<br>
 	</div>
 
 {% else %}
