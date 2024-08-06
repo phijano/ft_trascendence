@@ -100,10 +100,10 @@ def profile(request):
         points_win = 0
         for match in data:
             total_points += match.player_score + match.opponent_score
-            if match.player == profile:
+            if match.player == userProfile:
                 points_win += match.player_score
                 if match.player_score > match.opponent_score:
-                    total_win += 1
+                    total_win += 1 
             else:
                 points_win += match.opponent_score
                 if match.player_score < match.opponent_score:
