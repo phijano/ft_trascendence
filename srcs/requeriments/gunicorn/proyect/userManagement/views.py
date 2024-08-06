@@ -91,10 +91,35 @@ class ActivateUser(View):
         return
 
 def profile(request):
-    #if request.user.is_authenticated:
-    return render(request, 'profile.html')
-    #else:
-    #    return http.HttpResponse(status=404)
+    if request.user.is_authenticated:
+        userProfile = Profile.objects.filter(user_id=request.user.id)[0]
+        data = Match.objects.filter(Q(player__user_id=request.user)|Q(opponent__user_id=request.user)).order_by('-date')
+        num_matches = data.count()
+        total_win = 0
+        total_points = 0
+        points_win = 0
+        for match in data:
+            total_points += match.player_score + match.opponent_score
+            if match.player == profile:
+                points_win += match.player_score
+                if match.player_score > match.opponent_score:
+                    total_win += 1
+            else:
+                points_win += match.opponent_score
+                if match.player_score < match.opponent_score:
+                    total_win += 1
+        total_lose = num_matches - total_win 
+        percent_win = 0
+        percent_points_win = 0
+        if num_matches > 0:
+            percent_win = total_win * 100 / num_matches
+            percent_points_win = points_win * 100 / total_points
+        percent_lose = 100 - percent_win
+        points_lose = total_points - points_win
+        percent_points_lose = 100 - percent_points_win
+        return render(request, 'profile.html', {"num_matches":num_matches, "total_win":total_win, "total_lose":total_lose, "percent_win":percent_win, "percent_lose":percent_lose, "total_points":total_points, "points_win":points_win, "points_lose":points_lose, "percent_points_win":percent_points_win, "percent_points_lose": percent_points_lose})
+    else:
+        return render(request, "profile.html")
 
 
 def friends(request):
@@ -103,8 +128,8 @@ def friends(request):
         paginator = Paginator(queryset, 10)
         page_number = request.GET.get("page")
         page_obj = paginator.get_page(page_number)
-        userProfile = Profile.objects.filter(user_id=request.user.id)
-        return render(request, "friends.html", {"page_obj":page_obj, 'profile':userProfile[0]})
+        userProfile = Profile.objects.filter(user_id=request.user.id)[0]
+        return render(request, "friends.html", {"page_obj":page_obj, 'profile':userProfile})
     return render(request, "friends.html")
 
 
@@ -141,12 +166,12 @@ def search(request):
         query = request.GET.get("searchQuery")
         if not query:
             return render(request,"search.html")
-        userProfile = Profile.objects.filter(user_id=request.user.id)
+        userProfile = Profile.objects.filter(user_id=request.user.id)[0]
         friendships = Friendship.objects.filter(Q(accepter__user_id=request.user)|Q(giver__user_id=request.user))
-        queryset = Profile.objects.filter(nick__icontains=query).exclude(nick=userProfile[0].nick)
+        queryset = Profile.objects.filter(nick__icontains=query).exclude(nick=userProfile.nick)
         friends= []
         for friend in friendships:
-            if friend.accepter != userProfile[0]:
+            if friend.accepter != userProfile:
                 friends.append(friend.accepter)
             else:
                 friends.append(friend.giver)        
