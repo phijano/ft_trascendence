@@ -15,7 +15,7 @@ urlpatterns = [
         path("friends/search", search, name='search'),
         path("acceptFriend", AcceptFriend.as_view()),
         path("deleteFriend", DeleteFriend.as_view()),
-        path("sendInvitation", SendInvitation.as_view()),
+        path("inviteFriend", SendInvitation.as_view()),
         path("history", matches, name='history'),
 
 ]
