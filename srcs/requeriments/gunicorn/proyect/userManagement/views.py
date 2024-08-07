@@ -117,9 +117,35 @@ def profile(request):
         percent_lose = 100 - percent_win
         points_lose = total_points - points_win
         percent_points_lose = 100 - percent_points_win
-        return render(request, 'profile.html', {"num_matches":num_matches, "total_win":total_win, "total_lose":total_lose, "percent_win":percent_win, "percent_lose":percent_lose, "total_points":total_points, "points_win":points_win, "points_lose":points_lose, "percent_points_win":percent_points_win, "percent_points_lose": percent_points_lose})
+        return render(request, 'profile.html', {"num_matches":num_matches, "total_win":total_win, "total_lose":total_lose, "percent_win":percent_win, "percent_lose":percent_lose, "total_points":total_points, "points_win":points_win, "points_lose":points_lose, "percent_points_win":percent_points_win, "percent_points_lose": percent_points_lose, "nick":userProfile.nick})
     else:
         return render(request, "profile.html")
+
+class ChangeNick(View):
+
+    def post(self, request):
+        if request.user.is_authenticated:
+            new_nick = request.POST.get("newNick")
+            print(new_nick)
+            is_nick_used = Profile.objects.filter(nick=new_nick).count()
+            if not is_nick_used:
+                user_profile = Profile.objects.get(user_id=request.user.id)
+                user_profile.nick = new_nick
+                user_profile.save()
+                return http.HttpResponse(status=201)
+            return http.HttpResponse(status=400)
+        return http.HttpResponse(status=400)
+
+class ChangeAvatar(View):
+
+    def post(self, request):
+        if request.user.is_authenticated:
+            avatar = request.FILES['avatar']
+            user_profile = Profile.objects.get(user_id=request.user.id)
+            user_profile.avatar = avatar
+            user_profile.save()
+            return http.HttpResponse(status=201)
+        return http.HttpResponse(status=400)
 
 
 def friends(request):
@@ -151,16 +177,6 @@ def invited(request):
         return render(request, "invited.html", {"page_obj":page_obj})
     return render(request, "invited.html")
 
-def matches(request):
-    if request.user.is_authenticated:
-        queryset = Match.objects.filter(Q(player__user_id=request.user)|Q(opponent__user_id=request.user)).order_by('-date')
-        paginator = Paginator(queryset, 10)
-        page_number = request.GET.get("page")
-        page_obj = paginator.get_page(page_number)
-        return render(request, "history.html", {"page_obj":page_obj})
-    return render(request, "history.html")
-
-
 def search(request):
     if request.user.is_authenticated:
         query = request.GET.get("searchQuery")
@@ -180,6 +196,16 @@ def search(request):
         page_obj = paginator.get_page(page_number)
         return render(request, "search.html", {"page_obj":page_obj,'friends':friends, 'query':query})
     return render(request, "search.html")
+
+
+def matches(request):
+    if request.user.is_authenticated:
+        queryset = Match.objects.filter(Q(player__user_id=request.user)|Q(opponent__user_id=request.user)).order_by('-date')
+        paginator = Paginator(queryset, 10)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+        return render(request, "history.html", {"page_obj":page_obj})
+    return render(request, "history.html")
 
 class AcceptFriend(View):
 

@@ -52,8 +52,6 @@ function signUpError() {
 
 }
 
-
-
 async function logIn(data) {
 	console.log("data" + data);
 	const resp = await fetch('/userManagement/login', {
@@ -115,5 +113,151 @@ function hideUser() {
 	document.getElementById("nUser").hidden = true;
 }
 
-window.logOut = logOut;
+
+function editAvatar() {
+	document.getElementById("imAvatar").hidden = true;
+	document.getElementById("fileAvatar").hidden = false;
+	document.getElementById("bEditAvatar").hidden = true;
+	document.getElementById("bSaveAvatar").hidden = false;
+	document.getElementById("bCancelAvatar").hidden = false;
+}
+
+
+function checkAvatar() {
+	const dError = document.getElementById("dErrorAvatar");
+	const file = document.getElementById("fileAvatar");
+	console.log(file)	
+	const image = file.files[0];
+	console.log(image)
+
+	if (!image.type.includes('image')) {
+		dError.innerHTML = "wrong file, only images";
+		dError.hidden = false;
+	}
+	else if (image.size > 5_000_000) {
+		dError.innerHTML = "maximun upload size is 5MB";
+		dError.hidden = false;
+		
+	}
+
+}
+
+async function changeAvatar() {
+	const file = document.getElementById("fileAvatar");
+	const resp = await fetch('/userManagement/login', {
+			method: 'GET',
+			credentials: 'same-origin'
+	});
+	if (resp.ok) {
+
+		const formdata = new FormData();
+		formdata.append("avatar", file.files[0]);
+		formdata.append("csrfmiddlewaretoken", document.getElementsByName("csrfmiddlewaretoken")[0].value);
+
+		try {
+			const response = await fetch("/userManagement/changeAvatar", {
+				method: "POST",
+				credentials: 'same-origin',
+				body: formdata,
+
+			});
+			if (response.ok) {
+				console.log("avatar changed");
+				router(window.location.pathname + window.location.search);
+			}
+			else {
+				console.log("error");
+			}
+		} catch (e) {
+			console.error(e);
+		}
+	}
+}
+
+
+
+function cancelAvatar() {
+	document.getElementById("imAvatar").hidden = false;
+	document.getElementById("fileAvatar").hidden = true;
+	document.getElementById("fileAvatar").value = "";
+	document.getElementById("bEditAvatar").hidden = false;
+	document.getElementById("bSaveAvatar").hidden = true;
+	document.getElementById("bCancelAvatar").hidden = true;
+	document.getElementById("dErrorAvatar").hidden = true;
+}
+
+
+function editNick() {
+	document.getElementById("dNick").hidden = true;
+	document.getElementById("iNick").hidden = false;
+	document.getElementById("bEdit").hidden = true;
+	document.getElementById("bSave").hidden = false;
+	document.getElementById("bCancelNick").hidden = false;
+}
+
+async function changeNick() {
+	const iNick = document.getElementById("iNick");
+	const dError = document.getElementById("dError");
+
+	//validate Nick
+	if (iNick.value.length < 3) {
+		dError.innerHTML = "nick too short";
+		dError.hidden = false;
+		return;
+	}
+	else {
+		const resp = await fetch('/userManagement/login', {
+				method: 'GET',
+				credentials: 'same-origin'
+		});
+		if (resp.ok) {
+
+			const formdata = new FormData();
+			formdata.append("newNick", iNick.value);
+			formdata.append("csrfmiddlewaretoken", document.getElementsByName("csrfmiddlewaretoken")[0].value);
+	
+			try {
+				const response = await fetch("/userManagement/changeNick", {
+					method: "POST",
+					credentials: 'same-origin',
+					body: formdata,
+		
+				});
+				if (response.ok) {
+					console.log("nick changed");
+					router(window.location.pathname + window.location.search);
+				}
+				else{
+					dError.innerHTML = "nick already used";
+					dError.hidden = false;
+					console.log("error");
+				}
+			} catch (e) {
+				console.error(e);
+			}
+		}
+	}
+}
+
+function cancelNick() {
+	document.getElementById("dNick").hidden = false;
+	document.getElementById("iNick").hidden = true;
+	document.getElementById("iNick").value = "";
+	document.getElementById("bEdit").hidden = false;
+	document.getElementById("bSave").hidden = true;
+	document.getElementById("bCancelNick").hidden = true;
+	document.getElementById("dError").hidden = true;
+}
+
+window.logOut = logOut
 window.setUser = setUser
+
+window.checkAvatar = checkAvatar
+window.editAvatar = editAvatar
+window.changeAvatar = changeAvatar
+window.cancelAvatar = cancelAvatar
+
+window.editNick = editNick
+window.changeNick = changeNick
+window.cancelNick = cancelNick
+
