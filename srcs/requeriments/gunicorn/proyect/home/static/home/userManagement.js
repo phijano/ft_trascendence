@@ -115,7 +115,6 @@ function hideUser() {
 
 
 function editAvatar() {
-	document.getElementById("imAvatar").hidden = true;
 	document.getElementById("fileAvatar").hidden = false;
 	document.getElementById("bEditAvatar").hidden = true;
 	document.getElementById("bSaveAvatar").hidden = false;
@@ -136,14 +135,24 @@ function checkAvatar() {
 	}
 	else if (image.size > 5_000_000) {
 		dError.innerHTML = "maximun upload size is 5MB";
-		dError.hidden = false;
-		
+		dError.hidden = false;		
+	}
+	else {
+		const imAvatar = document.getElementById("imAvatar");
+		imAvatar.src = URL.createObjectURL(file.files[0]);
 	}
 
 }
 
 async function changeAvatar() {
 	const file = document.getElementById("fileAvatar");
+	const dError = document.getElementById("dErrorAvatar");
+
+	if (!file.files[0]){
+		dError.innerHTML = "No image selected";
+		dError.hidden = false;
+		return
+	}
 	const resp = await fetch('/userManagement/login', {
 			method: 'GET',
 			credentials: 'same-origin'
@@ -174,21 +183,12 @@ async function changeAvatar() {
 	}
 }
 
-
-
 function cancelAvatar() {
-	document.getElementById("imAvatar").hidden = false;
-	document.getElementById("fileAvatar").hidden = true;
-	document.getElementById("fileAvatar").value = "";
-	document.getElementById("bEditAvatar").hidden = false;
-	document.getElementById("bSaveAvatar").hidden = true;
-	document.getElementById("bCancelAvatar").hidden = true;
-	document.getElementById("dErrorAvatar").hidden = true;
+	router(window.location.pathname + window.location.search);
 }
 
 
 function editNick() {
-	document.getElementById("dNick").hidden = true;
 	document.getElementById("iNick").hidden = false;
 	document.getElementById("bEdit").hidden = true;
 	document.getElementById("bSave").hidden = false;
