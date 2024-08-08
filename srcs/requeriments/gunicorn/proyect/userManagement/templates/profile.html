@@ -1,36 +1,48 @@
 {% if user.is_authenticated %}
 	{% csrf_token %}	
-	<h1 class="text-info"> PROFILE </h1> 
-	<div class="container text-center">
-		<div class="row">
-			<div class="col">
-				{% load static %}
-				<img id="imAvatar" src="{% static 'home/images/avatar.png' %}" class="img-fluid" width="30" height="30">
-				<input hidden id="fileAvatar" type="file" onchange="checkAvatar()" accept="image/*">
-					<button id="bEditAvatar" class="btn btn-warning btn-sm" onclick="editAvatar()">Edit</button>
-					<button id="bSaveAvatar" hidden class="btn btn-success btn-sm" onclick="changeAvatar()">Save</button>
-					<button id="bCancelAvatar" hidden class="btn btn-danger btn-sm" onclick="cancelAvatar()">Cancel</button>
-					<div id="dErrorAvatar"></div>
-				<div>
-					<div id="dNick">{{nick}}</div>
-					<input hidden id="iNick" maxlength=15 value=""></input>
-					<button id="bEdit" class="btn btn-warning btn-sm" onclick="editNick()">Edit</button>
-					<button id="bSave" hidden class="btn btn-success btn-sm" onclick="changeNick()">Save</button>
-					<button id="bCancelNick" hidden class="btn btn-danger btn-sm" onclick="cancelNick()">Cancel</button>
-					<div id="dError"></div>
-				</div>
-			</div>
-			<div class="col">
+	<h1 class="text-info"> PROFILE </h1>
 				<nav>
 					<a class="px-3 text-decoration-none" href="/friends">FRIENDS</a>
 					<a class="px-3 text-decoration-none" href="/history">MATCH HISTORY</a>
 				</nav>
-				<!-- <button>Friends</button>
-					 <button>Match History</button> -->
+	<div class="container fixed-width text-center">
+		<div class="row">
+			<div class="col-2"></div>
+
+			<div class="col-2">
+				<img id="imAvatar" src="{{profile.avatar.url}}" class="img-fluid" width="50" height="50">
 			</div>
+			<div class="col-2 text-start align-self-center">
+				<button id="bEditAvatar" class="btn btn-warning btn-sm" onclick="editAvatar()">Edit</button>
+				<button id="bSaveAvatar" hidden class="btn btn-success btn-sm" onclick="changeAvatar()">Save</button>
+				<button id="bCancelAvatar" hidden class="btn btn-danger btn-sm" onclick="cancelAvatar()">Cancel</button>
+			</div>
+
+			<div class="col-6 text-start align-self-center">
+				<input hidden height="50" id="fileAvatar" type="file" onchange="checkAvatar()" accept="image/*">
+			</div>
+			<div class="w-100 my-1"></div>
+			<div class="col-2"></div>
+
+			<div class="col-2">
+				<h5 class="align-self-center" id="dNick">{{profile.nick}}</h5>
+			</div>
+			<div class="col-2 text-start">
+				<button id="bEdit" class="btn btn-warning btn-sm" onclick="editNick()">Edit</button>
+				<button id="bSave" hidden class="btn btn-success btn-sm" onclick="changeNick()">Save</button>
+				<button id="bCancelNick" hidden class="btn btn-danger btn-sm" onclick="cancelNick()">Cancel</button>
+			</div>
+			<div class="col-6 text-start">
+				<input hidden id="iNick" placeholder="Enter nick" maxlength=15 value=""></input>
+			</div>
+
+		</div>
+		<div class="row">
+			<div id="dErrorAvatar" class="text-danger"></div>
+			<div id="dError" class="text-danger"></div>
 		</div>
 	</div>
-	<div class="container mb-3 h5 text-center align-self-center bg-info text-white">
+	<div class="container my-3 h5 text-center align-self-center bg-info text-white">
 		STATS
 	</div>
 	<div class="container">

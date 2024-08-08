@@ -111,13 +111,15 @@ def profile(request):
         total_lose = num_matches - total_win 
         percent_win = 0
         percent_points_win = 0
+        percent_lose = 0
+        percent_points_lose = 0
         if num_matches > 0:
             percent_win = total_win * 100 / num_matches
             percent_points_win = points_win * 100 / total_points
-        percent_lose = 100 - percent_win
+            percent_lose = 100 - percent_win
+            percent_points_lose = 100 - percent_points_win
         points_lose = total_points - points_win
-        percent_points_lose = 100 - percent_points_win
-        return render(request, 'profile.html', {"num_matches":num_matches, "total_win":total_win, "total_lose":total_lose, "percent_win":percent_win, "percent_lose":percent_lose, "total_points":total_points, "points_win":points_win, "points_lose":points_lose, "percent_points_win":percent_points_win, "percent_points_lose": percent_points_lose, "nick":userProfile.nick})
+        return render(request, 'profile.html', {"num_matches":num_matches, "total_win":total_win, "total_lose":total_lose, "percent_win":percent_win, "percent_lose":percent_lose, "total_points":total_points, "points_win":points_win, "points_lose":points_lose, "percent_points_win":percent_points_win, "percent_points_lose": percent_points_lose, "profile":userProfile})
     else:
         return render(request, "profile.html")
 

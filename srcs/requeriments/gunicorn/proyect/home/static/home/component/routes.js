@@ -19,7 +19,7 @@ const URL = {
 	},
 
 	"/pong": {
-		template: "/pongApp",
+		template: "/pongApp/pong",
 		title: "Pong",
 		description: "This is pong game page",
 	},
