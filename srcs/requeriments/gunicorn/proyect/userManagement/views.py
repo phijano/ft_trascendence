@@ -11,9 +11,10 @@ from .forms import SignUpForm, FriendshipCreationForm
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
-from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.core.mail import EmailMessage
+from django.shortcuts import redirect
 from .models import Friendship, Profile
 from pong.models import Match
 from django.db.models import Q
@@ -80,15 +81,25 @@ class SignUpTemplate(generic.FormView):
 class ActivateUser(View):
     def get(self, request, uidb64, token):
         try:
-            uid = force_text(urlsafe_base64_decode(uidb64))
+            uid = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
         except(TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None
         tokenGenerator = PasswordResetTokenGenerator()
         if user and tokenGenerator.check_token(user, token):
+            if user.is_active:
+                return redirect("/confirmation/expired")
+            active_user_same_email = User.objects.filter(is_active=True, email=user.email).count()
+            if active_user_same_email:
+                return redirect("/confirmation/error")
             user.is_active = True
             user.save()
-        return
+            user_profile = Profile()
+            user_profile.user_id = user
+            user_profile.nick = "name" + str(user.id).rjust(11, '0')
+            user_profile.save()
+            return redirect("/confirmation/success")
+        return redirect("/confirmation/expired")
 
 def profile(request):
     if request.user.is_authenticated:
