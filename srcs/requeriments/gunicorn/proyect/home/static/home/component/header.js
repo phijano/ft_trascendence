@@ -1,4 +1,5 @@
 import {Menu} from "./menu.js"
+import {PlayerMenu} from "./playerMenu.js"
 import {registerMenu} from "./registerMenu.js"
 import {userMenu} from "./userMenu.js"
 
@@ -21,6 +22,7 @@ export function Header(){
 	const colMiddle = document.createElement("div");	
 	colMiddle.classList.add("col-sm-auto");
 	colMiddle.appendChild(Menu());
+	colMiddle.appendChild(PlayerMenu());
 	row.appendChild(colMiddle);
 
 	const colRight = document.createElement("div");

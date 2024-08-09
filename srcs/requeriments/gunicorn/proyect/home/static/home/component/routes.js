@@ -29,7 +29,21 @@ const URL = {
 		title: "Sign up",
 		description: "This is sign up page",
 	},
-
+	"/confirmation/success": {
+		template: "/templates/email_success.html",
+		title: "Activate success",
+		description: "This is actvate account success page",
+	},
+	"/confirmation/error": {
+		template: "/templates/email_error.html",
+		title: "Activate error",
+		description: "This is activate account error page",
+	},
+	"/confirmation/expired": {
+		template: "/templates/expired.html",
+		title: "Link expired",
+		description: "This is link expired error page",
+	},
 	"/login": {
 		template: "/accounts/login",
 		title: "Login",

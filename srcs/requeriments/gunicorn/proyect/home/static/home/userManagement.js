@@ -89,12 +89,16 @@ function loginError() {
 
 function setUser() {
 	hideRegister();
+	hideMenu();
 	showUser();
+	showPlayer();
 }
 
 function unsetUser() {
 	hideUser();
+	hidePlayer();
 	showRegister();
+	showMenu();
 }
 
 function showRegister() {
@@ -112,6 +116,23 @@ function showUser() {
 function hideUser() {
 	document.getElementById("nUser").hidden = true;
 }
+
+function showMenu() {
+	document.getElementById("nMenu").hidden = false;
+}
+
+function hideMenu() {
+	document.getElementById("nMenu").hidden = true;
+}
+
+function showPlayer() {
+	document.getElementById("nPlayer").hidden = false;
+}
+
+function hidePlayer() {
+	document.getElementById("nPlayer").hidden = true;
+}
+
 
 
 function editAvatar() {

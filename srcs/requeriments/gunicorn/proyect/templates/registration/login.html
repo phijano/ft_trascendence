@@ -1,19 +1,29 @@
 <p hidden id="pError">Please enter a correct username and password. Note that both fields may be case-sensitive.</p>
 
-<form method="post" id="fLogin">
-	{% csrf_token %}
-	<table>
-		<tr>
-			<td>{{ form.username.label_tag }}</td>
-			<td>{{ form.username }}</td>
-		</tr>
-		<tr>
-			<td>{{ form.password.label_tag }}</td>
-			<td>{{ form.password }}</td>
-		</tr>
-	</table>
-	<input type="submit" id="blogin" value="login">
-</form>
-
-{# Asume que configura la vista de restablecimiento de contraseña en su URLconf #}
-<p><a href="{% url 'password_reset' %}">¿Olvidó su contraseña?</a></p>
+<h1 class="text-info mb-4"> LOG IN </h1>
+<div class="container fixed-width text-center">
+	<form method="post" id="fLogin">
+		{% csrf_token %}
+		<div class="row mb-4">
+			<div class="col-3"></div>
+			<div class="col-2 text-start">
+				{{ form.username.label_tag }}
+			</div>
+			<div class="col-2 text-start">
+				{{ form.username }}
+			</div>
+			<div class="col-3"></div>
+			<div class="w-100 my-1"></div>
+			<div class="col-3"></div>
+			<div class="col-2 text-start">
+				{{ form.password.label_tag }}
+			</div>
+			<div class="col-2">
+				{{ form.password }}	
+			</div>
+			<div class="col-3"></div>
+		</div>
+		<input type="submit" id="blogin" value="login">
+	</form>
+</div>
+<!--<p><a href="{% url 'password_reset' %}">¿Forgot your password?</a></p>-->
