@@ -1,8 +1,6 @@
-<p hidden id="pError">Please enter a correct username and password. Note that both fields may be case-sensitive.</p>
-
 <h1 class="text-info mb-4"> SIGN UP </h1>
 <div class="container fixed-width text-center">
-	<form id="fSignUp" method="POST">
+	<form id="fSignUp" class="mb-3" method="POST">
 		{% csrf_token %}
 		<div class="row mb-4">
 			<div class="col-3"></div>
@@ -15,7 +13,10 @@
 			<div class="col-3"></div>
 			<div class="w-100 my-1"></div>
 			<div class="col-3"></div>
-			<div class="col-9 text-start fw-bold">{{ form.username.help_text}}</div>
+			<div class="col-9 text-start fw-bold"><p>{{ form.username.help_text}}</p></div>
+			<div class="w-100 mv-1"></div>
+			<div class="col-3"></div>
+			<div hidden id="dUsernameError" class="col-9 text-start text-danger fw-bold"></div>
 			<div class="w-100 my-3"></div>
 			<div class="col-3"></div>
 			<div class="col-2 text-start">
@@ -27,7 +28,10 @@
 			<div class="col-3"></div>
 			<div class="w-100 my-1"></div>
 			<div class="col-3"></div>
-			<div class="col-9 text-start fw-bold">{{ form.email.help_text}}.</div>
+			<div class="col-9 text-start fw-bold"><p>{{ form.email.help_text}}.</p></div>
+			<div class="w-100 mv-1"></div>
+			<div class="col-3"></div>
+			<div hidden id="dEmailError" class="col-9 text-start text-danger fw-bold"></div>
 			<div class="w-100 my-3"></div>
 			<div class="col-3"></div>
 			<div class="col-2 text-start">
@@ -54,9 +58,13 @@
 			<div class="col-3"></div>
 			<div class="w-100 my-1"></div>
 			<div class="col-3"></div>
-			<div class="col-9 text-start fw-bold">{{ form.password2.help_text}}</div>
-			<div class="w-100"></div>
+			<div class="col-9 text-start fw-bold"><p>{{ form.password2.help_text}}</p></div>
+			<div class="w-100 mv-1"></div>
+			<div class="col-3"></div>
+			<div hidden id="dPasswordError" class="col-9 text-start text-danger fw-bold"></div>
 		</div>
 		<input type="submit" value="Sign Up">
 	</form>
+	<p hidden class="text-danger" id="pError"></p>
+
 </div>

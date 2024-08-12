@@ -42,14 +42,36 @@ async function signUp(data) {
 }
 
 function signUpError() {
+	
+	const dUsernameError = document.getElementById("dUsernameError");
+	const dEmailError = document.getElementById("dEmailError");
+	const dPasswordError = document.getElementById("dPasswordError");
 
-	document.getElementById("id_username").value = "";
-	document.getElementById("id_password1").value = "";	
-	document.getElementById("id_password2").value = "";
-	//fix. Need to build error messages
-	document.getElementById("pError").innerHTML = errors.password2[0].message;
-	document.getElementById("pError").hidden = false;
+	dUsernameError.innerHTML = "";
+	dEmailError.innerHTML = "";
+	dPasswordError.innerHTML = "";
 
+	for (const field in errors) {
+		for (const error in errors[field]) {
+			console.log(field + " " + errors[field][error].message);
+			if (field == "username") {
+				document.getElementById("id_username").value = "";
+				dUsernameError.innerHTML += "<p>" + errors[field][error].message + "</p>"; 
+				dUsernameError.hidden = false;
+			}
+			else if (field == "email") {
+				document.getElementById("id_email").value = "";
+				dEmailError.innerHTML += "<p>" + errors[field][error].message + "</p>";
+				dEmailError.hidden = false;
+			}
+			else {
+				document.getElementById("id_password1").value = "";	
+				document.getElementById("id_password2").value = "";
+				dPasswordError.innerHTML += "<p>" + errors[field][error].message + "</p>"; 
+				dPasswordError.hidden = false;
+			}
+		}
+	}
 }
 
 async function logIn(data) {
