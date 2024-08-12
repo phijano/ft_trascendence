@@ -1,8 +1,6 @@
-<p hidden id="pError">Please enter a correct username and password. Note that both fields may be case-sensitive.</p>
-
 <h1 class="text-info mb-4"> LOG IN </h1>
 <div class="container fixed-width text-center">
-	<form method="post" id="fLogin">
+	<form method="post" class="mb-3" id="fLogin">
 		{% csrf_token %}
 		<div class="row mb-4">
 			<div class="col-3"></div>
@@ -25,5 +23,6 @@
 		</div>
 		<input type="submit" id="blogin" value="login">
 	</form>
+<p hidden class="text-danger" id="pError">Please enter a correct username and password. Note that both fields may be case-sensitive.</p>
 </div>
 <!--<p><a href="{% url 'password_reset' %}">¿Forgot your password?</a></p>-->
