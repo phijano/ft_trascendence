@@ -15,6 +15,9 @@ RUN pip install psycopg[binary]
 
 
 # Development things
+RUN pip install channels
+RUN pip install daphne
+
 RUN apk -i add vim
 COPY ./vim/conf /
 RUN cat conf >> etc/vim/vimrc

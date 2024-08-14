@@ -21,6 +21,8 @@ class Profile(models.Model):
     nick = models.CharField(max_length=15,  help_text="Introduce your avatar name")
     
     avatar = models.FileField(upload_to="avatars", blank=True)
+    
+    connections = models.IntegerField(default=0)
 
     def __str__(self):
         """
