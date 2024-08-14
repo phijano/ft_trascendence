@@ -8,6 +8,12 @@ export async function App() {
 	root.appendChild(Header());
 	await userLogged();
 	locationHandler();
+	testWS();
+}
+
+async function testWS() {
+	const mySocket = new WebSocket('ws://' + window.location.host + '/ws');
+	console.log("got socket");
 }
 
 async function userLogged() {
