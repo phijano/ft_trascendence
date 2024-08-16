@@ -40,7 +40,15 @@
 							{{invitation.accepter}}
 						</h5>
 					</div>
-					<div class="col"></div>
+					<div class="col text-start">
+						<h5>
+							{% if invitation.accepter.connections > 0 %}
+								online
+							{% else %}
+								offline
+							{% endif %}
+						</h5>
+					</div>
 					<div class="col"></div>
 					<div class="col text-start">
 						<button class="btn btn-danger btn-sm" onclick="deleteFriend('{{invitation.id}}')">Delete</button>
