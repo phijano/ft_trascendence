@@ -44,7 +44,23 @@
 							{% endif %}
 						</h5>
 					</div>
-					<div class="col"></div>
+					<div class="col text-start">
+						<h5>
+							{% if profile == friend.giver %}
+								{% if friend.accepter.connections > 0 %}
+									online
+								{% else %}
+									offline
+								{% endif %}
+							{% else %}
+								{% if friend.giver.connections > 0 %}
+									online
+								{% else %}
+									offline
+								{% endif %}
+							{% endif %}
+						</h5>
+					</div>
 					<div class="col"></div>
 					<div class="col text-start">
 						<button class="btn btn-danger btn-sm" onclick="deleteFriend('{{friend.id}}')">Delete</button>

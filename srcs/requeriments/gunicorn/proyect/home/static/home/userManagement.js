@@ -1,6 +1,7 @@
 import {router} from "./component/router.js"
 
 let errors;
+let myWebsocket;
 
 document.addEventListener('submit',async ev => {
 	console.log("submit");
@@ -110,6 +111,7 @@ function loginError() {
 }
 
 function setUser() {
+	getWebsocket();
 	hideRegister();
 	hideMenu();
 	showUser();
@@ -117,10 +119,17 @@ function setUser() {
 }
 
 function unsetUser() {
+	myWebsocket.close();
 	hideUser();
 	hidePlayer();
 	showRegister();
 	showMenu();
+}
+
+async function getWebsocket() {	
+	myWebsocket = new WebSocket('wss://' + window.location.host + '/ws');
+	//myWebsocket = new WebSocket('ws://' + window.location.host + '/ws');
+	console.log("got socket");
 }
 
 function showRegister() {

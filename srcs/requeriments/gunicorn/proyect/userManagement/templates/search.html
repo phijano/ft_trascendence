@@ -40,7 +40,15 @@
 							{{player.nick}}
 						</h5>
 					</div>
-					<div class="col"></div>
+					<div class="col text-start">
+						<h5>	
+							{% if player.connections > 0 %}
+								online
+							{% else %}
+								offline
+							{% endif %}
+						</h5>
+					</div>
 					<div class="col"></div>
 					<div class="col text-start">
 						{% if player in friends %}	
