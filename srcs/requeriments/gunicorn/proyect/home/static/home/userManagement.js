@@ -3,6 +3,25 @@ import {router} from "./component/router.js"
 let errors;
 let myWebsocket;
 
+function socketMessage(event) {
+	console.log("datos servidor");
+	const message = JSON.parse(event.data);
+	if (message.app = "pong") {
+		console.log("datos servidor pong");
+	} else if (message.app = "chat") {
+		console.leg("datos servidor chat");
+	}
+}
+
+function socketClose(event) {
+	if (event.wasClean) {
+		console.log("connection ended");
+	}
+	else {
+		console.log("connection lost");
+	}
+}
+
 document.addEventListener('submit',async ev => {
 	console.log("submit");
 	console.log(ev.target);
@@ -127,8 +146,10 @@ function unsetUser() {
 }
 
 async function getWebsocket() {	
-	myWebsocket = new WebSocket('wss://' + window.location.host + '/ws');
-	//myWebsocket = new WebSocket('ws://' + window.location.host + '/ws');
+	//myWebsocket = new WebSocket('wss://' + window.location.host + '/ws');
+	myWebsocket = new WebSocket('ws://' + window.location.host + '/ws');
+	myWebsocket.onmessage = socketMessage;
+	myWebsocket.onclose = socketClose;
 	console.log("got socket");
 }
 

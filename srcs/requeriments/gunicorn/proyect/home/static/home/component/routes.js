@@ -24,6 +24,13 @@ const URL = {
 		description: "This is pong game page",
 	},
 
+	//testing remote
+	"/pongRemote": {
+		template: "/pongApp/pongRemote",
+		title: "Pong",
+		description: "This is pong game page",
+	},
+
 	"/signup": {
 		template: "/userManagement/signup/template",
 		title: "Sign up",
