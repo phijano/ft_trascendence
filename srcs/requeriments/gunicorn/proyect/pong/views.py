@@ -31,3 +31,10 @@ class SaveMatch(View):
             return http.HttpResponse(status=201)
         return http.JsonResponse(form.errors.get_json_data(), status=400)
 
+#testing remote (delete)
+def pongRemote(request):
+    if request.user.is_authenticated:
+        userProfile = Profile.objects.filter(user_id=request.user.id)
+        return render(request, "pongRemote.html",{'profile':userProfile[0]})
+    return render(request, "pongRemote.html")
+
