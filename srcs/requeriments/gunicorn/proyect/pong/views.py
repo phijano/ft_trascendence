@@ -10,8 +10,8 @@ from .forms import MatchCreationForm
 
 def pong(request):
     if request.user.is_authenticated:
-        userProfile = Profile.objects.filter(user_id=request.user.id)
-        return render(request, "pong.html",{'profile':userProfile[0]})
+        userProfile = Profile.objects.get(user_id=request.user)
+        return render(request, "pong.html",{'profile':userProfile})
     return render(request, "pong.html")
 
 class SaveMatch(View):
@@ -34,7 +34,7 @@ class SaveMatch(View):
 #testing remote (delete)
 def pongRemote(request):
     if request.user.is_authenticated:
-        userProfile = Profile.objects.filter(user_id=request.user.id)
-        return render(request, "pongRemote.html",{'profile':userProfile[0]})
+        userProfile = Profile.objects.get(user_id=request.user)
+        return render(request, "pongRemote.html",{'profile':userProfile})
     return render(request, "pongRemote.html")
 

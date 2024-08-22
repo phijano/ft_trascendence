@@ -288,7 +288,9 @@ function setOneVsOne() {
 
 function createGame() {
 	const nick = document.getElementById("hNick").value;
-	
+	const profileId = document.getElementById("hProfileId").value;
+
+	sendMessageServer({player: profileId, app: "pong", action: "create", config: gameConfig});
 	document.getElementById("lLeftPlayer").innerHTML = nick;
 	document.getElementById("lRightPlayer").innerHTML = "?";
 	document.getElementById("dMatchPlayers").hidden = false;
@@ -297,7 +299,9 @@ function createGame() {
 
 function joinGame() {
 	const nick = document.getElementById("hNick").value;
+	const profileId = document.getElementById("hProfileId").value;
 	
+	sendMessageServer({player: profileId, app: "pong", action: "join"});
 	document.getElementById("lLeftPlayer").innerHTML = "?";
 	document.getElementById("lRightPlayer").innerHTML = nick;
 	document.getElementById("dMatchPlayers").hidden = false;
