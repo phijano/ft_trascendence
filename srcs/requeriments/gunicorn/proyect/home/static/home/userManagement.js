@@ -22,6 +22,15 @@ function socketClose(event) {
 	}
 }
 
+function sendMessageServer(data) {
+	if (myWebsocket) {
+		if (data) {
+			myWebsocket.send(JSON.stringify(data));
+			console.log("sent message server");
+		}
+	}
+}
+
 document.addEventListener('submit',async ev => {
 	console.log("submit");
 	console.log(ev.target);
@@ -333,4 +342,6 @@ window.cancelAvatar = cancelAvatar
 window.editNick = editNick
 window.changeNick = changeNick
 window.cancelNick = cancelNick
+
+window.sendMessageServer = sendMessageServer
 

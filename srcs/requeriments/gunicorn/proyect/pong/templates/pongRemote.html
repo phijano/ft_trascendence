@@ -10,6 +10,7 @@
 {% if user.is_authenticated %}
 	{% csrf_token %}
 	<input hidden id="hNick" value="{{profile}}">
+	<input hidden id="hProfileId" value="{{profile.id}}">
 	<div class="container">
 		<div class="row">
 			<div class="col text-start">
