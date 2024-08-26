@@ -8,6 +8,8 @@ function socketMessage(event) {
 	const message = JSON.parse(event.data);
 	if (message.app = "pong") {
 		console.log("datos servidor pong");
+		console.log(message.config);
+		serverPongMessage(message);
 	} else if (message.app = "chat") {
 		console.leg("datos servidor chat");
 	}

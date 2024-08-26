@@ -475,3 +475,5 @@ function simulateAIInput()
         keyUpHandler({ code: "ArrowUp" }, true);
     }
 }
+
+window.initPong = initGame
