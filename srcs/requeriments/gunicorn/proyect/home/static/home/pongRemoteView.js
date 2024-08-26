@@ -2,6 +2,8 @@ import Tournament from "./Tournament.js"
 
 const tournament = new Tournament();
 
+let host;
+
 let gameMode;
 let opponent;
 let difficulty;
@@ -290,7 +292,8 @@ function createGame() {
 	const nick = document.getElementById("hNick").value;
 	const profileId = document.getElementById("hProfileId").value;
 
-	sendMessageServer({player: profileId, app: "pong", action: "create", config: gameConfig});
+	host = true;
+	sendMessageServer({player: profileId,  app: "pong", action: "create", config: gameConfig});
 	document.getElementById("lLeftPlayer").innerHTML = nick;
 	document.getElementById("lRightPlayer").innerHTML = "?";
 	document.getElementById("dMatchPlayers").hidden = false;
@@ -300,13 +303,34 @@ function createGame() {
 function joinGame() {
 	const nick = document.getElementById("hNick").value;
 	const profileId = document.getElementById("hProfileId").value;
-	
-	sendMessageServer({player: profileId, app: "pong", action: "join"});
+
+	host = false;
+	sendMessageServer({player: profileId,  app: "pong", action: "join"});
 	document.getElementById("lLeftPlayer").innerHTML = "?";
 	document.getElementById("lRightPlayer").innerHTML = nick;
 	document.getElementById("dMatchPlayers").hidden = false;
 	document.getElementById("board").style.visibility = "visible";
 }
+
+function serverPongMessage(message){ 
+	if (message.type == "game_update") {
+		console.log(message.app);
+	} else if (message.type == "find_opponent") {
+		if (host) {
+			document.getElementById("lRightPlayer").innerHTML = message.opponent_nick;
+		} else {	
+			document.getElementById("lLeftPlayer").innerHTML = message.opponent_nick;
+		}
+		//config overwrite user config I think, fix this
+		initPong(message.config);
+		console.log(message.config);
+	}
+	else if (message.type == "opponent_drop")
+	{
+		console.log(message.app);
+	}
+}
+
 
 async function saveMatchResult(lplayer, rplayer, opponent, pl_score, op_score, match_type ) {
 
@@ -349,6 +373,8 @@ async function saveMatchResult(lplayer, rplayer, opponent, pl_score, op_score, m
 window.remoteSetOneVsOne = setOneVsOne;
 window.remoteCreateGame = createGame;
 window.remoteJoinGame = joinGame;
+window.serverPongMessage = serverPongMessage;
+
 
 window.remoteEndMatch = endMatch;
 window.remoteSetTournament = setTournament;
