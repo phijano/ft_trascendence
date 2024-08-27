@@ -1,5 +1,7 @@
 import json
 import asyncio
+import math
+import random
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import Profile
@@ -12,9 +14,16 @@ class WebConsumer(AsyncWebsocketConsumer):
     opponent = ""
     opponent_nick = ""
     pong_config = ""
-    ongoing = True
-    loop = 0
 
+    #pong game
+    ongoing = ""
+    lPlayer = ""
+    rPlayer = ""
+    keyState = ""
+    ball = ""
+    width = ""
+    yMax = ""
+    serveSpeedMultiple = 0.3
 
     @database_sync_to_async
     def get_user_profile(self, user):
@@ -184,10 +193,115 @@ class WebConsumer(AsyncWebsocketConsumer):
         return
 
     async def pong_loop(self):
+        self.initPong()
+        self.ongoing = True
         while (self.ongoing):
-            print("update")
-            self.loop += 1;
-            if self.loop == 10:
-                self.ongoing = False
+            await self.updatePong()
             await asyncio.sleep(0.05)
         return
+
+    def initPong(self):
+        self.width = self.pong_config["ballSide"] * 1.2
+        self.yMax = self.pong_config["boardHeight"] - self.pong_config["playerHeight"]
+        self.keyState = {
+            "w": False,
+            "s": False,
+            "up": False,
+            "down": False,
+            "lPowerUpUsed": False,
+            "rPowerUpUsed": False,
+            "powerUpInUse": False,
+        }
+        self.lPlayer = {
+            "x": self.width,
+            "y":self.pong_config["boardHeight"]/2 - self.pong_config["playerHeight"]/2,
+            "speed":0,
+            "score":0,
+        }
+        self.rPlayer = {
+            "x":self.pong_config["boardWidth"] - self.width * 2,
+            "y":self.lPlayer["y"],
+            "speed":0,
+            "score":0,
+        }
+        self.resetPong(random.choice([-1,1]))
+
+    def resetPong(self, direction):
+        startRadAngle = random.uniform(-math.pi/4, math.pi/4)
+        self.ball = {
+            "x" : self.pong_config["boardWidth"]/2 - self.pong_config["ballSide"]/2,
+            "y" : self.pong_config["boardHeight"]/2 - self.pong_config["ballSide"]/2,
+            "xVel" : self.pong_config["startSpeed"] * math.cos(startRadAngle) * direction,
+            "yVel" : self.pong_config["startSpeed"] * math.sin(startRadAngle),
+            "speed" : self.pong_config["startSpeed"],
+            "serve" : True,
+        }
+        self.keyState["lPowerUpUsed"] = False
+        self.keyState["rPowerUpUsed"] = False
+
+    async def updatePong(self):
+        self.lPlayer["y"] += self.lPlayer["speed"]
+        self.rPlayer["y"] += self.rPlayer["speed"]
+        self.fixOutOfBounds(self.lPlayer)
+        self.fixOutOfBounds(self.rPlayer)
+        if self.ball["serve"] and not self.keyState["powerUpInUse"]:
+            self.ball["x"] +=  self.ball["xVel"] * self.serveSpeedMultiple
+            self.ball["y"] +=  self.ball["yVel"] * self.serveSpeedMultiple
+        elif not self.keyState["powerUpInUse"]:
+            self.ball["x"] +=  self.ball["xVel"]
+            self.ball["y"] +=  self.ball["yVel"]
+        if self.ball["xVel"] < 0:
+            self.handlePaddleHit(self.lPlayer)
+        elif self.handlePaddleHit(self.rPlayer):
+            self.ball["xVel"] *= -1
+        if self.ball["y"] <= 0 or self.ball["y"] + self.pong_config["ballSide"] >= self.pong_config["boardHeight"]:
+            self.ball["yVel"] *= -1
+        if self.ball["x"] < 0:
+            self.rPlayer["score"] += 1
+            self.resetPong(-1)
+        elif self.ball["x"] + self.pong_config["ballSide"] > self.pong_config["boardWidth"]:
+            self.lPlayer["score"] += 1
+            self.resetPong(1)
+        await self.channel_layer.group_send(
+            "host" + self.profile_id ,
+            {
+                "app":"pong",
+                "type":"game.message" ,
+                "lPlayer":self.lPlayer,
+                "rPlayer":self.rPlayer,
+                "ball":self.ball,
+                "width":self.width, 
+            }
+         )
+        if self.rPlayer["score"] == self.pong_config["pointsToWin"] or self.lPlayer["score"] == self.pong_config["pointsToWin"]:
+            self.onGoing = False
+            print("end")
+
+    def fixOutOfBounds(self, player):
+        if player["y"] < 0:
+            player["y"] = 0
+        elif player["y"] > self.yMax:
+            player["y"] = self.yMax
+    
+    def handlePaddleHit(self, player):
+        if self.keyState["powerUpInUse"]:
+            return
+        if self.ball["x"] < player["x"] + self.width and self.ball["x"] + self.pong_config["ballSide"] > player["x"] and self.ball["y"] < player["y"] + self.pong_config["playerHeight"] and self.ball["y"] + self.pong_config["ballSide"] > player["y"]:
+            collisionPoint = self.ball["y"] - player["y"] - self.pong_config["playerHeight"]/2 + self.pong_config["ballSide"]/2
+            if collisionPoint > self.pong_config["playerHeight"]/2:
+                collisionPoint = self.pong_config["playerHeight"]/2
+            elif collisionPoint < -self.pong_config["playerHeight"]/2:
+                collisionPoint = -self.pong_config["playerHeight"]/2
+            collisionPoint /= self.pong_config["playerHeight"]/2
+            radAngle = math.pi/4 * collisionPoint
+            if self.ball["speed"] < 20:
+                self.ball["speed"] *= self.pong_config["speedUpMultiple"]
+            self.ball["xVel"] = self.ball["speed"] * math.cos(radAngle)
+            self.ball["yVel"] = self.ball["speed"] * math.sin(radAngle)
+            self.ball.serve = False
+            return True
+        return False
+
+
+        
+
