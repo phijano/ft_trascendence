@@ -312,8 +312,14 @@ function joinGame() {
 	document.getElementById("board").style.visibility = "visible";
 }
 
+let start = true
 function serverPongMessage(message){ 
-	if (message.type == "game_update") {
+	if (message.type == "game.update") {
+		updateServerData(message);
+		if (start) {
+			serverGameLoop();
+			start = false;
+	}
 		console.log(message.app);
 	} else if (message.type == "find_opponent") {
 		if (host) {
@@ -324,6 +330,13 @@ function serverPongMessage(message){
 		//config overwrite user config I think, fix this
 		initPong(message.config);
 		console.log(message.config);
+	}
+	else if (message.type == "end_game"){
+		console.log("stop")
+		updateServerData(message);
+		drawServerData();
+		stop();
+		start = true
 	}
 	else if (message.type == "opponent_drop")
 	{
