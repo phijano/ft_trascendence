@@ -476,4 +476,44 @@ function simulateAIInput()
     }
 }
 
+
+let serverData
+
+function updateServerData(data) {
+	serverData = data
+}
+
+function serverGameLoop() {
+	id = requestAnimationFrame(serverGameLoop);
+	drawServerData();
+}
+
+function drawServerData() {
+	console.log("drawing")
+
+    context.clearRect(0, 0, board.width, board.height);
+
+	//players
+	context.fillStyle = "turquoise";
+    context.fillRect(serverData.lPlayer.x, serverData.lPlayer.y, serverData.width, playerHeight);
+    context.fillRect(serverData.rPlayer.x, serverData.rPlayer.y, serverData.width, playerHeight);
+
+	context.fillStyle = "white";
+
+	//ball
+	context.fillRect(serverData.ball.x, serverData.ball.y, ballSide, ballSide);
+
+	//field
+    for (let i = 10; i < board.height; i+=25)
+        context.fillRect(board.width/2 - 10, i, 5, 5);
+
+	//score
+    context.font = "45px sans-serif";
+    context.fillText(serverData.lPlayer.score, board.width/5, 45);
+    context.fillText(serverData.rPlayer.score, board.width/5 * 4 -45, 45);
+
+}
+window.updateServerData = updateServerData
+window.serverGameLoop = serverGameLoop
+window.drawServerData = drawServerData
 window.initPong = initGame

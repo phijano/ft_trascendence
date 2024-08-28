@@ -130,9 +130,9 @@ class WebConsumer(AsyncWebsocketConsumer):
                     profile = await self.get_user_profile(self.scope['user'])
                     self.profile_nick = profile.nick
                     await self.channel_layer.group_send(
-                        "host" + self.profile_id ,
+                        "host" + self.profile_id,
                         {
-                            "type":"opponent.message" ,
+                            "type":"opponent.message",
                             "player":self.profile_id,
                             "nick":self.profile_nick,
                             "message":"accepted", 
@@ -155,9 +155,9 @@ class WebConsumer(AsyncWebsocketConsumer):
                     asyncio.create_task(self.pong_loop())
                 else:
                     await self.channel_layer.group_send(
-                        "host" + self.profile_id ,
+                        "host" + self.profile_id,
                         {
-                            "type":"opponent.message" ,
+                            "type":"opponent.message",
                             "player":self.profile_id, 
                             "message":"full", 
                             "opponent": event["player"]
@@ -166,6 +166,7 @@ class WebConsumer(AsyncWebsocketConsumer):
         else:
             if event["message"] == "accepted":
                 if self.profile_id == event["opponent"]:
+                    self.opponent = event["player"]
                     await self.send(text_data=json.dumps(
                             {
                                 "app":"pong",
@@ -189,15 +190,26 @@ class WebConsumer(AsyncWebsocketConsumer):
                     )
         print(event)
 
-    async def game_message(self, event):
+    async def game_update(self, event):
+        await self.send(text_data=json.dumps(event))
         return
+
+    async def end_game(self, event):
+        await self.send(text_data=json.dumps(event))
+        if self.status == "host":
+            await self.channel_layer.group_discard("host" + self.profile_id, self.channel_name)
+        else:
+            await self.channel_layer.group_discard("host" + self.opponent, self.channel_name)
+        self.opponent = ""
+        return
+
 
     async def pong_loop(self):
         self.initPong()
         self.ongoing = True
         while (self.ongoing):
             await self.updatePong()
-            await asyncio.sleep(0.05)
+            await asyncio.sleep(0.015)
         return
 
     def initPong(self):
@@ -240,6 +252,7 @@ class WebConsumer(AsyncWebsocketConsumer):
         self.keyState["rPowerUpUsed"] = False
 
     async def updatePong(self):
+        reset = 0
         self.lPlayer["y"] += self.lPlayer["speed"]
         self.rPlayer["y"] += self.rPlayer["speed"]
         self.fixOutOfBounds(self.lPlayer)
@@ -258,24 +271,38 @@ class WebConsumer(AsyncWebsocketConsumer):
             self.ball["yVel"] *= -1
         if self.ball["x"] < 0:
             self.rPlayer["score"] += 1
-            self.resetPong(-1)
+            #self.resetPong(-1)
+            reset = -1
         elif self.ball["x"] + self.pong_config["ballSide"] > self.pong_config["boardWidth"]:
             self.lPlayer["score"] += 1
-            self.resetPong(1)
+            reset = 1
+            #self.resetPong(1)
         await self.channel_layer.group_send(
             "host" + self.profile_id ,
             {
-                "app":"pong",
-                "type":"game.message" ,
+                "type":"game.update" ,
                 "lPlayer":self.lPlayer,
                 "rPlayer":self.rPlayer,
                 "ball":self.ball,
                 "width":self.width, 
             }
-         )
+        )
         if self.rPlayer["score"] == self.pong_config["pointsToWin"] or self.lPlayer["score"] == self.pong_config["pointsToWin"]:
-            self.onGoing = False
+            self.ongoing = False
+            await self.channel_layer.group_send(
+            "host" + self.profile_id,
+                {
+                    "app":"pong",
+                    "type":"end_game",
+                    "lPlayer":self.lPlayer,
+                    "rPlayer":self.rPlayer,
+                    "ball":self.ball,
+                    "width":self.width, 
+                }
+            )
             print("end")
+        if reset:
+            self.resetPong(reset)
 
     def fixOutOfBounds(self, player):
         if player["y"] < 0:
@@ -298,7 +325,7 @@ class WebConsumer(AsyncWebsocketConsumer):
                 self.ball["speed"] *= self.pong_config["speedUpMultiple"]
             self.ball["xVel"] = self.ball["speed"] * math.cos(radAngle)
             self.ball["yVel"] = self.ball["speed"] * math.sin(radAngle)
-            self.ball.serve = False
+            self.ball["serve"] = False
             return True
         return False
 
