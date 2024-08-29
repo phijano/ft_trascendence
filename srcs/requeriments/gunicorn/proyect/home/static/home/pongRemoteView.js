@@ -297,6 +297,7 @@ function createGame() {
 	document.getElementById("lLeftPlayer").innerHTML = nick;
 	document.getElementById("lRightPlayer").innerHTML = "?";
 	document.getElementById("dMatchPlayers").hidden = false;
+	initPong(gameConfig);
 	document.getElementById("board").style.visibility = "visible";
 }
 
@@ -317,10 +318,9 @@ function serverPongMessage(message){
 	if (message.type == "game.update") {
 		updateServerData(message);
 		if (start) {
-			serverGameLoop();
+			startPongRemote();
 			start = false;
-	}
-		console.log(message.app);
+		}
 	} else if (message.type == "find_opponent") {
 		if (host) {
 			document.getElementById("lRightPlayer").innerHTML = message.opponent_nick;
@@ -335,7 +335,7 @@ function serverPongMessage(message){
 		console.log("stop")
 		updateServerData(message);
 		drawServerData();
-		stop();
+		stopPongRemote();
 		start = true
 	}
 	else if (message.type == "opponent_drop")
