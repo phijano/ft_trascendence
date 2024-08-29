@@ -118,6 +118,17 @@ function initGame(gameConfig)
     context.fillStyle = "turquoise";
     context.fillRect(Lplayer.x, Lplayer.y, Lplayer.width, Lplayer.height);
     context.fillRect(Rplayer.x, Rplayer.y, Rplayer.width, Rplayer.height);
+
+	context.fillStyle = "white";
+
+	//field
+    for (let i = 10; i < board.height; i+=25)
+        context.fillRect(board.width/2 - 10, i, 5, 5);
+
+	//score
+    context.font = "45px sans-serif";
+    context.fillText(Lplayer.score, board.width/5, 45);
+    context.fillText(Rplayer.score, board.width/5 * 4 -45, 45);
 }
 
 function start(gameConfig)
@@ -477,19 +488,29 @@ function simulateAIInput()
 }
 
 
-let serverData
+let serverData;
 
 function updateServerData(data) {
-	serverData = data
+	serverData = data;
 }
 
-function serverGameLoop() {
-	id = requestAnimationFrame(serverGameLoop);
+function startPongRemote() {
+	startKeys();
+	gameLoop();
+}
+
+function stopPongRemote() {
+	endKeys();
+	if (id)
+		cancelAnimationFrame(id);
+}
+
+function gameLoop() {
+	id = requestAnimationFrame(gameLoop);
 	drawServerData();
 }
 
 function drawServerData() {
-	console.log("drawing")
 
     context.clearRect(0, 0, board.width, board.height);
 
@@ -513,7 +534,66 @@ function drawServerData() {
     context.fillText(serverData.rPlayer.score, board.width/5 * 4 -45, 45);
 
 }
+
+function startKeys () {
+	console.log("startKeys")
+    document.addEventListener("keydown", keyDownHandler2);
+    document.addEventListener("keyup", keyUpHandler2);
+}
+
+function endKeys () {
+    document.removeEventListener("keydown", keyDownHandler2);
+    document.removeEventListener("keyup", keyUpHandler2);
+}
+
+function keyDownHandler2(event)
+{  
+	if (["KeyW", "KeyS", "ArrowUp", "ArrowDown", "KeyD", "ArrowLeft"].includes(event.code))
+ 		event.preventDefault(); 
+       // To avoid page moving up & down when using arrows
+    if (event.code == "KeyW")
+        keyState.w = true;
+    else if (event.code == "KeyS")
+        keyState.s = true;
+    else if (event.code == "ArrowUp")
+        keyState.up = true;
+    else if (event.code == "ArrowDown")
+        keyState.down = true;
+    else if (event.code == "KeyD")
+		keyState.lPowerUpUsed = true;
+    else if (event.code == "ArrowLeft")
+    	keyState.rPowerUpUsed = true;
+	sendKeysToServer();
+}
+
+// Player stops when button is released/no longer pressed down
+function keyUpHandler2(event)
+{
+
+    if (["KeyW", "KeyS", "ArrowUp", "ArrowDown", "KeyD", "ArrowLeft"].includes(event.code)) 
+        event.preventDefault(); // To avoid page moving up & down when using arrows
+    if (event.code == "KeyW")
+        keyState.w = false;
+    else if (event.code == "KeyS")
+        keyState.s = false;
+    else if (event.code == "ArrowUp")
+		keyState.up = false;
+    else if (event.code == "ArrowDown")
+        keyState.down = false;
+    else if (event.code == "KeyD")
+		keyState.lPowerUpUsed = false;
+    else if (event.code == "ArrowLeft")
+    	keyState.rPowerUpUsed = false;
+	sendKeysToServer();
+}
+
+function sendKeysToServer() {
+	const profileId = document.getElementById("hProfileId").value;
+	sendMessageServer({player: profileId,  app: "pong", action: "keys", "keys": keyState});
+}
+
 window.updateServerData = updateServerData
-window.serverGameLoop = serverGameLoop
+window.startPongRemote = startPongRemote
+window.stopPongRemote = stopPongRemote
 window.drawServerData = drawServerData
 window.initPong = initGame

@@ -7,7 +7,6 @@ function socketMessage(event) {
 	console.log("datos servidor");
 	const message = JSON.parse(event.data);
 	if (message.app = "pong") {
-		console.log("datos servidor pong");
 		serverPongMessage(message);
 	} else if (message.app = "chat") {
 		console.leg("datos servidor chat");
@@ -27,7 +26,6 @@ function sendMessageServer(data) {
 	if (myWebsocket) {
 		if (data) {
 			myWebsocket.send(JSON.stringify(data));
-			console.log("sent message server");
 		}
 	}
 }
