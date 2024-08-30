@@ -521,6 +521,14 @@ function drawServerData() {
 
 	context.fillStyle = "white";
 
+	//score
+    context.font = "45px sans-serif";
+    context.fillText(serverData.lPlayer.score, board.width/5, 45);
+    context.fillText(serverData.rPlayer.score, board.width/5 * 4 -45, 45);
+
+	if (serverData.powerUp)
+		context.fillStyle = "red";
+
 	//ball
 	context.fillRect(serverData.ball.x, serverData.ball.y, ballSide, ballSide);
 
@@ -528,10 +536,7 @@ function drawServerData() {
     for (let i = 10; i < board.height; i+=25)
         context.fillRect(board.width/2 - 10, i, 5, 5);
 
-	//score
-    context.font = "45px sans-serif";
-    context.fillText(serverData.lPlayer.score, board.width/5, 45);
-    context.fillText(serverData.rPlayer.score, board.width/5 * 4 -45, 45);
+
 
 }
 

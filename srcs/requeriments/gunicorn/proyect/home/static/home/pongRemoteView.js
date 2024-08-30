@@ -251,15 +251,6 @@ function endMatch(lPlayerScore, rPlayerScore) {
 			document.getElementById("dAdvance").hidden = false;
 		}
 	}
-	const nick = document.getElementById("hNick").value;
-	if (nick) {
-		if (nick == lPlayer) {
-			saveMatchResult(lPlayer, "", rPlayer, lPlayerScore, rPlayerScore, matchType);
-		}
-		else if (nick == rPlayer) {
-			saveMatchResult("", rPlayer, lPlayer, lPlayerScore, rPlayerScore, matchType);
-		}		
-	}
 
 }
 
@@ -299,6 +290,7 @@ function createGame() {
 	document.getElementById("dMatchPlayers").hidden = false;
 	initPong(gameConfig);
 	document.getElementById("board").style.visibility = "visible";
+	document.getElementById("dWinner").hidden = true;
 }
 
 function joinGame() {
@@ -311,6 +303,7 @@ function joinGame() {
 	document.getElementById("lRightPlayer").innerHTML = nick;
 	document.getElementById("dMatchPlayers").hidden = false;
 	document.getElementById("board").style.visibility = "visible";
+	document.getElementById("dWinner").hidden = true;
 }
 
 let start = true
@@ -337,49 +330,12 @@ function serverPongMessage(message){
 		drawServerData();
 		stopPongRemote();
 		start = true
+		endMatch(message.lPlayer.score, message.rPlayer.score);
+
 	}
 	else if (message.type == "opponent_drop")
 	{
 		console.log(message.app);
-	}
-}
-
-
-async function saveMatchResult(lplayer, rplayer, opponent, pl_score, op_score, match_type ) {
-
-	const resp = await fetch('/userManagement/login', {
-			method: 'GET',
-			credentials: 'same-origin'
-	});
-	if (resp.ok) {
-
-		console.log("match saving");
-		const formdata = new FormData();
-
-		formdata.append("left_player", lplayer);
-		formdata.append("right_player", rplayer);
-		formdata.append("opponent_name", opponent);
-		formdata.append("player_score", pl_score);
-		formdata.append("opponent_score", op_score);
-		formdata.append("match_type", match_type);
-		formdata.append("csrfmiddlewaretoken", document.getElementsByName("csrfmiddlewaretoken")[0].value);
-
-		try {
-			const response = await fetch("/pongApp/saveMatch", {
-				method: "POST",
-				credentials: 'same-origin',
-				body: formdata,
-	
-			});
-			if (response.ok) {
-				console.log("match saved?");
-			}
-			else{
-				console.log(await response.json());
-			}
-		} catch (e) {
-			console.error(e)
-		}
 	}
 }
 

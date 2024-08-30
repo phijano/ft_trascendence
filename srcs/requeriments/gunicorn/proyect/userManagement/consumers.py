@@ -5,6 +5,7 @@ import random
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import Profile
+from pong.models import Match
 
 class WebConsumer(AsyncWebsocketConsumer):
 
@@ -30,12 +31,22 @@ class WebConsumer(AsyncWebsocketConsumer):
         return Profile.objects.get(user_id=user)
 
     @database_sync_to_async
-    def get_opponent_profile(self, opponent_id):
-        return Profile.objects.get(id=opponent_id)
+    def get_profile_by_id(self, profile_id):
+        return Profile.objects.get(id=profile_id)
 
     @database_sync_to_async
     def save_profile(self, profile):
         profile.save()
+
+    @database_sync_to_async
+    def save_match(self, lProfile, rProfile, lScore, rScore, match_type):
+        match = Match()
+        match.player = lProfile
+        match.opponent = rProfile
+        match.player_score = lScore
+        match.opponent_score = rScore
+        match.match_type = match_type
+        match.save()
 
     async def connect(self):
         if self.scope['user'].is_authenticated:
@@ -44,9 +55,7 @@ class WebConsumer(AsyncWebsocketConsumer):
             self.profile_id = str(user_profile.id)
             await self.save_profile(user_profile)
             await self.accept() 
-            print("connected")
         else:
-            print("rejected")
             await self.close()
 
     async def disconnect(self, close_code):
@@ -54,19 +63,15 @@ class WebConsumer(AsyncWebsocketConsumer):
             user_profile = await self.get_user_profile(self.scope['user'])
             user_profile.connections = user_profile.connections - 1
             await self.save_profile(user_profile)
-            print("disconnected")
     
     async def receive(self, text_data):
-        print(text_data)
         json_data = json.loads(text_data)
         if json_data.get("app", "") == "pong":
             await self.userActions(json_data)
-        print("comunicating")
 
     async def userActions(self, json_data):
         action = json_data.get("action", "")
         if action == "create":
-            print("creating game")
             self.status = "host"
             self.pong_config = json_data.get("config","")
             await self.channel_layer.group_add("games", self.channel_name)
@@ -80,7 +85,6 @@ class WebConsumer(AsyncWebsocketConsumer):
                 }
             )
         elif action == "join":
-            print("join game")
             self.status = "guest"
             await self.channel_layer.group_add("games", self.channel_name)
             await self.channel_layer.group_send(
@@ -94,7 +98,6 @@ class WebConsumer(AsyncWebsocketConsumer):
         elif action == "drop":
             print("drop game")
         elif action == "keys":
-            print("keys")
             group = ""
             if self.status == "host":
                 group = "host" + self.profile_id
@@ -110,7 +113,6 @@ class WebConsumer(AsyncWebsocketConsumer):
             )
 
     async def players_message(self, event):
-        print(event)
         if self.status == "host":
             if event["message"] == "join":
                 await self.channel_layer.group_send(
@@ -156,7 +158,7 @@ class WebConsumer(AsyncWebsocketConsumer):
                         }
                     )
                     await self.channel_layer.group_discard("games", self.channel_name)
-                    profile = await self.get_opponent_profile(self.opponent)
+                    profile = await self.get_profile_by_id(self.opponent)
                     self.opponent_nick = profile.nick
                     await self.send(text_data=json.dumps(
                             {
@@ -203,14 +205,15 @@ class WebConsumer(AsyncWebsocketConsumer):
                             "message":"join"
                         }
                     )
-        print(event)
 
     async def keys_message(self, event):
         if self.status == "host":
             if event["player"] == self.profile_id:
                 self.keyState["w"] = event["keys"]["w"]
                 self.keyState["s"] = event["keys"]["s"]
-                self.keyState["lPowerUpUsed"] = event["keys"]["lPowerUpUsed"]
+                if self.pong_config["allowPowerUp"] and event["keys"]["lPowerUpUsed"] and not self.keyState["lPowerUpUsed"] and self.ball["xVel"] > 0:
+                    self.keyState["lPowerUpUsed"] = event["keys"]["lPowerUpUsed"]
+                    await self.powerUp()
                 if self.keyState["w"]:
                     self.lPlayer["speed"] = -self.pong_config["playerSpeed"]
                 elif self.keyState["s"]:
@@ -226,7 +229,9 @@ class WebConsumer(AsyncWebsocketConsumer):
             else:
                 self.keyState["up"] = event["keys"]["up"]
                 self.keyState["down"] = event["keys"]["down"]
-                self.keyState["rPowerUpUsed"] = event["keys"]["rPowerUpUsed"]
+                if self.pong_config["allowPowerUp"] and event["keys"]["rPowerUpUsed"] and not self.keyState["rPowerUpUsed"] and self.ball["xVel"] < 0:
+                    self.keyState["rPowerUpUsed"] = event["keys"]["rPowerUpUsed"]
+                    await self.powerUp()
                 if self.keyState["up"]:
                     self.rPlayer["speed"] = -self.pong_config["playerSpeed"]
                 elif self.keyState["down"]:
@@ -258,6 +263,10 @@ class WebConsumer(AsyncWebsocketConsumer):
         while (self.ongoing):
             await self.updatePong()
             await asyncio.sleep(0.015)
+            if  self.keyState["powerUpInUse"] == True:
+                await asyncio.sleep(0.75)
+                self.keyState["powerUpInUse"] = False
+
 
     def initPong(self):
         self.width = self.pong_config["ballSide"] * 1.2
@@ -318,12 +327,10 @@ class WebConsumer(AsyncWebsocketConsumer):
             self.ball["yVel"] *= -1
         if self.ball["x"] < 0:
             self.rPlayer["score"] += 1
-            #self.resetPong(-1)
             reset = -1
         elif self.ball["x"] + self.pong_config["ballSide"] > self.pong_config["boardWidth"]:
             self.lPlayer["score"] += 1
             reset = 1
-            #self.resetPong(1)
         await self.channel_layer.group_send(
             "host" + self.profile_id ,
             {
@@ -331,11 +338,15 @@ class WebConsumer(AsyncWebsocketConsumer):
                 "lPlayer":self.lPlayer,
                 "rPlayer":self.rPlayer,
                 "ball":self.ball,
-                "width":self.width, 
+                "width":self.width,
+                "powerUp":self.keyState["powerUpInUse"],
             }
         )
         if self.rPlayer["score"] == self.pong_config["pointsToWin"] or self.lPlayer["score"] == self.pong_config["pointsToWin"]:
             self.ongoing = False
+            user_profile = await self.get_profile_by_id(self.profile_id)
+            guest_profile = await self.get_profile_by_id(self.opponent)
+            await self.save_match(user_profile, guest_profile, self.lPlayer["score"], self.rPlayer["score"], "Single Match")
             await self.channel_layer.group_send(
             "host" + self.profile_id,
                 {
@@ -345,6 +356,7 @@ class WebConsumer(AsyncWebsocketConsumer):
                     "rPlayer":self.rPlayer,
                     "ball":self.ball,
                     "width":self.width, 
+                    "powerUp":self.keyState["powerUpInUse"],
                 }
             )
             print("end")
@@ -362,10 +374,12 @@ class WebConsumer(AsyncWebsocketConsumer):
             return
         if self.ball["x"] < player["x"] + self.width and self.ball["x"] + self.pong_config["ballSide"] > player["x"] and self.ball["y"] < player["y"] + self.pong_config["playerHeight"] and self.ball["y"] + self.pong_config["ballSide"] > player["y"]:
             collisionPoint = self.ball["y"] - player["y"] - self.pong_config["playerHeight"]/2 + self.pong_config["ballSide"]/2
+
             if collisionPoint > self.pong_config["playerHeight"]/2:
                 collisionPoint = self.pong_config["playerHeight"]/2
             elif collisionPoint < -self.pong_config["playerHeight"]/2:
                 collisionPoint = -self.pong_config["playerHeight"]/2
+
             collisionPoint /= self.pong_config["playerHeight"]/2
             radAngle = math.pi/4 * collisionPoint
             if self.ball["speed"] < 20:
@@ -376,6 +390,17 @@ class WebConsumer(AsyncWebsocketConsumer):
             return True
         return False
 
-
-        
-
+    async def powerUp(self):
+        self.keyState["powerUpInUse"] = True
+        await self.channel_layer.group_send(
+            "host" + self.profile_id ,
+            {
+                "type":"game.update" ,
+                "lPlayer":self.lPlayer,
+                "rPlayer":self.rPlayer,
+                "ball":self.ball,
+                "width":self.width,
+                "powerUp":self.keyState["powerUpInUse"],
+            }
+        )
+        self.ball["yVel"] *= -1
