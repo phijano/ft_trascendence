@@ -108,12 +108,12 @@ function initGame(gameConfig)
     resetGame(getRandomEitherOr(-1, 1));
     Lplayer.y = boardHeight/2 - playerHeight/2;
     Rplayer.y = boardHeight/2 - playerHeight/2;
-
+    	
     board = document.getElementById("board");
     board.width = boardWidth;
     board.height = boardHeight;
     context = board.getContext("2d");
-
+	context.clearRect(0, 0, board.width, board.height);
     // draw players
     context.fillStyle = "turquoise";
     context.fillRect(Lplayer.x, Lplayer.y, Lplayer.width, Lplayer.height);
@@ -508,6 +508,7 @@ function stopPongRemote() {
 function gameLoop() {
 	id = requestAnimationFrame(gameLoop);
 	drawServerData();
+	console.log("loop")
 }
 
 function drawServerData() {
@@ -535,9 +536,6 @@ function drawServerData() {
 	//field
     for (let i = 10; i < board.height; i+=25)
         context.fillRect(board.width/2 - 10, i, 5, 5);
-
-
-
 }
 
 function startKeys () {

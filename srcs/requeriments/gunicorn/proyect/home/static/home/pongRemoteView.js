@@ -24,6 +24,7 @@ let gameConfig = // Initialize to normal settings
 }
 
 function showCustomizationOptions() {
+	dropGame();
 	stop();
 	document.getElementById("bSettings").disabled = true;
     document.getElementById("dCustomizationOptions").hidden = false;
@@ -93,6 +94,8 @@ function hideOneVsOne() {
 	document.getElementById("dMatchPlayers").hidden = true;
 	document.getElementById("dStartGame").hidden = true;
 	document.getElementById("dWinner").hidden = true;
+	document.getElementById("dGameMessage").hidden = true;
+
 }
 
 function addRegisteredPlayer() {
@@ -106,6 +109,7 @@ function addRegisteredPlayer() {
 
 function setTournament() {
 
+	dropGame();
 	stop();
 	gameConfig.playAI = false;
 	gameMode = "tournament";
@@ -138,7 +142,7 @@ function selectNumPlayers() {
 function addPlayer() {
 	const nick = document.getElementById("iNick");
 	const showPlayers = document.getElementById("tPlayers");
-	const register = document.getElementById("bRegisterPlayer");
+	const register = document.getElementById("bR	initPong(gameConfig);egisterPlayer");
 	const numPlayers = document.getElementById("sNumPlayers");
 	const lNickWarning = document.getElementById("lNickWarning");
 
@@ -180,6 +184,7 @@ function startTournament() {
 	console.log(tournament.matchPlayers);
 	showPlayers(tournament.matchPlayers);
 	document.getElementById("board").style.visibility = "visible";
+	document.getElementById("dGameMessage").hidden = true;
 }
 
 function endTournament() {
@@ -209,7 +214,7 @@ function showPlayers(players) {
 }
 
 function endMatch(lPlayerScore, rPlayerScore) {
-
+	initPong(gameConfig);
 	const winner = document.getElementById("lWinner");
 	const lPlayer = document.getElementById("lLeftPlayer").innerHTML;
 	const rPlayer = document.getElementById("lRightPlayer").innerHTML;
@@ -228,7 +233,7 @@ function endMatch(lPlayerScore, rPlayerScore) {
 
 	if (gameMode == "normal")
 	{
-		matchType = "Single Match"
+		matchType = "Single Match";
 		document.getElementById("sOpponent").disabled = false;
 		document.getElementById("sDifficulty").disabled = false;
 		document.getElementById("dStartGame").hidden = false;
@@ -251,7 +256,7 @@ function endMatch(lPlayerScore, rPlayerScore) {
 			document.getElementById("dAdvance").hidden = false;
 		}
 	}
-
+	initPong(gameConfig);
 }
 
 function startPong()
@@ -274,6 +279,8 @@ function setOneVsOne() {
 	stop();
 	document.getElementById("bNormalGame").disabled = true;
 	document.getElementById("dOneVsOneSettings").hidden = false;
+	document.getElementById("dGameMessage").hidden = true;
+
 //	document.getElementById("dMatchPlayers").hidden = false;
 //	document.getElementById("board").style.visibility = "visible";
 	gameMode = "normal";
@@ -291,6 +298,7 @@ function createGame() {
 	initPong(gameConfig);
 	document.getElementById("board").style.visibility = "visible";
 	document.getElementById("dWinner").hidden = true;
+	document.getElementById("dGameMessage").hidden = true;
 }
 
 function joinGame() {
@@ -302,19 +310,21 @@ function joinGame() {
 	document.getElementById("lLeftPlayer").innerHTML = "?";
 	document.getElementById("lRightPlayer").innerHTML = nick;
 	document.getElementById("dMatchPlayers").hidden = false;
+	initPong(gameConfig);
 	document.getElementById("board").style.visibility = "visible";
 	document.getElementById("dWinner").hidden = true;
+	document.getElementById("dGameMessage").hidden = true;
 }
 
-let start = true
+let playing = false
 function serverPongMessage(message){ 
 	if (message.type == "game.update") {
 		updateServerData(message);
-		if (start) {
+		if (!playing) {
 			startPongRemote();
-			start = false;
+			playing = true;
 		}
-	} else if (message.type == "find_opponent") {
+	} else if (message.type == "find.opponent") {
 		if (host) {
 			document.getElementById("lRightPlayer").innerHTML = message.opponent_nick;
 		} else {	
@@ -323,28 +333,52 @@ function serverPongMessage(message){
 		//config overwrite user config I think, fix this
 		initPong(message.config);
 		console.log(message.config);
-	}
-	else if (message.type == "end_game"){
+	} else if (message.type == "end.game") {
 		console.log("stop")
 		updateServerData(message);
 		drawServerData();
 		stopPongRemote();
-		start = true
+		playing = false;
 		endMatch(message.lPlayer.score, message.rPlayer.score);
 
 	}
-	else if (message.type == "opponent_drop")
+	else if (message.type == "drop.game")
 	{
-		console.log(message.app);
+		const profileId = document.getElementById("hProfileId").value;
+		const winner = document.getElementById("lWinner");
+		const lPlayer = document.getElementById("lLeftPlayer").innerHTML;
+		const rPlayer = document.getElementById("lRightPlayer").innerHTML;
+		const gameMessage = document.getElementById("lGameMessage");
+
+		if (message.player != profileId) {
+			if (host) {
+				winner.innerHTML = lPlayer;
+			} else {
+				winner.innerHTML = rPlayer;
+			}
+			gameMessage.innerHTML = "Opponent left game.";
+			document.getElementById("dMatchPlayers").hidden = true;
+			document.getElementById("dWinner").hidden = false;
+			document.getElementById("dGameMessage").hidden = false;
+		}
+		playing = false;
+		stopPongRemote();
 	}
 }
 
+function dropGame() {
+	if (playing) {
+		const profileId = document.getElementById("hProfileId").value;
+		sendMessageServer({player: profileId,  app: "pong", action: "drop"});
+		stopPongRemote();
+		playing = false;
+	}
+}
+window.dropGame = dropGame;
 window.remoteSetOneVsOne = setOneVsOne;
 window.remoteCreateGame = createGame;
 window.remoteJoinGame = joinGame;
 window.serverPongMessage = serverPongMessage;
-
-
 window.remoteEndMatch = endMatch;
 window.remoteSetTournament = setTournament;
 window.remoteSelectNumPlayers = selectNumPlayers;
@@ -353,7 +387,6 @@ window.remoteStartTournament = startTournament;
 window.remoteStartPong = startPong;
 window.remoteAdvance = advance;
 window.remoteEndTournament = endTournament;
-
 window.remoteShowCustomizationOptions = showCustomizationOptions;
 window.remoteStartOneVsOne = startOneVsOne;
 window.remoteStartTournamentMode = startTournamentMode;
