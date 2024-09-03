@@ -131,8 +131,11 @@ function initGame(gameConfig)
     context.fillText(Rplayer.score, board.width/5 * 4 -45, 45);
 }
 
-function start(gameConfig)
+let registered = false
+
+function start(gameConfig, reg)
 {
+	registered = reg
     initGame(gameConfig); // To restart all values that are changed in previous games & apply settings changes
 
     if (playAI) 
@@ -228,8 +231,11 @@ function update()
     {
         stop();
         predictedY = boardHeight / 2; // reset to middle for next game
-        endMatch(Lplayer.score, Rplayer.score);
-    }
+		if (registered)
+        	remoteEndMatch(Lplayer.score, Rplayer.score);
+    	else 
+        	endMatch(Lplayer.score, Rplayer.score);
+	}
 }
 
 function stop() {
@@ -238,6 +244,8 @@ function stop() {
 		cancelAnimationFrame(id);
     if (aiIntervalId) 
         clearInterval(aiIntervalId);
+    document.removeEventListener("keydown", keyDownHandler);
+    document.removeEventListener("keyup", keyUpHandler);
 }
 
 window.stop = stop;

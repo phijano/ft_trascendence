@@ -269,7 +269,7 @@ function startPong()
 	document.getElementById("board").style.visibility = "visible";
 	document.getElementById("dMatchPlayers").hidden = false;
 	document.getElementById("dWinner").hidden = true;
-	start(gameConfig);
+	start(gameConfig, false);
 }
 
 function advance() {
@@ -408,11 +408,11 @@ window.setRules = setRules;
 window.showRules = showRules;
 window.closeRules = closeRules;
 
-window.setOneVsOne = setOneVsOne;
+
 window.setOpponent = setOpponent;
 window.setDifficulty = setDifficulty;
 window.endMatch = endMatch;
-window.setTournament = setTournament;
+
 window.selectNumPlayers = selectNumPlayers;
 window.addPlayer = addPlayer;
 window.startTournament = startTournament;

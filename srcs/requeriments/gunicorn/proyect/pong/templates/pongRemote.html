@@ -35,7 +35,8 @@
 
 	<p>
 		<div id="dStartOptions">
-			<button id="bNormalGame" type="button" onclick="remoteStartOneVsOne()">1 vs 1 Game</button> 
+			<button id="bLocalGame" type="button" onclick="remoteStartLocal()">Local Game</button> 
+			<button id="bRemoteGame" type="button" onclick="remoteStartRemote()">Remote Game</button> 
 			<button id="bTournament" type="button" onclick="remoteStartTournamentMode()">Tournament</button>	
 			<button id="bSettings" type="button" onclick="remoteShowCustomizationOptions()">Settings</button>
 		</div>
@@ -43,7 +44,21 @@
 			<button type="button" onclick="remoteEndTournament()">End Tournament</button>
 		</div>
 	</p>
-	<div class="container mt-4" id="dOneVsOneSettings" hidden>
+		<div class="container mt-4" id="dLocalSettings" hidden>
+		<p>
+			<select id="sOpponent" onchange="remoteSetOpponent()">
+				<option value="0" selected> Player Vs Player </option>
+				<option value="1"> Player Vs AI </option>
+			</select>
+			<select id="sDifficulty" onchange="remoteSetDifficulty()" style="visibility: hidden">
+				<option value="0"> Easy </option>
+				<option value="1" selected> Medium </option>
+				<option value="2"> Hard </option>
+				<option value="3"> Impossible </option>
+			</select>
+		</p>
+	</div>
+	<div class="container mt-4" id="dRemoteSettings" hidden>
 		<p>
 			<button id="bSearch" type="button" onclick="remoteCreateGame()">Create game</button>
 			<button id="bSearch" type="button" onclick="remoteJoinGame()">Join game</button>
@@ -52,7 +67,7 @@
 	<div class="bg-info container" id="dTournamentSettings" hidden>
 		<h4 class="p-4 text-white">CREATE TOURNAMENT</h4>
 		<p>
-			<select id="sNumPlayers" name="selectPlayers" onchange="selectNumPlayers()">
+			<select id="sNumPlayers" name="selectPlayers" onchange="remoteSelectNumPlayers()">
 				<option value="4" selected> 4 Players </option>
 				<option value="8"> 8 Players </option>
 				<option value="16"> 16 Players </option>
@@ -66,7 +81,7 @@
 							<input id="iNick" class ="border-3" type="text" minlength="3" maxlength="12" placeholder="Enter nick"></input>
 						</div>
 						<div class="px-3">
-							<button id="bRegisterPlayer" type="button" onclick="addPlayer()"> Add Player >> </button>
+							<button id="bRegisterPlayer" type="button" onclick="remoteAddPlayer()"> Add Player >> </button>
 						</div>
 					</div>
 					<div class="px-3 m-2 d-flex justify-content-start">
@@ -78,7 +93,7 @@
 				</div>
 			</div>
 			<div class="p-3">
-				<button id="bCreate" style="visibility: hidden" type="button" onclick="startTournament()">Start Tournament</button>
+				<button id="bCreate" style="visibility: hidden" type="button" onclick="remoteStartTournament()">Start Tournament</button>
 			</div>
 		</div>
 	</div>
@@ -214,12 +229,12 @@
 	<canvas id="board" style="visibility: hidden;" height="500" width="700"></canvas>
 	<div class="p-3" hidden id="dGameMessage">
 		<label class="text-danger" id="lGameMessage"></label>
-
+	</div>
 	<div class="p-3" hidden id="dStartGame">
-		<button type="button" onclick="startPong()"> Start !! </button>
+		<button type="button" onclick="remoteStartPong()"> Start !! </button>
 	</div>
 	<div class="p-3" hidden id="dAdvance">
-		<button type="button" onclick="advance()"> Next Match </button>
+		<button type="button" onclick="remoteAdvance()"> Next Match </button>
 	</div>
 {% else %}
 	Log in to play
