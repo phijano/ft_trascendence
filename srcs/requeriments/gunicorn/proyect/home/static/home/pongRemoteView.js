@@ -23,20 +23,6 @@ let gameConfig = // Initialize to normal settings
 	boardHeight: 500
 }
 
-function showCustomizationOptions() {
-	dropGame();
-	stop();
-	document.getElementById("bSettings").disabled = true;
-    document.getElementById("dCustomizationOptions").hidden = false;
-	hideTournament();
-	hideOneVsOne();
-}
-
-function hideCustomizationOptions() {
-	document.getElementById("bSettings").disabled = false;
-    document.getElementById("dCustomizationOptions").hidden = true;
-}
-
 function applySettings() {
     gameConfig.playerHeight = parseFloat(document.getElementById("playerSize").value);
     gameConfig.startSpeed = parseFloat(document.getElementById("ballSpeed").value);
@@ -68,28 +54,54 @@ function applySettings() {
     }
 }
 
-function startOneVsOne() {
+//menu
+
+function startLocal() {
     applySettings();
+	hideRemote();
 	hideTournament();
     hideCustomizationOptions();
-    setOneVsOne();
+    setLocal();
 }
 
-function startTournamentMode() {
+function startRemote() {
     applySettings();
-	hideOneVsOne();
+	hideLocal();
+	hideTournament();
+    hideCustomizationOptions();
+    setRemote();
+}
+
+function regStartTournamentMode() {
+    applySettings();
+	hideLocal();
+	hideRemote();
     hideCustomizationOptions();
     setTournament();
 }
 
-function hideTournament() {
-	document.getElementById("bTournament").disabled = false;
-	document.getElementById("dTournamentSettings").hidden = true;
+function regShowCustomizationOptions() {
+	dropGame();
+	stop();
+	hideLocal();	
+	hideRemote();
+	hideTournament();
+	document.getElementById("bSettings").disabled = true;
+    document.getElementById("dCustomizationOptions").hidden = false;
 }
 
-function hideOneVsOne() {
-	document.getElementById("dOneVsOneSettings").hidden = true;
-	document.getElementById("bNormalGame").disabled = false;
+function hideLocal() {
+	document.getElementById("dLocalSettings").hidden = true;
+	document.getElementById("bLocalGame").disabled = false;
+	document.getElementById("board").style.visibility = "hidden";
+	document.getElementById("dMatchPlayers").hidden = true;
+	document.getElementById("dStartGame").hidden = true;
+	document.getElementById("dWinner").hidden = true;
+}
+
+function hideRemote() {
+	document.getElementById("dRemoteSettings").hidden = true;
+	document.getElementById("bRemoteGame").disabled = false;
 	document.getElementById("board").style.visibility = "hidden";
 	document.getElementById("dMatchPlayers").hidden = true;
 	document.getElementById("dStartGame").hidden = true;
@@ -98,17 +110,30 @@ function hideOneVsOne() {
 
 }
 
-function addRegisteredPlayer() {
+function hideTournament() {
+	document.getElementById("bTournament").disabled = false;
+	document.getElementById("dTournamentSettings").hidden = true;
+}
 
-	const nick = document.getElementById("hNick").value;
-	if (nick) {
-		tournament.addPlayer(nick);
-		document.getElementById("tPlayers").value = nick;
-	}
+function hideCustomizationOptions() {
+	document.getElementById("bSettings").disabled = false;
+    document.getElementById("dCustomizationOptions").hidden = true;
+}
+
+function setLocal() {
+	dropGame()
+	document.getElementById("bLocalGame").disabled = true;
+	document.getElementById("dLocalSettings").hidden = false;
+	document.getElementById("dMatchPlayers").hidden = false;
+	document.getElementById("dStartGame").hidden = false;
+	document.getElementById("sOpponent").disabled = false;
+	document.getElementById("sDifficulty").disabled = false;
+	document.getElementById("board").style.visibility = "visible";
+	gameMode = "local";
+	regSetOpponent();
 }
 
 function setTournament() {
-
 	dropGame();
 	stop();
 	gameConfig.playAI = false;
@@ -126,8 +151,197 @@ function setTournament() {
 	addRegisteredPlayer();
 }
 
+function setRemote() {
+	stop();
+	document.getElementById("bRemoteGame").disabled = true;
+	document.getElementById("dRemoteSettings").hidden = false;
+	document.getElementById("dGameMessage").hidden = true;
+	gameMode = "remote";
+}
 
-function selectNumPlayers() {
+// local game
+
+function addRegisteredPlayer() {
+
+	const nick = document.getElementById("hNick").value;
+	if (nick) {
+		tournament.addPlayer(nick);
+		document.getElementById("tPlayers").value = nick;
+	}
+}
+
+
+function regSetOpponent() {
+	const sDifficulty = document.getElementById("sDifficulty");
+
+	opponent = Number(document.getElementById("sOpponent").value);
+	const nick = document.getElementById("hNick").value;
+	console.log(nick);
+	if (nick) {
+		document.getElementById("lLeftPlayer").innerHTML = nick;
+	}
+	else {
+		document.getElementById("lLeftPlayer").innerHTML = "Player 1";
+	}
+	if (opponent) {
+		sDifficulty.style.visibility = "visible";
+		gameConfig.playAI = true;
+		setDifficulty();
+	}
+	else {
+		sDifficulty.style.visibility = "hidden";
+		gameConfig.playAI = false;
+		document.getElementById("lRightPlayer").innerHTML = "Player 2";	
+	}
+	showPlayers();
+}
+
+function regSetDifficulty() {
+	difficulty = Number(document.getElementById("sDifficulty").value);
+	switch (difficulty) {
+		case 0:
+			document.getElementById("lRightPlayer").innerHTML = "AI - Easy";
+			gameConfig.msAIcalcRefresh = 1200;
+			break;
+		case 1:
+			document.getElementById("lRightPlayer").innerHTML = "AI - Medium";
+			gameConfig.msAIcalcRefresh = 1000;
+			break;
+		case 2:
+			document.getElementById("lRightPlayer").innerHTML = "AI - Hard";
+			gameConfig.msAIcalcRefresh = 700;	
+			break;
+		case 3:
+			document.getElementById("lRightPlayer").innerHTML = "AI - Impossible";	
+			gameConfig.msAIcalcRefresh = 100;
+			break;
+		default:
+			document.getElementById("lRightPlayer").innerHTML = "AI - Medium";
+			gameConfig.msAIcalcRefresh = 1000;
+			break;
+	}
+	showPlayers();
+}
+
+function showPlayers(players) {
+	document.getElementById("dWinner").hidden = true;
+	document.getElementById("dAdvance").hidden = true;
+	if (gameMode == "tournament")
+	{
+		document.getElementById("lLeftPlayer").innerHTML = players[0];
+		document.getElementById("lRightPlayer").innerHTML = players[1];
+	}
+	document.getElementById("dStartGame").hidden= false;
+	document.getElementById("dMatchPlayers").hidden = false;
+	initPong(gameConfig);
+}
+
+function regStartPong()
+{
+	document.getElementById("sOpponent").disabled = true;
+	document.getElementById("sDifficulty").disabled = true;
+	document.getElementById("dStartGame").hidden = true;
+	document.getElementById("board").style.visibility = "visible";
+	document.getElementById("dMatchPlayers").hidden = false;
+	document.getElementById("dWinner").hidden = true;
+	start(gameConfig, true);
+}
+
+function regEndMatch(lPlayerScore, rPlayerScore) {
+	const winner = document.getElementById("lWinner");
+	const lPlayer = document.getElementById("lLeftPlayer").innerHTML;
+	const rPlayer = document.getElementById("lRightPlayer").innerHTML;
+	let matchType;
+
+	console.log(lPlayerScore + " " + rPlayerScore)
+	console.log(lPlayerScore + " " + rPlayerScore)
+
+	if (lPlayerScore > rPlayerScore)
+		winner.innerHTML = lPlayer;
+	else
+		winner.innerHTML = rPlayer;
+
+	document.getElementById("dMatchPlayers").hidden = true;
+	document.getElementById("dWinner").hidden = false;
+
+	if (gameMode == "local")
+	{
+		matchType = "Single Match";
+		document.getElementById("sOpponent").disabled = false;
+		document.getElementById("sDifficulty").disabled = false;
+		document.getElementById("dStartGame").hidden = false;
+	}
+	else
+	{
+		matchType = "Tournament " + tournament.roundName;
+		tournament.addResult(winner.innerHTML, lPlayerScore, rPlayerScore);
+		if (tournament.champion)
+		{
+			document.getElementById("dMatchPlayers").hidden = true;
+			document.getElementById("dWinner").hidden = true;
+			document.getElementById("dAdvance").hidden = true;
+			document.getElementById("board").style.visibility = "hidden";
+			document.getElementById("dChampion").hidden = false;
+			document.getElementById("lChampion").innerHTML = winner.innerHTML;
+		}
+		else
+		{
+			document.getElementById("dAdvance").hidden = false;
+		}
+	}
+	const nick = document.getElementById("hNick").value;
+	if (nick && gameMode != "remote") {
+		if (nick == lPlayer) {
+			saveMatchResult(lPlayer, "", rPlayer, lPlayerScore, rPlayerScore, matchType);
+		}
+		else if (nick == rPlayer) {
+			saveMatchResult("", rPlayer, lPlayer, lPlayerScore, rPlayerScore, matchType);
+		}
+	}
+
+}
+
+async function saveMatchResult(lplayer, rplayer, opponent, pl_score, op_score, match_type ) {
+
+	const resp = await fetch('/userManagement/login', {
+			method: 'GET',
+			credentials: 'same-origin'
+	});
+	if (resp.ok) {
+
+		console.log("match saving");
+		const formdata = new FormData();
+
+		formdata.append("left_player", lplayer);
+		formdata.append("right_player", rplayer);
+		formdata.append("opponent_name", opponent);
+		formdata.append("player_score", pl_score);
+		formdata.append("opponent_score", op_score);
+		formdata.append("match_type", match_type);
+		formdata.append("csrfmiddlewaretoken", document.getElementsByName("csrfmiddlewaretoken")[0].value);
+
+		try {
+			const response = await fetch("/pongApp/saveMatch", {
+				method: "POST",
+				credentials: 'same-origin',
+				body: formdata,
+
+			});
+			if (response.ok) {
+				console.log("match saved?");
+			}
+			else{
+				console.log(await response.json());
+			}
+		} catch (e) {
+			console.error(e)
+		}
+	}
+}
+
+//tournament
+
+function regSelectNumPlayers() {
 	const numPlayers = document.getElementById("sNumPlayers");
 	const showPlayers = document.getElementById("tPlayers");
 
@@ -139,10 +353,10 @@ function selectNumPlayers() {
 	addRegisteredPlayer();
 }
 
-function addPlayer() {
+function regAddPlayer() {
 	const nick = document.getElementById("iNick");
 	const showPlayers = document.getElementById("tPlayers");
-	const register = document.getElementById("bR	initPong(gameConfig);egisterPlayer");
+	const register = document.getElementById("bRegisterPlayer");
 	const numPlayers = document.getElementById("sNumPlayers");
 	const lNickWarning = document.getElementById("lNickWarning");
 
@@ -175,7 +389,7 @@ function addPlayer() {
 	}
 }
 
-function startTournament() {
+function regStartTournament() {
 	document.getElementById("dStartOptions").hidden = true;
 	document.getElementById("bTournament").disabled = false;
 	document.getElementById("dEndTournament").hidden = false;
@@ -187,7 +401,7 @@ function startTournament() {
 	document.getElementById("dGameMessage").hidden = true;
 }
 
-function endTournament() {
+function regEndTournament() {
 	stop();
 	document.getElementById("board").style.visibility = "hidden";
 	document.getElementById("dStartOptions").hidden = false;
@@ -199,92 +413,12 @@ function endTournament() {
 	document.getElementById("dChampion").hidden = true;
 }
 
-
-function showPlayers(players) {
-	document.getElementById("dWinner").hidden = true;
-	document.getElementById("dAdvance").hidden = true;
-	if (gameMode == "tournament")
-	{
-		document.getElementById("lLeftPlayer").innerHTML = players[0];
-		document.getElementById("lRightPlayer").innerHTML = players[1];
-	}
-	document.getElementById("dStartGame").hidden= false;
-	document.getElementById("dMatchPlayers").hidden = false;
-	
-}
-
-function endMatch(lPlayerScore, rPlayerScore) {
-	initPong(gameConfig);
-	const winner = document.getElementById("lWinner");
-	const lPlayer = document.getElementById("lLeftPlayer").innerHTML;
-	const rPlayer = document.getElementById("lRightPlayer").innerHTML;
-	let matchType;
-
-	console.log(lPlayerScore + " " + rPlayerScore)
-	console.log(lPlayerScore + " " + rPlayerScore)
-
-	if (lPlayerScore > rPlayerScore)
-		winner.innerHTML = lPlayer;
-	else
-		winner.innerHTML = rPlayer;
-
-	document.getElementById("dMatchPlayers").hidden = true;
-	document.getElementById("dWinner").hidden = false;
-
-	if (gameMode == "normal")
-	{
-		matchType = "Single Match";
-		document.getElementById("sOpponent").disabled = false;
-		document.getElementById("sDifficulty").disabled = false;
-		document.getElementById("dStartGame").hidden = false;
-	}
-	else
-	{
-		matchType = "Tournament " + tournament.roundName;
-		tournament.addResult(winner.innerHTML, lPlayerScore, rPlayerScore);
-		if (tournament.champion)
-		{
-			document.getElementById("dMatchPlayers").hidden = true;
-			document.getElementById("dWinner").hidden = true;
-			document.getElementById("dAdvance").hidden = true;
-			document.getElementById("board").style.visibility = "hidden";
-			document.getElementById("dChampion").hidden = false;
-			document.getElementById("lChampion").innerHTML = winner.innerHTML;
-		}
-		else
-		{
-			document.getElementById("dAdvance").hidden = false;
-		}
-	}
-	initPong(gameConfig);
-}
-
-function startPong()
-{
-	document.getElementById("sOpponent").disabled = true;
-	document.getElementById("sDifficulty").disabled = true;
-	document.getElementById("dStartGame").hidden = true;
-	document.getElementById("board").style.visibility = "visible";
-	document.getElementById("dMatchPlayers").hidden = false;
-	document.getElementById("dWinner").hidden = true;
-	start(gameConfig);
-}
-
-function advance() {
+function regAdvance() {
 	tournament.advance()
 	showPlayers(tournament.matchPlayers);
 }
 
-function setOneVsOne() {
-	stop();
-	document.getElementById("bNormalGame").disabled = true;
-	document.getElementById("dOneVsOneSettings").hidden = false;
-	document.getElementById("dGameMessage").hidden = true;
-
-//	document.getElementById("dMatchPlayers").hidden = false;
-//	document.getElementById("board").style.visibility = "visible";
-	gameMode = "normal";
-}
+//remote game
 
 function createGame() {
 	const nick = document.getElementById("hNick").value;
@@ -339,7 +473,7 @@ function serverPongMessage(message){
 		drawServerData();
 		stopPongRemote();
 		playing = false;
-		endMatch(message.lPlayer.score, message.rPlayer.score);
+		regEndMatch(message.lPlayer.score, message.rPlayer.score);
 
 	}
 	else if (message.type == "drop.game")
@@ -374,19 +508,28 @@ function dropGame() {
 		playing = false;
 	}
 }
-window.dropGame = dropGame;
-window.remoteSetOneVsOne = setOneVsOne;
+
+//menu
+window.remoteStartLocal = startLocal
+window.remoteStartRemote = startRemote;
+window.remoteStartTournamentMode = regStartTournamentMode;
+window.remoteShowCustomizationOptions = regShowCustomizationOptions;
+
+//local game
+window.remoteSetOpponent = regSetOpponent;
+window.remoteSetDifficulty = regSetDifficulty;
+window.remoteStartPong = regStartPong;
+window.remoteEndMatch = regEndMatch;
+
+//tournament
+window.remoteSelectNumPlayers = regSelectNumPlayers;
+window.remoteAddPlayer = regAddPlayer;
+window.remoteStartTournament = regStartTournament;
+window.remoteAdvance = regAdvance;
+window.remoteEndTournament = regEndTournament;
+
+//remote game
 window.remoteCreateGame = createGame;
 window.remoteJoinGame = joinGame;
 window.serverPongMessage = serverPongMessage;
-window.remoteEndMatch = endMatch;
-window.remoteSetTournament = setTournament;
-window.remoteSelectNumPlayers = selectNumPlayers;
-window.remoteAddPlayer = addPlayer;
-window.remoteStartTournament = startTournament;
-window.remoteStartPong = startPong;
-window.remoteAdvance = advance;
-window.remoteEndTournament = endTournament;
-window.remoteShowCustomizationOptions = showCustomizationOptions;
-window.remoteStartOneVsOne = startOneVsOne;
-window.remoteStartTournamentMode = startTournamentMode;
+window.dropGame = dropGame;
