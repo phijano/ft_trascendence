@@ -27,7 +27,4 @@ urlpatterns = [
         path("history", views.index, name='login'),
         path("history/", views.index, name='login'),
         path("templates/<str:html>", views.templates, name='templates'),
-        #testing Multiplayer (delete)
-        path("pongRemote", views.index, name='pong'),
-        path("pongRemote/", views.index, name='pong'), 
 ]
