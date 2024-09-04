@@ -7,16 +7,17 @@
 	<link rel="stylesheet" href="{% static 'home/pong/pong.css' %}">
 </head>
 <body>
-	{% if user.is_authenticated %}
-		{% csrf_token %}
-		<input hidden id="hNick" value="{{profile}}">
-	{% else %}
-		<input hidden id="hNick" value="">
-	{% endif %}
+{% if user.is_authenticated %}
+	{% csrf_token %}
+	<input hidden id="hNick" value="{{profile}}">
+	<input hidden id="hProfileId" value="{{profile.id}}">
+{% else %}
+	<input hidden id="hNick" value="">
+{% endif %}
 	<div class="container">
 		<div class="row">
 			<div class="col text-start">
-				<button id="bRules" type="button" onclick="showRules()" onmouseover="setRules()">Rules ></button>
+				<button id="bRules" type="button" onclick="pongShowRules()" onmouseover="pongSetRules()">Rules ></button>
 			</div>
 			<div class="col">
 				<h1 class="text-info">PONG</h1>
@@ -26,7 +27,7 @@
 	</div>
 
 	<div hidden id="dSidePanel" class="sidepanel">
-  		<a href="javascript:void(0)" class="sideCloseButton text-black text-decoration-none" onclick="closeRules()">&times;</a>
+  		<a href="javascript:void(0)" class="sideCloseButton text-black text-decoration-none" onclick="pongCloseRules()">&times;</a>
 		<div id="dSidePanelContent" class="sideContent">
 			Press D to activate the Freeze Flip power-up as the left player,
 			press Left Arrow as the right player.
@@ -37,21 +38,26 @@
 
 	<p>
 		<div id="dStartOptions">
-			<button id="bNormalGame" type="button" onclick="startOneVsOne()">1 vs 1 Game</button> 
-			<button id="bTournament" type="button" onclick="startTournamentMode()">Tournament</button>	
-			<button id="bSettings" type="button" onclick="showCustomizationOptions()">Settings</button>
+			<button id="bLocalGame" type="button" onclick="pongStartLocal()">Local Game</button>
+			{% if user.is_authenticated %}
+				<button id="bRemoteGame" type="button" onclick="pongStartRemote()">Remote Game</button>
+			{% else %}
+				<button id="bRemoteGame" type="button" hidden>Remote Game</button>	
+			{% endif %}
+			<button id="bTournament" type="button" onclick="pongStartTournamentMode()">Tournament</button>	
+			<button id="bSettings" type="button" onclick="pongShowCustomizationOptions()">Settings</button>
 		</div>
 		<div hidden id="dEndTournament">
-			<button type="button" onclick="endTournament()">End Tournament</button>
+			<button type="button" onclick="pongEndTournament()">End Tournament</button>
 		</div>
 	</p>
-	<div class="container mt-4" id="dOneVsOneSettings" hidden>
+		<div class="container mt-4" id="dLocalSettings" hidden>
 		<p>
-			<select id="sOpponent" onchange="setOpponent()">
+			<select id="sOpponent" onchange="pongSetOpponent()">
 				<option value="0" selected> Player Vs Player </option>
 				<option value="1"> Player Vs AI </option>
 			</select>
-			<select id="sDifficulty" onchange="setDifficulty()" style="visibility: hidden">
+			<select id="sDifficulty" onchange="pongSetDifficulty()" style="visibility: hidden">
 				<option value="0"> Easy </option>
 				<option value="1" selected> Medium </option>
 				<option value="2"> Hard </option>
@@ -59,10 +65,16 @@
 			</select>
 		</p>
 	</div>
+	<div class="container mt-4" id="dRemoteSettings" hidden>
+		<p>
+			<button id="bCreateRemote" type="button" onclick="pongCreateGame()">Create game</button>
+			<button id="bJoinRemote" type="button" onclick="pongJoinGame()">Join game</button>
+		</p>
+	</div>
 	<div class="bg-info container" id="dTournamentSettings" hidden>
 		<h4 class="p-4 text-white">CREATE TOURNAMENT</h4>
 		<p>
-			<select id="sNumPlayers" name="selectPlayers" onchange="selectNumPlayers()">
+			<select id="sNumPlayers" name="selectPlayers" onchange="pongSelectNumPlayers()">
 				<option value="4" selected> 4 Players </option>
 				<option value="8"> 8 Players </option>
 				<option value="16"> 16 Players </option>
@@ -76,7 +88,7 @@
 							<input id="iNick" class ="border-3" type="text" minlength="3" maxlength="12" placeholder="Enter nick"></input>
 						</div>
 						<div class="px-3">
-							<button id="bRegisterPlayer" type="button" onclick="addPlayer()"> Add Player >> </button>
+							<button id="bRegisterPlayer" type="button" onclick="pongAddPlayer()"> Add Player >> </button>
 						</div>
 					</div>
 					<div class="px-3 m-2 d-flex justify-content-start">
@@ -88,7 +100,7 @@
 				</div>
 			</div>
 			<div class="p-3">
-				<button id="bCreate" style="visibility: hidden" type="button" onclick="startTournament()">Start Tournament</button>
+				<button id="bCreate" style="visibility: hidden" type="button" onclick="pongStartTournament()">Start Tournament</button>
 			</div>
 		</div>
 	</div>
@@ -197,13 +209,13 @@
 		<div class="mt-4" hidden id="dMatchPlayers">
 			<div class="d-inline-flex flex-row align-self-center">
 				<div class="">
-					<h4><label class="bg-info" style="display:block;width:300px" id="lLeftPlayer">Player 1</label></h4>
+					<h4><label class="bg-info" style="display:block;width:300px" id="lLeftPlayer">???</label></h4>
 				</div>
 				<div class="">
 					<h4><label style="display:block;width:50px" id="lVs"> VS </label></h4>
 				</div>
 				<div class="">
-					<h4><label class="bg-info" style="display:block;width:300px" id="lRightPlayer">Player 2</label></h4>
+					<h4><label class="bg-info" style="display:block;width:300px" id="lRightPlayer">???</label></h4>
 				</div>
 			</div>
 		</div>
@@ -221,13 +233,15 @@
 		</div>
 	</p>
 
-	<!-- <canvas id="board" style="visibility: hidden;"></canvas> -->
 	<canvas id="board" style="visibility: hidden;" height="500" width="700"></canvas>
+	<div class="p-3" hidden id="dGameMessage">
+		<label class="text-danger" id="lGameMessage"></label>
+	</div>
 	<div class="p-3" hidden id="dStartGame">
-		<button type="button" onclick="startPong()"> Start !! </button>
+		<button type="button" onclick="pongStartPong()"> Start !! </button>
 	</div>
 	<div class="p-3" hidden id="dAdvance">
-		<button type="button" onclick="advance()"> Next Match </button>
+		<button type="button" onclick="pongAdvance()"> Next Match </button>
 	</div>
 </body>
 </html>

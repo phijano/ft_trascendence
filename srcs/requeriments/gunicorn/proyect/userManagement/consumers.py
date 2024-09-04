@@ -11,11 +11,11 @@ class WebConsumer(AsyncWebsocketConsumer):
 
     profile_id = ""
     profile_nick = ""
-    status = ""
+    host = False
     opponent = ""
     opponent_nick = ""
     pong_config = ""
-    ongoing = False
+    playing = False
     lPlayer = ""
     rPlayer = ""
     keyState = ""
@@ -61,10 +61,10 @@ class WebConsumer(AsyncWebsocketConsumer):
             user_profile = await self.get_user_profile(self.scope['user'])
             user_profile.connections = user_profile.connections - 1
             await self.save_profile(user_profile)
-            if self.ongoing:
-                self.ongoing = False
+            if self.playing:
+                self.playing = False
                 group = "host"
-                if self.status == "host":
+                if self.host:
                     group += self.profile_id
                 else:
                     group += self.opponent
@@ -75,7 +75,7 @@ class WebConsumer(AsyncWebsocketConsumer):
                         "player":self.profile_id,
                     }
                 )
-                if self.status == "host":
+                if self.host:
                     await self.channel_layer.group_discard("host" + self.profile_id, self.channel_name)
                 else:
                     await self.channel_layer.group_discard("host" + self.opponent, self.channel_name)
@@ -88,8 +88,11 @@ class WebConsumer(AsyncWebsocketConsumer):
     async def userActions(self, json_data):
         action = json_data.get("action", "")
         if action == "create":
-            self.status = "host"
+            self.host = True
             self.pong_config = json_data.get("config","")
+            #
+            self.pong_config["startSpeed"] /= 15
+            self.pong_config["playerSpeed"] /= 15
             await self.channel_layer.group_add("games", self.channel_name)
             await self.channel_layer.group_add("host" + self.profile_id, self.channel_name)
             await self.channel_layer.group_send(
@@ -101,7 +104,7 @@ class WebConsumer(AsyncWebsocketConsumer):
                 }
             )
         elif action == "join":
-            self.status = "guest"
+            self.host = False
             await self.channel_layer.group_add("games", self.channel_name)
             await self.channel_layer.group_send(
                 "games",
@@ -113,7 +116,7 @@ class WebConsumer(AsyncWebsocketConsumer):
             )
         elif action == "drop":
             group = "host"
-            if self.status == "host":
+            if self.host:
                 self.ongoing = False
                 group += self.profile_id
             else:
@@ -128,7 +131,7 @@ class WebConsumer(AsyncWebsocketConsumer):
 
         elif action == "keys":
             group = "host"
-            if self.status == "host":
+            if self.host:
                 group += self.profile_id
             else:
                 group += self.opponent
@@ -142,7 +145,7 @@ class WebConsumer(AsyncWebsocketConsumer):
             )
 
     async def players_message(self, event):
-        if self.status == "host":
+        if self.host:
             if event["message"] == "join":
                 await self.channel_layer.group_send(
                     "games",
@@ -169,7 +172,7 @@ class WebConsumer(AsyncWebsocketConsumer):
                 )
                        
     async def opponent_message(self, event):
-        if self.status == "host":
+        if self.host:
             if event["message"] == "join":
                 if not self.opponent:
                     self.opponent = event["player"]
@@ -237,7 +240,7 @@ class WebConsumer(AsyncWebsocketConsumer):
                     )
 
     async def keys_message(self, event):
-        if self.status == "host":
+        if self.host:
             if event["player"] == self.profile_id:
                 self.keyState["w"] = event["keys"]["w"]
                 self.keyState["s"] = event["keys"]["s"]
@@ -275,23 +278,22 @@ class WebConsumer(AsyncWebsocketConsumer):
                 else:
                     self.rPlayer["speed"] = 0
 
-
     async def game_update(self, event):
         await self.send(text_data=json.dumps(event))
 
     async def end_game(self, event):
         await self.send(text_data=json.dumps(event))
-        if self.status == "host":
+        if self.host:
             await self.channel_layer.group_discard("host" + self.profile_id, self.channel_name)
         else:
-            self.ongoing = False
+            self.playing = False
             await self.channel_layer.group_discard("host" + self.opponent, self.channel_name)
         self.opponent = ""
 
     async def drop_game(self, event):
         await self.send(text_data=json.dumps(event))
-        self.ongoing = False
-        if self.status == "host":
+        self.playing = False
+        if self.host:
             await self.channel_layer.group_discard("host" + self.profile_id, self.channel_name)
         else:
             await self.channel_layer.group_discard("host" + self.opponent, self.channel_name)
@@ -299,10 +301,11 @@ class WebConsumer(AsyncWebsocketConsumer):
 
     async def pong_loop(self):
         self.initPong()
-        self.ongoing = True
-        while (self.ongoing):
+        self.playing = True
+        while (self.playing):
             await self.updatePong()
-            await asyncio.sleep(0.015)
+            #await asyncio.sleep(0.015) 
+            await asyncio.sleep(0.001)
             if  self.keyState["powerUpInUse"] == True:
                 await asyncio.sleep(0.75)
                 self.keyState["powerUpInUse"] = False
@@ -383,7 +386,7 @@ class WebConsumer(AsyncWebsocketConsumer):
             }
         )
         if self.rPlayer["score"] == self.pong_config["pointsToWin"] or self.lPlayer["score"] == self.pong_config["pointsToWin"]:
-            self.ongoing = False
+            self.playing = False
             user_profile = await self.get_profile_by_id(self.profile_id)
             guest_profile = await self.get_profile_by_id(self.opponent)
             await self.save_match(user_profile, guest_profile, self.lPlayer["score"], self.rPlayer["score"], "Single Match")

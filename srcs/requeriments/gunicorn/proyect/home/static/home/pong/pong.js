@@ -131,11 +131,8 @@ function initGame(gameConfig)
     context.fillText(Rplayer.score, board.width/5 * 4 -45, 45);
 }
 
-let registered = false
-
-function start(gameConfig, reg)
+function start(gameConfig)
 {
-	registered = reg
     initGame(gameConfig); // To restart all values that are changed in previous games & apply settings changes
 
     if (playAI) 
@@ -231,10 +228,7 @@ function update()
     {
         stop();
         predictedY = boardHeight / 2; // reset to middle for next game
-		if (registered)
-        	remoteEndMatch(Lplayer.score, Rplayer.score);
-    	else 
-        	endMatch(Lplayer.score, Rplayer.score);
+        pongEndMatch(Lplayer.score, Rplayer.score);
 	}
 }
 
@@ -516,7 +510,6 @@ function stopPongRemote() {
 function gameLoop() {
 	id = requestAnimationFrame(gameLoop);
 	drawServerData();
-	console.log("loop")
 }
 
 function drawServerData() {
@@ -530,7 +523,7 @@ function drawServerData() {
 
 	context.fillStyle = "white";
 
-	//score
+		//score
     context.font = "45px sans-serif";
     context.fillText(serverData.lPlayer.score, board.width/5, 45);
     context.fillText(serverData.rPlayer.score, board.width/5 * 4 -45, 45);
