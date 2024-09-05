@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-yrb=73%bos5rsni@-qb0c&2)uwi#n4g^yyhhzr1=)!yf13ws5+'
+SECRET_KEY = 'my_secret_key'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -96,9 +96,9 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'trascendence',
-        'USER': 'dbmaster',
-        'PASSWORD': 'masterpass',
+        'NAME': 'my_db_name',
+        'USER': 'my_db_user',
+        'PASSWORD': 'my_db_password',
         'HOST': 'postgre',
         'PORT': '5432',
     }
@@ -161,8 +161,8 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 #EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_USER = 'my_email_host_user_onemy_email_host_user_two'
+EMAIL_HOST_PASSWORD = 'my_email_host_password'
 EMAIL_PORT = 587
 
 MEDIA_URL = 'avatars/'
