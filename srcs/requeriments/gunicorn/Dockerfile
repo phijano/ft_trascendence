@@ -27,9 +27,10 @@ RUN django-admin startproject dummy
 #
 RUN mkdir /trascendence
 COPY ./proyect/ /trascendence/
+RUN python3 /trascendence/manage.py collectstatic --noinput
+
 
 COPY ./tools/django.sh /
-
 RUN chmod +x django.sh
 
 CMD ["/django.sh"]
