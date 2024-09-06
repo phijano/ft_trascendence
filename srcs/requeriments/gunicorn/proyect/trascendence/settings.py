@@ -143,10 +143,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-
-STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -165,4 +161,11 @@ EMAIL_HOST_USER = 'my_email_host_user_onemy_email_host_user_two'
 EMAIL_HOST_PASSWORD = 'my_email_host_password'
 EMAIL_PORT = 587
 
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/4.2/howto/static-files/
+
+STATIC_URL = 'static/'
 MEDIA_URL = 'avatars/'
+
+STATIC_ROOT = 'static_files/static'
+MEDIA_ROOT = 'stattic_files/media'

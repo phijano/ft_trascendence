@@ -12,11 +12,13 @@ services:
       - 8080:8080
     networks:
       - trascendencenet
+    volumes:
+      - static:${STATIC_PATH}
     restart: always
 
   gunicorn:
-    #    depends_on:
-    #      - postgree
+    depends_on:
+      - postgre
     image: gunicorn:42.version.1.0
     container_name: gunicorn
     env_file:
@@ -25,13 +27,12 @@ services:
     expose:
       - 8081    
 # remove port 8082 when development end(keep expose port)
-# port 587 for smtp to send active email. Look for smtp service or whatever
     ports:
       - 8082:8082
-#      - 587:587
     networks:
       - trascendencenet
     volumes:
+      - static:${STATIC_PATH}
       - backend:${BACKEND_PATH}
     restart: always
 
@@ -54,6 +55,12 @@ networks:
   trascendencenet:
 
 volumes:
+  static:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${HOST_STATIC_PATH}
+      o: bind
   backend:
     driver: local
     driver_opts:
