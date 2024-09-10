@@ -2,18 +2,23 @@ import json
 import asyncio
 import math
 import random
+import userManagement
+import pong
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-from .models import Profile
-from pong.models import Match
 
 class WebConsumer(AsyncWebsocketConsumer):
+
 
     profile_id = ""
     profile_nick = ""
     host = False
     opponent = ""
     opponent_nick = ""
+    #channels
+    games_channel = False
+    host_channel = False
+    #pong
     pong_config = ""
     playing = False
     lPlayer = ""
@@ -26,11 +31,11 @@ class WebConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_user_profile(self, user):
-        return Profile.objects.get(user_id=user)
+        return userManagement.models.Profile.objects.get(user_id=user)
 
     @database_sync_to_async
     def get_profile_by_id(self, profile_id):
-        return Profile.objects.get(id=profile_id)
+        return userManagement.models.Profile.objects.get(id=profile_id)
 
     @database_sync_to_async
     def save_profile(self, profile):
@@ -38,7 +43,7 @@ class WebConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def save_match(self, lProfile, rProfile, lScore, rScore, match_type):
-        match = Match()
+        match = pong.models.Match()
         match.player = lProfile
         match.opponent = rProfile
         match.player_score = lScore
@@ -61,24 +66,27 @@ class WebConsumer(AsyncWebsocketConsumer):
             user_profile = await self.get_user_profile(self.scope['user'])
             user_profile.connections = user_profile.connections - 1
             await self.save_profile(user_profile)
-            if self.playing:
-                self.playing = False
-                group = "host"
-                if self.host:
-                    group += self.profile_id
-                else:
-                    group += self.opponent
-                await self.channel_layer.group_send(
-                    group,
-                    {
-                        "type":"drop.game" ,
-                        "player":self.profile_id,
-                    }
-                )
+            if self.host_channel:
+                if self.playing:
+                    self.playing = False
+                    group = "host"
+                    if self.host:
+                        group += self.profile_id
+                    else:
+                        group += self.opponent
+                    await self.channel_layer.group_send(
+                        group,
+                        {
+                            "type":"drop.game" ,
+                            "player":self.profile_id,
+                        }
+                    )
                 if self.host:
                     await self.channel_layer.group_discard("host" + self.profile_id, self.channel_name)
                 else:
                     await self.channel_layer.group_discard("host" + self.opponent, self.channel_name)
+            if self.games_channel:
+                await self.channel_layer.group_discard("games", self.channel_name)
  
     async def receive(self, text_data):
         json_data = json.loads(text_data)
@@ -94,7 +102,9 @@ class WebConsumer(AsyncWebsocketConsumer):
             self.pong_config["startSpeed"] /= 15
             self.pong_config["playerSpeed"] /= 15
             await self.channel_layer.group_add("games", self.channel_name)
+            self.games_channel = True
             await self.channel_layer.group_add("host" + self.profile_id, self.channel_name)
+            self.host_channel = True
             await self.channel_layer.group_send(
                 "games",
                 {
@@ -106,6 +116,7 @@ class WebConsumer(AsyncWebsocketConsumer):
         elif action == "join":
             self.host = False
             await self.channel_layer.group_add("games", self.channel_name)
+            self.games_channel = True
             await self.channel_layer.group_send(
                 "games",
                 {
@@ -115,19 +126,26 @@ class WebConsumer(AsyncWebsocketConsumer):
                 }
             )
         elif action == "drop":
-            group = "host"
-            if self.host:
-                self.ongoing = False
-                group += self.profile_id
-            else:
-                group += self.opponent
-            await self.channel_layer.group_send(
-                group,
-                {
-                    "type":"drop.game" ,
-                    "player":self.profile_id,
-                }
-            )
+            if self.host_channel:
+                if self.playing:
+                    group = "host"
+                    if self.host:
+                        group += self.profile_id
+                    else:
+                        group += self.opponent
+                    await self.channel_layer.group_send(
+                        group,
+                        {
+                            "type":"drop.game" ,
+                            "player":self.profile_id,
+                        }
+                    )
+                if self.host:
+                    await self.channel_layer.group_discard("host" + self.profile_id, self.channel_name)
+                else:
+                    await self.channel_layer.group_discard("host" + self.opponent, self.channel_name)
+            if self.games_channel:
+                await self.channel_layer.group_discard("games", self.channel_name)
 
         elif action == "keys":
             group = "host"
@@ -158,10 +176,12 @@ class WebConsumer(AsyncWebsocketConsumer):
         else:
             if event["message"] == "created":
                 await self.channel_layer.group_discard("games", self.channel_name)
+                self.games_channel = False
                 await self.channel_layer.group_add(
                     "host" + event["player"], 
                     self.channel_name
                 )
+                self.host_channel = True
                 await self.channel_layer.group_send(
                     "host" + event["player"] ,
                     {
@@ -190,6 +210,7 @@ class WebConsumer(AsyncWebsocketConsumer):
                         }
                     )
                     await self.channel_layer.group_discard("games", self.channel_name)
+                    self.games_channel = False
                     profile = await self.get_profile_by_id(self.opponent)
                     self.opponent_nick = profile.nick
                     await self.send(text_data=json.dumps(
@@ -225,11 +246,13 @@ class WebConsumer(AsyncWebsocketConsumer):
                             }
                         )
                     )
-                    self.ongoing = True
+                    self.playing = True
             elif event["message"] == "full":
                 if self.profile_id == event["opponent"]:
                     await self.channel_layer.group_discard("host" + event["player"], self.channel_name)
+                    self.host_channel = False
                     await self.channel_layer.group_add("games", self.channel_name)
+                    self.games.channel = True
                     await self.channel_layer.group_send(
                         "games",
                         {

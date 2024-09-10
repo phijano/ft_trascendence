@@ -7,7 +7,7 @@ RUN apk -i update && apk -i upgrade \
   py3-pip \
   && rm -rf /var/cache/apk/*
 
-RUN pip install uvicorn
+RUN pip install uvicorn[standard]
 
 #postgresql 
 RUN pip install psycopg[binary]
@@ -28,7 +28,7 @@ RUN django-admin startproject dummy
 RUN mkdir /trascendence
 COPY ./proyect/ /trascendence/
 RUN python3 /trascendence/manage.py collectstatic --noinput
-
+RUN python3 /trascendence/manage.py makemigrations
 
 COPY ./tools/django.sh /
 RUN chmod +x django.sh

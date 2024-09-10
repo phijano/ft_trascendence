@@ -32,6 +32,12 @@ ALLOWED_HOSTS = [
     '0.0.0.0',
 ]
 
+#Fix this, no idea what should add
+CSRF_TRUSTED_ORIGINS = [
+    'https://localhost:8080',
+    'https://127.0.0.1:8080',
+]
+
 
 # Application definition
 
