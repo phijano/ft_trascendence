@@ -421,13 +421,14 @@ function advance() {
 
 //remote game
 
-function createGame() {
+async function createGame() {
 	const nick = document.getElementById("hNick").value;
 	const profileId = document.getElementById("hProfileId").value;
 
 	dropGame();
+	await sleep(1);
 	host = true;
-	sendMessageServer({player: profileId,  app: "pong", action: "create", config: gameConfig});
+	sendMessageServer({player: profileId,  app: "pong", action: "create", config: gameConfig, date: Date.now()});
 	document.getElementById("lLeftPlayer").innerHTML = nick;
 	document.getElementById("lRightPlayer").innerHTML = "?";
 	document.getElementById("dMatchPlayers").hidden = false;
@@ -437,13 +438,14 @@ function createGame() {
 	document.getElementById("dGameMessage").hidden = true;
 }
 
-function joinGame() {
+async function joinGame() {
 	const nick = document.getElementById("hNick").value;
 	const profileId = document.getElementById("hProfileId").value;
 
 	dropGame();
+	await sleep(1);
 	host = false;
-	sendMessageServer({player: profileId,  app: "pong", action: "join"});
+	sendMessageServer({player: profileId,  app: "pong", action: "join", date: Date.now()});
 	document.getElementById("lLeftPlayer").innerHTML = "?";
 	document.getElementById("lRightPlayer").innerHTML = nick;
 	document.getElementById("dMatchPlayers").hidden = false;
@@ -467,7 +469,6 @@ function serverPongMessage(message){
 		} else {	
 			document.getElementById("lLeftPlayer").innerHTML = message.opponent_nick;
 		}
-		//config overwrite user config I think, fix this
 		initPong(message.config);
 		console.log(message.config);
 		ready = true;
@@ -502,16 +503,20 @@ function serverPongMessage(message){
 	}
 }
 
+
+const sleep = function(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function dropGame() {
 	if (playing) {
 		const profileId = document.getElementById("hProfileId").value;
-		sendMessageServer({player: profileId,  app: "pong", action: "drop"});
+		sendMessageServer({player: profileId,  app: "pong", action: "drop", date: Date.now()});
 		stopPongRemote();
 		playing = false;
 	}
 }
 
-//rules
 
 function setRules() {
 	document.getElementById("dSidePanel").hidden = false;
