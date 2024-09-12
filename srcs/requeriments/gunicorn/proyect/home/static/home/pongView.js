@@ -303,40 +303,42 @@ function endMatch(lPlayerScore, rPlayerScore) {
 }
 
 async function saveMatchResult(lplayer, rplayer, opponent, pl_score, op_score, match_type ) {
+	try {
+		const resp = await fetch('/userManagement/login', {
+				method: 'GET',
+				credentials: 'same-origin'
+		});
+		if (resp.ok) {
 
-	const resp = await fetch('/userManagement/login', {
-			method: 'GET',
-			credentials: 'same-origin'
-	});
-	if (resp.ok) {
+			console.log("match saving");
+			const formdata = new FormData();
 
-		console.log("match saving");
-		const formdata = new FormData();
+			formdata.append("left_player", lplayer);
+			formdata.append("right_player", rplayer);
+			formdata.append("opponent_name", opponent);
+			formdata.append("player_score", pl_score);
+			formdata.append("opponent_score", op_score);
+			formdata.append("match_type", match_type);
+			formdata.append("csrfmiddlewaretoken", document.getElementsByName("csrfmiddlewaretoken")[0].value);
 
-		formdata.append("left_player", lplayer);
-		formdata.append("right_player", rplayer);
-		formdata.append("opponent_name", opponent);
-		formdata.append("player_score", pl_score);
-		formdata.append("opponent_score", op_score);
-		formdata.append("match_type", match_type);
-		formdata.append("csrfmiddlewaretoken", document.getElementsByName("csrfmiddlewaretoken")[0].value);
-
-		try {
-			const response = await fetch("/pongApp/saveMatch", {
-				method: "POST",
-				credentials: 'same-origin',
-				body: formdata,
-
-			});
-			if (response.ok) {
-				console.log("match saved?");
+			try {
+				const response = await fetch("/pongApp/saveMatch", {
+					method: "POST",
+					credentials: 'same-origin',
+					body: formdata,
+				});
+				if (response.ok) {
+					console.log("match saved?");
+				}
+				else{
+					console.log(await response.json());
+				}
+			} catch (e) {
+				console.log(e)
 			}
-			else{
-				console.log(await response.json());
-			}
-		} catch (e) {
-			console.error(e)
 		}
+	} catch (e){
+		console.log(e)
 	}
 }
 
