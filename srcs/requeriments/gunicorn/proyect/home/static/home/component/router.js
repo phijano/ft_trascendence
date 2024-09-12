@@ -19,18 +19,12 @@ export const locationHandler = async() => {
 	const search = window.location.search;
 	console.log(route);
 	console.log(route.template);
-	const html = await fetch(origin + route.template + search).then((response) => response.text());	
-	document.getElementById("content").innerHTML = html
-/*	
-	document.getElementById("content").remove();
-	const content = document.createElement("div");
-	content.id = "content";
-	document.body.appendChild(content);
-	const shadow = document.getElementById("content").attachShadow({ mode: "open" });
-	let child = document.createElement("div");
-	child.innerHTML = html;
-	shadow.appendChild(child);
-*/	
+	try {
+		const html = await fetch(origin + route.template + search).then((response) => response.text());
+		document.getElementById("content").innerHTML = html
+	} catch (e) {
+		console.log(e);
+	}
 	document.title = route.title;
 /*	document
 		.querySelector('meta[name="description"]')

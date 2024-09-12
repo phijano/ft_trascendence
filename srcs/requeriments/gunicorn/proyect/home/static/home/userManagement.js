@@ -3,6 +3,24 @@ import {router} from "./component/router.js"
 let errors;
 let myWebsocket;
 
+async function getWebsocket() {	
+	//myWebsocket = new WebSocket('wss://' + window.location.host + '/ws');
+	myWebsocket = new WebSocket('ws://' + window.location.host + '/ws');
+	myWebsocket.onopen = socketOpen
+	myWebsocket.onmessage = socketMessage;
+	myWebsocket.onclose = socketClose;
+	myWebsocket.onerror = socketError;
+	console.log("connecting");
+}
+
+function socketOpen(event) {
+	console.log("open wss");
+}
+
+function socketError(event) {
+	console.log("error wss");
+}
+
 function socketMessage(event) {
 	console.log("datos servidor");
 	const message = JSON.parse(event.data);
@@ -19,6 +37,9 @@ function socketClose(event) {
 	}
 	else {
 		console.log("connection lost");
+		setTimeout(function() {
+			getWebsocket();
+		}, 1000);
 	}
 }
 
@@ -47,25 +68,28 @@ document.addEventListener('submit',async ev => {
 		console.log("search friend form");
 		await searchFriend(new FormData(ev.target));
 	}
-	console.log("submited");
 });
 
 async function signUp(data) {
 	console.log("data" + data);
-	const resp = await fetch('/userManagement/signup', {
-		method: 'POST',
-		body: data,
-		credentials: 'same-origin'
-	});
-	if (resp.ok) {
-		console.log("ok")
-		document.getElementById("content").innerHTML = "You received an email to activate your account"
-	}
-	else {
-		console.log("error");
-		errors = await resp.json();
-		console.log (errors);
-		signUpError();
+	try {
+		const resp = await fetch('/userManagement/signup', {
+			method: 'POST',
+			body: data,
+			credentials: 'same-origin'
+		});
+		if (resp.ok) {
+			console.log("ok")
+			document.getElementById("content").innerHTML = "You received an email to activate your account"
+		}
+		else {
+			console.log("error");
+			errors = await resp.json();
+			console.log (errors);
+			signUpError();
+		}
+	} catch(e) {
+		console.log(e);
 	}
 }
 
@@ -104,29 +128,37 @@ function signUpError() {
 
 async function logIn(data) {
 	console.log("data" + data);
-	const resp = await fetch('/userManagement/login', {
-		method: 'POST',
-		body: data,
-		credentials: 'same-origin'
-	});
-	if (resp.ok) {
-		setUser();
-		router("/");
-	}
-	else {
-		loginError();
+	try {
+		const resp = await fetch('/userManagement/login', {
+			method: 'POST',
+			body: data,
+			credentials: 'same-origin'
+		});
+		if (resp.ok) {
+			setUser();
+			router("/");
+		}
+		else {
+			loginError();
+		}
+	} catch(e) {
+		console.log(e);
 	}
 }
 
 async function logOut() {
 	console.log("log out pressed");
-	const resp = await fetch('/userManagement/logout', {
-		credentials: 'same-origin'
-	});
-	console.log(resp.ok);
-	if (resp.ok) {
-		unsetUser();
-		router("/");
+	try {
+		const resp = await fetch('/userManagement/logout', {
+			credentials: 'same-origin'
+		});
+		console.log(resp.ok);
+		if (resp.ok) {
+			unsetUser();
+			router("/");
+		}
+	} catch(e) {
+		console.log(e);
 	}
 }
 
@@ -153,13 +185,7 @@ function unsetUser() {
 	showMenu();
 }
 
-async function getWebsocket() {	
-	//myWebsocket = new WebSocket('wss://' + window.location.host + '/ws');
-	myWebsocket = new WebSocket('ws://' + window.location.host + '/ws');
-	myWebsocket.onmessage = socketMessage;
-	myWebsocket.onclose = socketClose;
-	console.log("got socket");
-}
+
 
 function showRegister() {
 	document.getElementById("nRegister").hidden = false;
@@ -234,33 +260,37 @@ async function changeAvatar() {
 		dError.hidden = false;
 		return
 	}
-	const resp = await fetch('/userManagement/login', {
+	try {
+		const resp = await fetch('/userManagement/login', {
 			method: 'GET',
 			credentials: 'same-origin'
-	});
-	if (resp.ok) {
+		});
+		if (resp.ok) {
 
-		const formdata = new FormData();
-		formdata.append("avatar", file.files[0]);
-		formdata.append("csrfmiddlewaretoken", document.getElementsByName("csrfmiddlewaretoken")[0].value);
+			const formdata = new FormData();
+			formdata.append("avatar", file.files[0]);
+			formdata.append("csrfmiddlewaretoken", document.getElementsByName("csrfmiddlewaretoken")[0].value);
 
-		try {
-			const response = await fetch("/userManagement/changeAvatar", {
-				method: "POST",
-				credentials: 'same-origin',
-				body: formdata,
+			try {
+				const response = await fetch("/userManagement/changeAvatar", {
+					method: "POST",
+					credentials: 'same-origin',
+					body: formdata,
 
-			});
-			if (response.ok) {
-				console.log("avatar changed");
-				router(window.location.pathname + window.location.search);
+				});
+				if (response.ok) {
+					console.log("avatar changed");
+					router(window.location.pathname + window.location.search);
+				}
+				else {
+					console.log("error");
+				}
+			} catch(e) {
+				console.log(e);
 			}
-			else {
-				console.log("error");
-			}
-		} catch (e) {
-			console.error(e);
 		}
+	} catch(e) {
+		console.log(e);
 	}
 }
 
@@ -287,35 +317,39 @@ async function changeNick() {
 		return;
 	}
 	else {
-		const resp = await fetch('/userManagement/login', {
+		try {
+			const resp = await fetch('/userManagement/login', {
 				method: 'GET',
 				credentials: 'same-origin'
-		});
-		if (resp.ok) {
+			});
+			if (resp.ok) {
 
-			const formdata = new FormData();
-			formdata.append("newNick", iNick.value);
-			formdata.append("csrfmiddlewaretoken", document.getElementsByName("csrfmiddlewaretoken")[0].value);
+				const formdata = new FormData();
+				formdata.append("newNick", iNick.value);
+				formdata.append("csrfmiddlewaretoken", document.getElementsByName("csrfmiddlewaretoken")[0].value);
 	
-			try {
-				const response = await fetch("/userManagement/changeNick", {
-					method: "POST",
-					credentials: 'same-origin',
-					body: formdata,
+				try {
+					const response = await fetch("/userManagement/changeNick", {
+						method: "POST",
+						credentials: 'same-origin',
+						body: formdata,
 		
-				});
-				if (response.ok) {
-					console.log("nick changed");
-					router(window.location.pathname + window.location.search);
+					});
+					if (response.ok) {
+						console.log("nick changed");
+						router(window.location.pathname + window.location.search);
+					}
+					else{
+						dError.innerHTML = "nick already used";
+						dError.hidden = false;
+						console.log("error");
+					}
+				} catch(e) {
+					console.log(e);
 				}
-				else{
-					dError.innerHTML = "nick already used";
-					dError.hidden = false;
-					console.log("error");
-				}
-			} catch (e) {
-				console.error(e);
 			}
+		} catch(e) {
+			console.log(e);
 		}
 	}
 }
