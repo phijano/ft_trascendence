@@ -1,0 +1,38 @@
+:root {
+    --primary-color: #be0303;
+    --secondary-color: #750707;
+    --accent-color: #3b5998;
+    --light-color: #f4f4f4;
+    --dark-color: #061406;
+}
+
+.orbitron-font {
+  font-family: "Orbitron", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-size: 1.2rem;
+  font-style: normal;
+  color: var(--light-color);
+}
+
+.orbitron-font-large {
+    font-size: 1.5rem;
+}
+
+.orbitron-font:hover {
+    color: var(--primary-color); /* Cambia el color al pasar el cursor */
+}
+
+.custom-border-color {
+    position: relative; /* Necesario para el pseudo-elemento */
+}
+
+.custom-border-color::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 95%;
+    border-bottom: 2px solid var(--secondary-color); /* Borde inferior */
+}

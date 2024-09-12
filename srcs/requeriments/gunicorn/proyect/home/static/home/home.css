@@ -1,13 +1,6 @@
-:root {
-    --primary-color: #be0303;
-    --secondary-color: #750707;
-    --accent-color: #3b5998;
-    --light-color: #f4f4f4;
-    --dark-color: #061406;
-    --gradient-start: #ffffff;
-    --gradient-end: #dbd4d4;
-  }
-  
+@import url('nav.css');
+
+
   .bungee-tint-regular {
     font-family: "Bungee Tint", sans-serif;
     font-weight: 400;
@@ -20,7 +13,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: calc(100vh - 4.5rem);
+      height: calc(100vh - 5.25rem);
       margin: 0; /* Elimina márgenes */
       overflow: hidden; /* Evita que la pelota se salga del contenedor */
     }
@@ -65,9 +58,8 @@
   }
   
   
-  .play-now {
+  .pong-home {
       position: absolute;
-      color: var(--primary-color);
       font-size: 3rem;
       text-decoration: none;
       text-align: center;
@@ -75,7 +67,7 @@
       display: inline-block;
       padding: 1rem 2rem; /* Espaciado interno para el botón */
       border-radius: 1rem; /* Bordes redondeados */
-      border: 3px solid var(--primary-color); /* Borde grueso y de color verde */
+      border: 3px solid var(--primary-color); 
       animation: scale 2s infinite;
       transition: transform 0.3s ease; /* Transición para el efecto de escalado */
   }
@@ -162,3 +154,4 @@
       75% { top: 50%; transform: translateY(-50%); }
       100% { top: 100%; transform: translateY(-100%); }
     }
+

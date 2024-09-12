@@ -9,6 +9,7 @@ export function Header(){
 	header.classList.add("text-bg-dark");
 	header.classList.add("text-center");
 	header.classList.add("p-4");
+	header.classList.add("custom-border-color");
 	//header.classList.add("mb-3");
 	
 	const row = document.createElement("div");
