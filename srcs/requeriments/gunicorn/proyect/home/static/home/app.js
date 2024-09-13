@@ -3,19 +3,24 @@ import { locationHandler } from "./component/router.js"
 
 export async function App() {
 
-	console.log("new page");
-	const root = document.getElementById("root");
-	root.appendChild(Header());
-	await userLogged();
-	locationHandler();
+    console.log("new page");
+    const root = document.getElementById("root");
+    root.appendChild(Header());
+    await userLogged();
+    locationHandler();
 }
 
 async function userLogged() {
-	const resp = await fetch('/userManagement/login', {
-		method: 'GET',
-		credentials: 'same-origin'
+
+    try {
+    	const resp = await fetch('/userManagement/login', {
+	    method: 'GET',
+	    credentials: 'same-origin'
 	});
 	if (resp.ok) {
-		setUser();
+	    setUser();
 	}
+    } catch(e) {
+	console.log(e);		
+    }
 }
