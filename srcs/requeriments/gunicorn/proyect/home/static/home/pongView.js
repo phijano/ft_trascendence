@@ -524,22 +524,73 @@ function setRules() {
 	document.getElementById("dSidePanel").hidden = false;
 }
 
-function showRules() {
-	const sidePanel = document.getElementById("dSidePanel");
 
-	sidePanel.style.transition = "0.5s, border 0s, color 0s 0.5s";
-	sidePanel.style.color = "black";
-	sidePanel.style.borderWidth = "2px";
-	sidePanel.style.width = "250px";
+function toggleRules() {
+    const sidePanel = document.getElementById("dSidePanel");
+    const header = document.querySelector('header'); // Seleccionar el elemento header
+    const headerHeight = header ? header.offsetHeight : 0; // Obtener la altura del header
+    const rulesButton = document.getElementById("bRules");
+
+    if (sidePanel.style.visibility === "visible") {
+        // Ocultar el panel
+        sidePanel.style.transition = "height 0.5s, top 0.5s, border 0s, color 0s, visibility 0s 0.3s";
+        sidePanel.style.height = "0"; // Cambia la altura para ocultar el panel
+        sidePanel.style.top = `${headerHeight}px`; // Mantiene el panel justo debajo del header
+        sidePanel.style.borderWidth = "0px";
+        sidePanel.style.color = "white";
+        sidePanel.style.visibility = "hidden";
+
+        rulesButton.style.top = "0px"
+    } else {
+        // Mostrar el panel
+        sidePanel.style.transition = "height 0.5s, top 0.5s, border 0s, color 0s 0.5s";
+        sidePanel.style.color = "black";
+        sidePanel.style.borderWidth = "2px";
+        sidePanel.style.height = "250px"; // Cambia la altura para mostrar el panel
+        sidePanel.style.top = `${headerHeight}px`; // Mueve el panel a la vista, justo debajo del header
+        sidePanel.style.visibility = "visible"; // Asegúrate de que el panel esté visible
+
+        // Mueve el botón "Rules" justo debajo del panel después de un pequeño retraso
+        setTimeout(() => {
+            rulesButton.style.top = "250px"; // Ajusta esta altura según la altura del panel y la navbar
+        }, 50); // Ajusta el retraso según sea necesario
+    }
 }
 
-function closeRules() {
-	const sidePanel = document.getElementById("dSidePanel");
-	sidePanel.style.width = "0";
-	sidePanel.style.transition = "0.5s, border 0.1s 0.5s ,color 0s";
-	sidePanel.style.borderWidth = "0px";
-	sidePanel.style.color="white";
-}
+
+// function showRules() {
+//     const sidePanel = document.getElementById("dSidePanel");
+//     const header = document.querySelector('header'); // Seleccionar el elemento header
+//     const headerHeight = header ? header.offsetHeight : 0; // Obtener la altura del header
+// 	const rulesButton = document.getElementById("bRules");
+
+//     sidePanel.style.transition = "height 0.5s, top 0.5s, border 0s, color 0s 0.5s";
+//     sidePanel.style.color = "black";
+//     sidePanel.style.borderWidth = "2px";
+//     sidePanel.style.height = "250px"; // Cambia la altura para mostrar el panel
+//     sidePanel.style.top = `${headerHeight}px`; // Mueve el panel a la vista, justo debajo del header
+// 	sidePanel.style.visibility = "visible"; // Asegúrate de que el panel esté visible
+
+//     setTimeout(() => {
+//         rulesButton.style.top = "250px";
+//     }, 50); // Ajusta el retraso según sea necesario
+// }
+
+// function closeRules() {
+// 	const sidePanel = document.getElementById("dSidePanel");
+//     const header = document.querySelector('header'); // Seleccionar el elemento header
+//     const headerHeight = header ? header.offsetHeight : 0; // Obtener la altura del header
+// 	const rulesButton = document.getElementById("bRules");
+
+//     sidePanel.style.transition = "height 0.5s, top 0.5s, border 0s, color 0s, visibility 0s 0.3s";
+//     sidePanel.style.height = "0"; // Cambia la altura para ocultar el panel
+//     sidePanel.style.top = `${headerHeight}px`; // Mantiene el panel justo debajo del header
+//     sidePanel.style.borderWidth = "0px";
+//     sidePanel.style.color = "white";
+// 	sidePanel.style.visibility = "hidden"
+
+//     rulesButton.style.top = "0px";
+// }
 
 
 //menu
@@ -570,6 +621,7 @@ window.dropGame = dropGame;
 //rules
 
 window.pongSetRules = setRules;
-window.pongShowRules = showRules;
-window.pongCloseRules = closeRules;
+window.pongToggleRules = toggleRules;
+//window.pongShowRules = showRules;
+//window.pongCloseRules = closeRules;
 

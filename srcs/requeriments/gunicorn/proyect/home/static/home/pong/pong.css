@@ -1,3 +1,36 @@
+@import url('../nav.css');
+@import url('../home.css');
+
+.container-pong {
+    width: 95%; /* Ocupa el 95% del ancho de la pantalla */
+    margin: 0 auto; /* Centra el contenedor horizontalmente */
+    padding: 0; /* Elimina el padding */
+	position: relative;
+}
+
+#bRules {
+    width: 250px; /* Ancho del sidepanel */
+    background-color: var(--accent-color);
+    color: var(--light-color);
+    padding: 5px 20px;
+	border-top: none;
+	border-left: 2px solid var(--secondary-color); /* Borde izquierdo */
+    border-right: 2px solid var(--secondary-color); /* Borde derecho */
+    border-bottom: 2px solid var(--secondary-color); /* Borde inferior */
+    border-radius: 0 0 10px 10px;
+    cursor: pointer;
+    text-align: center;
+	font-size: 1.2rem;
+	position: absolute; /* Posiciona el botón respecto al contenedor */
+    top: 0; /* Posición inicial */
+    transition: top 0.5s ease, background-color 0.5s ease; /* Transición suave para la posición y el color de fondo */
+}
+
+#bRules:hover {
+    background-color: var(--secondary-color); /* Color del botón al pasar el mouse */
+}
+
+
 #board
 {
 	background-color: black;
@@ -6,32 +39,29 @@
 }
 
 .sidepanel {
-	height: 250px; /* Specify a height */
-	width: 0; /* 0 width - change this with JavaScript */
-	position: fixed; /* Stay in place */
-	z-index: 1; /* Stay on top */
+    height: 0; /* 0 height - change this with JavaScript */
+    width: 100%; /* Full width */
+    max-width: 250px; /* Max width of 250px */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Stay on top */
+    left: 2.5%;
+    background-color: var(--secondary-color); /* Background color */
+    overflow-y: hidden; /* Disable vertical scroll */
+    color: white;
 	top: 0;
-	left: 0;
-	background-color: #fff; /* Black*/
-	overflow-x: hidden; /* Disable horizontal scroll */
-	padding-top: 0px; /* Place content 60px from the top */
-	transition: width 0.5s, border 0.1s 0.5s; /* 0.5 second transition effect to slide in the sidepanel */
-	border-color: #0dcacc;
-	border-style: solid;
-	border-width: 0px;
-	color: white;
+	visibility: hidden; /* Hide the panel by default */
 }
 
-.sidepanel .sideCloseButton {
+/* .sidepanel .sideCloseButton {
   position: absolute;
   top: 0;
   right: 25px;
   font-size: 36px;
   margin-left: 50px;
-}
+} */
 
 .sidepanel .sideContent {
-  padding: 48px 8px 8px 8px;
+  padding: 8px 8px 8px 8px;
 }
 
 
