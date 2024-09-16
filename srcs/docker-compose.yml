@@ -37,7 +37,7 @@ services:
     restart: always
 
   postgre:
-    image: postgree:42.version.1.0
+    image: postgres:42.version.1.0
     container_name: postgre
     env_file:
       - .env
