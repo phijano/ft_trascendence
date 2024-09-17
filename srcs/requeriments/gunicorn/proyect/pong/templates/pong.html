@@ -23,37 +23,36 @@
 			<div class="col text-start">
 				<button id="bRules" type="button" class="orbitron-font" onclick="pongToggleRules()" onmouseover="pongSetRules()">Rules</button>
 			</div>
-			<div class="col">
-				<h1 class="text-info">PONG</h1>
+			<div class="slider-container">
+				<div class="slider">
+					<div class="ball" id="ball-pong"></div>
+				</div>
 			</div>
 			<div class="col"></div>
 		</div>
-	</div>
-
-	<div hidden id="dSidePanel" class="sidepanel">
-  		
-		<div id="dSidePanelContent" class="sideContent">
-			Press D to activate the Freeze Flip power-up as the left player,
-			press Left Arrow as the right player.
-			The power-up can only be used once per round,
-			which resets after each goal is scored.
+		<div hidden id="dSidePanel" class="sidepanel">
+			<div id="dSidePanelContent" class="sideContent rationale-font">
+				Press "W" to move up, "S" to move down as the left player, and "D" to activate the Freeze Flip power-up.<br>
+				Press "Up Arrow" to move up, "Down Arrow" to move down as the right player, and "Left Arrow" to activate the Freeze Flip power-up.<br>
+				The power-up can only be used once per round, which resets after each goal is scored.
+			</div>
 		</div>
 	</div>
 
-	<p>
-		<div id="dStartOptions">
-			<button id="bLocalGame" type="button" onclick="pongStartLocal()">Local Game</button>
-			{% if user.is_authenticated %}
-				<button id="bRemoteGame" type="button" onclick="pongStartRemote()">Remote Game</button>
-			{% else %}
-				<button id="bRemoteGame" type="button" hidden>Remote Game</button>	
-			{% endif %}
-			<button id="bTournament" type="button" onclick="pongStartTournamentMode()">Tournament</button>	
-			<button id="bSettings" type="button" onclick="pongShowCustomizationOptions()">Settings</button>
-		</div>
-		<div hidden id="dEndTournament">
-			<button type="button" onclick="pongEndTournament()">End Tournament</button>
-		</div>
+
+	<div id="dStartOptions">
+		<button id="bLocalGame" type="button" class="pong-button" onclick="pongStartLocal(); pongMoveball('left')">Local Game</button>
+		{% if user.is_authenticated %}
+			<button id="bRemoteGame" type="button" class="pong-button" onclick="pongStartRemote()">Remote Game</button>
+		{% else %}
+			<button id="bRemoteGame" type="button" class="pong-button" hidden>Remote Game</button>	
+		{% endif %}
+		<button id="bTournament" type="button" class="pong-button" onclick="pongStartTournamentMode(); pongMoveball('center')">Tournament</button>	
+		<button id="bSettings" type="button" class="pong-button" onclick="pongShowCustomizationOptions(); pongMoveball('right')">Settings</button>
+	</div>
+	<div hidden id="dEndTournament">
+		<button type="button" class="pong-button" onclick="pongEndTournament()">End Tournament</button>
+	</div>
 	</p>
 		<div class="container mt-4" id="dLocalSettings" hidden>
 		<p>

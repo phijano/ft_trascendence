@@ -528,31 +528,24 @@ function setRules() {
 function toggleRules() {
     const sidePanel = document.getElementById("dSidePanel");
     const header = document.querySelector('header'); // Seleccionar el elemento header
-    const headerHeight = header ? header.offsetHeight : 0; // Obtener la altura del header
     const rulesButton = document.getElementById("bRules");
+	const sidePanelHeight = sidePanel.scrollHeight;
 
-    if (sidePanel.style.visibility === "visible") {
+	if (sidePanel.style.opacity === "1" || sidePanel.style.height === `${sidePanelHeight}px`) {
         // Ocultar el panel
-        sidePanel.style.transition = "height 0.5s, top 0.5s, border 0s, color 0s, visibility 0s 0.3s";
-        sidePanel.style.height = "0"; // Cambia la altura para ocultar el panel
-        sidePanel.style.top = `${headerHeight}px`; // Mantiene el panel justo debajo del header
-        sidePanel.style.borderWidth = "0px";
-        sidePanel.style.color = "white";
-        sidePanel.style.visibility = "hidden";
+        sidePanel.style.height = "0"; // Colapsa el panel
+        sidePanel.style.opacity = "0"; // Hace el panel transparente
+		rulesButton.style.top = "0px"; // Ajusta esta altura según la altura de tu navbar
 
-        rulesButton.style.top = "0px"
     } else {
         // Mostrar el panel
-        sidePanel.style.transition = "height 0.5s, top 0.5s, border 0s, color 0s 0.5s";
-        sidePanel.style.color = "black";
+		sidePanel.style.opacity = "1"; // Hace visible el panel
         sidePanel.style.borderWidth = "2px";
-        sidePanel.style.height = "250px"; // Cambia la altura para mostrar el panel
-        sidePanel.style.top = `${headerHeight}px`; // Mueve el panel a la vista, justo debajo del header
-        sidePanel.style.visibility = "visible"; // Asegúrate de que el panel esté visible
-
+        sidePanel.style.height = `${sidePanelHeight}px`; // Cambia la altura para mostrar el panel
+ 
         // Mueve el botón "Rules" justo debajo del panel después de un pequeño retraso
         setTimeout(() => {
-            rulesButton.style.top = "250px"; // Ajusta esta altura según la altura del panel y la navbar
+            rulesButton.style.top = `${sidePanelHeight}px`; // Ajusta esta altura según la altura del panel y la navbar
         }, 50); // Ajusta el retraso según sea necesario
     }
 }
@@ -593,11 +586,24 @@ function toggleRules() {
 // }
 
 
+function moveBall(position) {
+    const ball = document.getElementById('ball-pong');
+    
+    if (position === 'left') {
+        ball.style.left = '0'; // Extremo izquierdo
+    } else if (position === 'center') {
+        ball.style.left = '47.5%'; // Centro
+    } else if (position === 'right') {
+        ball.style.left = '95%'; // Extremo derecho
+    }
+}
+
 //menu
 window.pongStartLocal = startLocal
 window.pongStartRemote = startRemote;
 window.pongStartTournamentMode = startTournamentMode;
 window.pongShowCustomizationOptions = showCustomizationOptions;
+window.pongMoveball = moveBall;
 
 //local game
 window.pongSetOpponent = setOpponent;

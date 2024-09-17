@@ -3,7 +3,7 @@
     --secondary-color: #750707;
     --accent-color: #59575f;
     --light-color: #f4f4f4;
-    --dark-color: #061406;
+    --dark-color: #252525;
 }
 
 .orbitron-font {
@@ -18,6 +18,13 @@
 .orbitron-font-large {
     font-size: 1.5rem;
 }
+
+.rationale-font {
+    font-family: "Rationale", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
 
 .orbitron-font:hover {
     color: var(--primary-color); /* Cambia el color al pasar el cursor */

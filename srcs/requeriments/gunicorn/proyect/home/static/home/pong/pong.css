@@ -9,6 +9,8 @@
 }
 
 #bRules {
+	position: absolute; /* Posiciona el botón respecto al contenedor */
+    top: 0; /* Posición inicial */
     width: 250px; /* Ancho del sidepanel */
     background-color: var(--accent-color);
     color: var(--light-color);
@@ -21,8 +23,6 @@
     cursor: pointer;
     text-align: center;
 	font-size: 1.2rem;
-	position: absolute; /* Posiciona el botón respecto al contenedor */
-    top: 0; /* Posición inicial */
     transition: top 0.5s ease, background-color 0.5s ease; /* Transición suave para la posición y el color de fondo */
 }
 
@@ -30,26 +30,20 @@
     background-color: var(--secondary-color); /* Color del botón al pasar el mouse */
 }
 
-
-#board
-{
-	background-color: black;
-	border-top: 5px solid turquoise;
-	border-bottom: 5px solid turquoise;
-}
-
 .sidepanel {
+    position: absolute;
+	top: 0;
+    opacity: 0;
     height: 0; /* 0 height - change this with JavaScript */
     width: 100%; /* Full width */
     max-width: 250px; /* Max width of 250px */
-    position: fixed; /* Stay in place */
     z-index: 1; /* Stay on top */
-    left: 2.5%;
-    background-color: var(--secondary-color); /* Background color */
+
+    background-color: var(--accent-color); /* Background color */
     overflow-y: hidden; /* Disable vertical scroll */
-    color: white;
-	top: 0;
-	visibility: hidden; /* Hide the panel by default */
+    border-left: 2px solid var(--secondary-color);
+    border-right: 2px solid var(--secondary-color);
+    transition: height 0.5s ease, top 0.5s ease, opacity 0.5s ease;
 }
 
 /* .sidepanel .sideCloseButton {
@@ -62,6 +56,57 @@
 
 .sidepanel .sideContent {
   padding: 8px 8px 8px 8px;
+}
+
+#board
+{
+	background-color: black;
+	border-top: 5px solid turquoise;
+	border-bottom: 5px solid turquoise;
+}
+
+.slider-container {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+}
+
+.slider {
+    width: 400px;  /* Ancho del rectángulo */
+    height: 20px;  /* Altura del rectángulo */
+    background-color: var(--dark-color);
+    border-radius: 15px; /* Bordes redondeados */
+    position: relative;
+    box-shadow: 
+        inset 1px 1px 4px var(--light-color);  /* Sombra interior para efecto hundido */
+    overflow: hidden;
+}
+
+/* La bola */
+.ball {
+    width: 20px;  /* El mismo tamaño que la altura del rectángulo */
+    height: 20px;
+    background: radial-gradient(circle at 30% 30%, #ffffff, #b3b3b33a); 
+    border-radius: 50%; /* Hace que la bola sea redonda */
+    position: absolute;
+    top: 0;
+    left: 0; /* Posición inicial a la izquierda */
+    transition: left 1s ease, transform 1s ease; /* Transición suave para el movimiento */
+}
+
+.pong-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-family: 'Orbitron', sans-serif;  /* Asegúrate de tener la fuente importada */
+    color: white;  /* Color del texto */
+    background-color: transparent; /* Fondo transparente */
+    border: none;
+    cursor: pointer;
+}
+
+.pong-button:hover {
+    color: var(--primary-color);
+    transform: scale(1.05); /* Efecto de agrandamiento */
 }
 
 
