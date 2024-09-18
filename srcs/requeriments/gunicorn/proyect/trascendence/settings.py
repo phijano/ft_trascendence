@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'userManagement',
     'pong',
     'chat',
+    'channels',	
 ]
 
 MIDDLEWARE = [
@@ -91,7 +92,7 @@ ASGI_APPLICATION = 'trascendence.asgi.application'
 
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
     },
 }
 
