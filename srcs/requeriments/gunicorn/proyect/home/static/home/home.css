@@ -9,12 +9,11 @@
   
   /* Estilo para el contenedor */
   .container-fluid {
-      position: relative;
       background-color: var(--bs-dark);
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      height: calc(100vh - 5.25rem);  
       margin: 0; /* Elimina márgenes */
       overflow: hidden; /* Evita que la pelota se salga del contenedor */
     }
