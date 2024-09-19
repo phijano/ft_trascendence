@@ -111,3 +111,22 @@
 
 
 
+#sOpponentContainer {
+    grid-column: 2; /* Colocar en la segunda columna */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.option {
+    padding: 10px;
+    margin: 5px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.option.selected {
+    background-color: #007bff;
+    color: white;
+}

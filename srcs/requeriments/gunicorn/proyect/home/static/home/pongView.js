@@ -588,15 +588,40 @@ function toggleRules() {
 
 function moveBall(position) {
     const ball = document.getElementById('ball-pong');
-    
+	const remote =document.getElementById('bRemoteGame');
+
     if (position === 'left') {
         ball.style.left = '0'; // Extremo izquierdo
-    } else if (position === 'center') {
-        ball.style.left = '47.5%'; // Centro
+	} else if (position === 'center_1') {
+		ball.style.left = '30.83%'; 
+	} else if (position === 'center') {
+        if (remote.hidden){
+			ball.style.left = '47.5%';
+		} else {
+			ball.style.left = '64.16%';
+		}
     } else if (position === 'right') {
         ball.style.left = '95%'; // Extremo derecho
     }
 }
+
+function selectOption(element) {
+    // Remove 'selected' class from all options
+    const options = document.querySelectorAll('#sOpponentContainer .option');
+    options.forEach(option => option.classList.remove('selected'));
+
+    // Add 'selected' class to the clicked option
+    element.classList.add('selected');
+
+    // Update the hidden select element
+    const selectElement = document.getElementById('sOpponent');
+    selectElement.value = element.getAttribute('data-value');
+
+    // Trigger the onchange event
+    selectElement.dispatchEvent(new Event('change'));
+}
+
+
 
 //menu
 window.pongStartLocal = startLocal
@@ -604,6 +629,7 @@ window.pongStartRemote = startRemote;
 window.pongStartTournamentMode = startTournamentMode;
 window.pongShowCustomizationOptions = showCustomizationOptions;
 window.pongMoveball = moveBall;
+window.pongSelectOption = selectOption;
 
 //local game
 window.pongSetOpponent = setOpponent;
