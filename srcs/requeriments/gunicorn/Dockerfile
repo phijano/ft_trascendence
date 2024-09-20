@@ -17,6 +17,8 @@ RUN pip install psycopg[binary]
 # Development things
 RUN pip install channels
 RUN pip install daphne
+# Dependencies para chat
+RUN pip install pillow django-cleanup django-allauth django-htmx
 
 RUN apk -i add vim
 COPY ./vim/conf /
