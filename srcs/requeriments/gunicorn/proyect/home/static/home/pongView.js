@@ -619,6 +619,30 @@ function selectOption(element) {
 
     // Trigger the onchange event
     selectElement.dispatchEvent(new Event('change'));
+
+	const value = element.getAttribute('data-value');
+	const difficultyContainer = document.getElementById('sDifficultyContainer');
+    if (value === '0') {
+        difficultyContainer.hidden = true;
+    } else {
+        difficultyContainer.hidden = false;
+    }
+}
+
+function selectDifficulty(element) {
+	// Remove 'selected' class from all options
+	const options = document.querySelectorAll('#sDifficultyContainer .option');
+	options.forEach(option => option.classList.remove('selected'));
+
+	// Add 'selected' class to the clicked option
+	element.classList.add('selected');
+
+	// Update the hidden select element
+	const selectElement = document.getElementById('sDifficulty');
+	selectElement.value = element.getAttribute('data-value');
+
+	// Trigger the onchange event
+	selectElement.dispatchEvent(new Event('change'));
 }
 
 
@@ -630,6 +654,7 @@ window.pongStartTournamentMode = startTournamentMode;
 window.pongShowCustomizationOptions = showCustomizationOptions;
 window.pongMoveball = moveBall;
 window.pongSelectOption = selectOption;
+window.pongSelectDifficulty = selectDifficulty;
 
 //local game
 window.pongSetOpponent = setOpponent;

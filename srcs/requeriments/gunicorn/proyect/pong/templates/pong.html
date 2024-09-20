@@ -11,9 +11,9 @@
 	<link rel="stylesheet" href="{% static 'home/pong/pong.css' %}">
 </head>
 <body>
-	<script>
-		console.log('carecarpincho');
-	</script>
+    <script>
+        console.log("prueba de script");
+    </script>
 {% if user.is_authenticated %}
 	{% csrf_token %}
 	<input hidden id="hNick" value="{{profile}}">
@@ -63,7 +63,13 @@
 				<option value="0" selected> Player Vs Player </option>
 				<option value="1"> Player Vs AI </option>
 			</select>
-			<select id="sDifficulty" onchange="pongSetDifficulty()" style="visibility: hidden">
+			<div id="sDifficultyContainer" hidden>
+				<div class="option" data-value="0" onclick="pongSelectDifficulty(this)">Easy</div>
+				<div class="option" data-value="1" onclick="pongSelectDifficulty(this)">Medium</div>
+				<div class="option" data-value="2" onclick="pongSelectDifficulty(this)">Hard</div>
+				<div class="option" data-value="3" onclick="pongSelectDifficulty(this)">Impossible</div>
+			</div>
+			<select id="sDifficulty" onchange="pongSetDifficulty()" style="display: none;">
 				<option value="0"> Easy </option>
 				<option value="1" selected> Medium </option>
 				<option value="2"> Hard </option>
