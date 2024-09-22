@@ -42,19 +42,19 @@ CSRF_TRUSTED_ORIGINS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     #delele daphne in prod
-    'daphne',
     'django.contrib.staticfiles',
+    'channels',
     'home',
     'userManagement',
     'pong',
     'chat',
-    'channels',
     'django_htmx',
     'django_cleanup',
 ]
