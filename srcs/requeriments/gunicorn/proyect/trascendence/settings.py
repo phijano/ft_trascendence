@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-yrb=73%bos5rsni@-qb0cdjango-insecure-yrb=73%bos5rsni@-qb0cdjango-insecure-yrb=73%bos5rsni@-qb0cdjango-insecure-yrb=73%bos5rsni@-qb0cdjango-insecure-yrb=73%bos5rsni@-qb0cdjango-insecure-yrb=73%bos5rsni@-qb0cdjango-insecure-yrb=73%bos5rsni@-qb0cdjango-insecure-yrb=73%bos5rsni@-qb0cmy_secret_key2)uwi#n4g^yyhhzr1=)!yf13ws5+2)uwi#n4g^yyhhzr1=)!yf13ws5+2)uwi#n4g^yyhhzr1=)!yf13ws5+2)uwi#n4g^yyhhzr1=)!yf13ws5+2)uwi#n4g^yyhhzr1=)!yf13ws5+2)uwi#n4g^yyhhzr1=)!yf13ws5+2)uwi#n4g^yyhhzr1=)!yf13ws5+2)uwi#n4g^yyhhzr1=)!yf13ws5+'
+SECRET_KEY = 'django-insecure-yrb=73%bos5rsni@-qb0cdjango-insecure-yrb=73%bos5rsni@-qb0cdjango-insecure-yrb=73%bos5rsni@-qb0cdjango-insecure-yrb=73%bos5rsni@-qb0cdjango-insecure-yrb=73%bos5rsni@-qb0cdjango-insecure-yrb=73%bos5rsni@-qb0cdjango-insecure-yrb=73%bos5rsni@-qb0cdjango-insecure-yrb=73%bos5rsni@-qb0cdjango-insecure-yrb=73%bos5rsni@-qb0cdjango-insecure-yrb=73%bos5rsni@-qb0cmy_secret_key2)uwi#n4g^yyhhzr1=)!yf13ws5+2)uwi#n4g^yyhhzr1=)!yf13ws5+2)uwi#n4g^yyhhzr1=)!yf13ws5+2)uwi#n4g^yyhhzr1=)!yf13ws5+2)uwi#n4g^yyhhzr1=)!yf13ws5+2)uwi#n4g^yyhhzr1=)!yf13ws5+2)uwi#n4g^yyhhzr1=)!yf13ws5+2)uwi#n4g^yyhhzr1=)!yf13ws5+2)uwi#n4g^yyhhzr1=)!yf13ws5+2)uwi#n4g^yyhhzr1=)!yf13ws5+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -67,6 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_htmx.middleware.HtmxMiddleware',
 ]
 
 ROOT_URLCONF = 'trascendence.urls'
