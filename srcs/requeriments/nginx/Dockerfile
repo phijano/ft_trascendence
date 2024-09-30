@@ -9,8 +9,6 @@ RUN apk -i update && apk -i upgrade \
 COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 COPY ./tools/ssl_nginx.sh /
 
-COPY ./static/ /var/www
-
 RUN chmod +x ssl_nginx.sh
 
 RUN	mkdir -p /var/run/nginx
