@@ -620,12 +620,15 @@ function selectOption(element) {
     // Trigger the onchange event
     selectElement.dispatchEvent(new Event('change'));
 
-	const value = element.getAttribute('data-value');
-	const difficultyContainer = document.getElementById('sDifficultyContainer');
+    const value = element.getAttribute('data-value');
+    const difficultyContainer = document.getElementById('sDifficultyContainer');
+    const localSettingsContainer = document.getElementById('dLocalSettings');
     if (value === '0') {
-        difficultyContainer.hidden = true;
+        difficultyContainer.classList.remove('visible');
+        localSettingsContainer.classList.add('centered');
     } else {
-        difficultyContainer.hidden = false;
+        difficultyContainer.classList.add('visible');
+        localSettingsContainer.classList.remove('centered');
     }
 }
 

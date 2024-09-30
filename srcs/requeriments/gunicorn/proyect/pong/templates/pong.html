@@ -56,16 +56,16 @@
 		</div>
 	<div class="container" id="dLocalSettings" hidden>
 			<div id="sOpponentContainer">
-				<div class="option" data-value="0" onclick="pongSelectOption(this)">Player Vs Player</div>
+				<div class="option selected" data-value="0" onclick="pongSelectOption(this)">Player Vs Player</div>
 				<div class="option" data-value="1" onclick="pongSelectOption(this)">Player Vs AI</div>
 			</div>
 			<select id="sOpponent" onchange="pongSetOpponent()" style="display: none;">
 				<option value="0" selected> Player Vs Player </option>
 				<option value="1"> Player Vs AI </option>
 			</select>
-			<div id="sDifficultyContainer" hidden>
+			<div id="sDifficultyContainer">
 				<div class="option" data-value="0" onclick="pongSelectDifficulty(this)">Easy</div>
-				<div class="option" data-value="1" onclick="pongSelectDifficulty(this)">Medium</div>
+				<div class="option selected" data-value="1" onclick="pongSelectDifficulty(this)">Medium</div>
 				<div class="option" data-value="2" onclick="pongSelectDifficulty(this)">Hard</div>
 				<div class="option" data-value="3" onclick="pongSelectDifficulty(this)">Impossible</div>
 			</div>
