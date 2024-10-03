@@ -23,6 +23,7 @@
     cursor: pointer;
     text-align: center;
 	font-size: 1.2rem;
+    z-index: 30;
     transition: top 0.5s ease, background-color 0.5s ease; /* Transición suave para la posición y el color de fondo */
 }
 
@@ -37,8 +38,7 @@
     height: 0; /* 0 height - change this with JavaScript */
     width: 100%; /* Full width */
     max-width: 250px; /* Max width of 250px */
-    z-index: 1; /* Stay on top */
-
+    z-index: 30; /* Stay on top */
     background-color: var(--accent-color); /* Background color */
     overflow-y: hidden; /* Disable vertical scroll */
     border-left: 2px solid var(--secondary-color);
@@ -58,12 +58,6 @@
   padding: 8px 8px 8px 8px;
 }
 
-#board
-{
-	background-color: black;
-	border-top: 5px solid turquoise;
-	border-bottom: 5px solid turquoise;
-}
 
 .slider-container {
     display: flex;
@@ -79,19 +73,20 @@
     position: relative;
     box-shadow: 
         inset 1px 1px 4px var(--light-color);  /* Sombra interior para efecto hundido */
-    overflow: hidden;
+
 }
 
 /* La bola */
-.ball {
+#ball-pong {
     width: 20px;  /* El mismo tamaño que la altura del rectángulo */
     height: 20px;
-    background: radial-gradient(circle at 30% 30%, #ffffff, #b3b3b33a); 
+    background: radial-gradient(circle at 30% 30%, #ffffff, #b3b3b3); 
     border-radius: 50%; /* Hace que la bola sea redonda */
     position: absolute;
-    top: 0;
-    left: 0; /* Posición inicial a la izquierda */
-    transition: left 1s ease, transform 1s ease; /* Transición suave para el movimiento */
+    top: 270px;
+    left: 50%; /* Posición inicial a la izquierda */
+    z-index: 20;
+    transition: top 1s ease, left 1s ease, transform 1s ease; /* Transición suave para el movimiento */
 }
 
 .pong-button {
@@ -145,7 +140,7 @@
 
 .option {
     font-family: 'Orbitron', sans-serif;
-    color: var(--light-color);
+    color: var(--accent-color);
     font-size: small;
     padding: 10px;
     margin: 5px;
@@ -156,7 +151,7 @@
 
 .option.selected {
     background-color: none;
-    color: magenta;
+    color: red;
 }
 
 #sDifficultyContainer .option {
@@ -164,10 +159,83 @@
 }
 
 #sDifficultyContainer .option.selected {
-    color: cyan; 
+    color: magenta; 
 }
 
 #dLocalSettings.centered #sOpponentContainer {
     justify-content: center; /* Centra las opciones de oponente */
     margin-right: 0; /* Elimina el margen derecho */
+}
+
+.container-players{
+    border-radius: 10px 10px 0 0;
+    width: 700px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container-players-inside{
+    display: block;
+    width: 300px;
+    justify-content: center;
+    flex: 1;
+}
+
+.container-players-inside-small {
+    flex: 0.2; /* El div del medio ocupará menos espacio */
+}
+
+.players-font {
+    font-family: "Orbitron", sans-serif;
+    font-size: medium;
+    color: cyan;
+}
+
+
+#gameContainer {
+    position: relative;
+}
+
+
+#chooseIndicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-family: "Bungee Tint", sans-serif;
+    font-size: 40px;
+    display: flex;
+    transform: translate(-50%, -50%);
+    gap: 10px; /* Espacio entre las palabras */
+}
+
+
+#board
+{
+	background-color: black;
+	border: 3px solid var(--accent-color);
+}
+
+#dStartGame {
+    position: absolute; /* Posicionamiento absoluto */
+    top: 50%; /* Ajusta según sea necesario */
+    left: 50%; /* Ajusta según sea necesario */
+    transform: translate(-50%, -50%); /* Centra el div */
+    z-index: 10; /* Asegura que el div esté por encima del canvas */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%; /* Asegura que el div tenga el mismo ancho que el canvas */
+    height: 100%;
+}
+
+.start-button {
+    font-family: "Bungee Tint", sans-serif;
+    border-radius: 15px; /* Bordes redondeados */
+    background-color: transparent; /* Color de fondo */
+    padding: 10px 20px; /* Espaciado interno */
+    border: none; /* Borde con grosor y color */
+    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+    font-size: 50px; /* Tamaño de la fuente */
+    transition: background-color 0.3s; /* Transición suave para el cambio de color */
 }

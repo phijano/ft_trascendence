@@ -98,6 +98,7 @@ function hideLocal() {
 	document.getElementById("dMatchPlayers").hidden = true;
 	document.getElementById("dStartGame").hidden = true;
 	document.getElementById("dWinner").hidden = true;
+	document.getElementById("chooseIndicator").hidden = true;
 }
 
 function hideRemote() {
@@ -108,17 +109,19 @@ function hideRemote() {
 	document.getElementById("dStartGame").hidden = true;
 	document.getElementById("dWinner").hidden = true;
 	document.getElementById("dGameMessage").hidden = true;
-
+	document.getElementById("chooseIndicator").hidden = true;
 }
 
 function hideTournament() {
 	document.getElementById("bTournament").disabled = false;
 	document.getElementById("dTournamentSettings").hidden = true;
+	document.getElementById("chooseIndicator").hidden = true;
 }
 
 function hideCustomizationOptions() {
 	document.getElementById("bSettings").disabled = false;
     document.getElementById("dCustomizationOptions").hidden = true;
+	document.getElementById("chooseIndicator").hidden = true;
 }
 
 function setLocal() {
@@ -589,6 +592,8 @@ function toggleRules() {
 function moveBall(position) {
     const ball = document.getElementById('ball-pong');
 	const remote =document.getElementById('bRemoteGame');
+
+	ball.style.top = '0px';
 
     if (position === 'left') {
         ball.style.left = '0'; // Extremo izquierdo
