@@ -11,6 +11,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import ChatGroup
 from .forms import ChatmessageCreateForm
+from userManagement.views import profile
 
 @login_required
 def chat_view(request):
