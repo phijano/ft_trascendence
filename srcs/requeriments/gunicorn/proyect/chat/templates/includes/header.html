@@ -13,9 +13,9 @@
                 <li>
                     <a href="{% url 'profile' %}">My Profile</a>
                 </li>
-                <li>
+                {% comment %} <li>
                     <a href="{% url 'account_logout' %}">Log Out</a>
-                </li>
+                </li> {% endcomment %}
             {% else %}
                 <li><a href="{% url 'home' %}">Home</a></li>  <!-- O redirige a otra página -->
             {% endif %}
