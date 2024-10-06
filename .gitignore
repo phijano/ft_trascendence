@@ -1,2 +1,62 @@
+# Ignorar archivos compilados de Python
 *.pyc
 __pycache__/
+
+# Ignorar archivos de configuración del entorno virtual
+venv/
+env/
+ENV/
+.venv/
+.ENV/
+
+# Ignorar archivos de configuración del editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Ignorar archivos de configuración de sistema operativo
+.DS_Store
+Thumbs.db
+
+# Ignorar archivos de configuración de logs
+*.log
+
+# Ignorar archivos de configuración de bases de datos locales
+db.sqlite3
+
+# Ignorar archivos de migraciones de Django
+*/migrations/*
+
+# Ignorar archivos estáticos generados
+staticfiles/
+media/
+
+# Ignorar archivos de configuración de despliegue
+*.env
+.env.*
+
+# Ignorar archivos JSON innecesarios
+*.json
+
+# Ignorar archivos de configuración de cobertura de pruebas
+htmlcov/
+.coverage
+.coverage.*
+
+# Ignorar archivos de configuración de caché
+.cache/
+*.cache
+
+# Ignorar archivos de configuración de pytest
+.pytest_cache/
+
+# Ignorar archivos de configuración de Jupyter Notebooks
+.ipynb_checkpoints/
+
+# Ignorar archivos de configuración de Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Ignorar archivos de configuración de Docker
+docker-compose.override.yml
