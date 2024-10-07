@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', (event) => {
-    // Conectar al WebSocket
+    const chatroomName = 'public-chat'; // Cambia esto si necesitas un nombre de sala dinámico
     const chatSocket = new WebSocket(
-        'ws://' + window.location.host + '/ws/chatroom/public-chat/'
+        'ws://' + window.location.host + '/ws/chatroom/' + chatroomName + '/'
     );
 
     // Manejar mensajes recibidos del WebSocket
@@ -59,4 +59,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
             messageInputDom.value = '';
         });
     };
+
+    // Enviar mensaje al presionar "Enter"
+    document.getElementById('message_input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            document.getElementById('chat_message_form').submit();
+        }
+    });
 });

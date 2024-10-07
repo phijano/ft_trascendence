@@ -62,7 +62,6 @@ class ChatroomConsumer(WebsocketConsumer):
         html = render_to_string('chat/partials/chat_message_p.html', context=context)
         self.send(text_data=html)
 
-
     def update_online_count(self):
         online_count = self.chatroom.users_online.count() -1
 

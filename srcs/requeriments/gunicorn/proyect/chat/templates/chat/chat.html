@@ -20,7 +20,7 @@
             <div class="flex items-center rounded-xl px-2 py-2">
                 <form id="chat_message_form" class="w-full">
                     {% csrf_token %}
-                    {{ form }}
+                    <input type="text" id="message_input" name="message" class="flex-grow p-2 rounded-xl bg-gray-600 text-white" placeholder="Type your message...">
                 </form>
             </div>
         </div>
