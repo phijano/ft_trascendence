@@ -1,0 +1,81 @@
+/* srcs/requeriments/gunicorn/proyect/chat/static/chat/css/styles.css */
+
+/* Estilo para el icono en línea */
+#online-icon {
+    /* Define los estilos necesarios aquí */
+}
+
+/* Estilo para el contador en línea */
+#online-count {
+    padding-right: 0.25rem; /* pr-1 en Tailwind */
+}
+
+/* Estilo para el contenedor del chat */
+#chat_container {
+    overflow-y: auto; /* overflow-y-auto en Tailwind */
+    flex-grow: 1; /* grow en Tailwind */
+}
+
+/* Estilo para la lista de mensajes del chat */
+#chat_messages {
+    display: flex; /* flex en Tailwind */
+    flex-direction: column; /* flex-col en Tailwind */
+    justify-content: flex-end; /* justify-end en Tailwind */
+    gap: 0.5rem; /* gap-2 en Tailwind */
+    padding: 1rem; /* p-4 en Tailwind */
+}
+
+/* Estilo para el pie del chat */
+.sticky {
+    position: sticky; /* sticky en Tailwind */
+    bottom: 0; /* bottom-0 en Tailwind */
+    z-index: 10; /* z-10 en Tailwind */
+    padding: 0.5rem; /* p-2 en Tailwind */
+    background-color: #2d3748; /* bg-gray-800 en Tailwind */
+}
+
+/* Estilo para el formulario del mensaje del chat */
+.flex {
+    display: flex; /* flex en Tailwind */
+    align-items: center; /* items-center en Tailwind */
+    border-radius: 0.75rem; /* rounded-xl en Tailwind */
+    padding-left: 0.5rem; /* px-2 en Tailwind */
+    padding-right: 0.5rem; /* px-2 en Tailwind */
+    padding-top: 0.5rem; /* py-2 en Tailwind */
+    padding-bottom: 0.5rem; /* py-2 en Tailwind */
+}
+
+/* Estilo para el formulario del mensaje del chat */
+#w-full {
+    width: 100%; /* w-full en Tailwind */
+}
+
+/* Estilo para el contenedor principal del chat */
+.chat-wrapper {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+/* Estilo para la ventana del chat */
+.chat-window {
+    height: 45rem;
+    display: flex;
+    flex-direction: column;
+    background-color: #2d3748;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+}
+
+/* Estilo para el encabezado del chat */
+.chat-header {
+    display: flex;
+    justify-content: center;
+    color: #38b2ac;
+    background-color: #2d3748;
+    padding: 0.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
