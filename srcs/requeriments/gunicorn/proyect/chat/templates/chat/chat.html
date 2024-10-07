@@ -17,14 +17,13 @@
         </div>
         <div class="sticky bottom-0 z-10 p-2 bg-gray-800">
             <div class="flex items-center rounded-xl px-2 py-2">
-                <form id="chat_message_form" class="w-full"
-                    hx-ext="ws"
-                    ws-connect="/ws/chatroom/public-chat"
-                    ws-send
-                    _="on htmx:wsAfterSend reset() me">
+                <form id="chat_message_form" class="w-full">
                     {% csrf_token %}
                     {{ form }}
                 </form>
+                <ul id="messages_list">
+                    
+                </ul>
             </div>
         </div>
     </div>
