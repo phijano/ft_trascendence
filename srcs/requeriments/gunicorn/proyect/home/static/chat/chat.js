@@ -32,10 +32,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     // Manejar envío de mensajes
     document.getElementById('chat_message_form').onsubmit = function(e) {
-        e.preventDefault();
+        e.preventDefault();  // Prevenir el envío predeterminado del formulario
         const messageInputDom = document.getElementById('message_input');
         const message = messageInputDom.value;
-
+    
+        // Verificar que el mensaje no esté vacío
+        if (message.trim() === "") return;
+    
         // Enviar mensaje al servidor Django
         fetch('/chat/', {
             method: 'POST',
@@ -56,10 +59,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 'avatar': data.avatar,
                 'is_author': data.is_author
             }));
-            messageInputDom.value = '';
+            messageInputDom.value = '';  // Limpiar el campo de texto
+        })
+        .catch(error => {
+            console.error('Error al enviar el mensaje:', error);
         });
     };
-
+    
     // Enviar mensaje al presionar "Enter"
     document.getElementById('message_input').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {

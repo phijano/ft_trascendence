@@ -11,19 +11,31 @@
 </li>
 {% else %}
 <li>
-    <div class="flex justify-start">
-        <div class="flex items-end mr-2">
-            <a href="{% url 'profile' message.author.username %}">
-                <img class="w-8 h-8 rounded-full object-cover" src="{{ message.author.profile.avatar }}">
-            </a>
+    <div class="flex flex-col items-start">
+        <!-- Mensaje y Avatar -->
+        <div class="flex items-center">
+            <!-- Avatar -->
+            <div class="flex items-end mr-2">
+                <a href="{% url 'profile' message.author.username %}">
+                    <img class="w-8 h-8 rounded-full object-cover" src="{{ message.author.profile.avatar }}">
+                </a>
+            </div>
+            <!-- Flecha SVG -->
+            <div class="flex items-end">
+                <svg height="13" width="8">
+                    <path fill="white" d="M2.8,13L8,13L8,0.2C7.1,5.5,6.5,8.7,1.7,10.4C-1.6,11.5,1,13,2.8,13z"></path>
+                </svg>
+            </div>
+            <!-- Mensaje -->
+            <div class="bg-white p-4 max-w-[75%] rounded-r-lg rounded-tl-lg">
+                <span>{{ message.body }}</span>
+            </div>  
         </div>
-        <div class="bg-white p-4 max-w-[75%] rounded-r-lg rounded-tl-lg">
-            <span>{{ message.body }}</span>
+        <!-- Nombre de usuario -->
+        <div class="text-sm font-light py-1 ml-10">
+            <span class="text-white">{{ message.author.profile.name }}</span>
+            <span class="text-gray-400">@{{ message.author.username }}</span>
         </div>
-    </div>
-    <div class="text-sm font-light py-1 ml-10">
-        <span class="text-white">{{ message.author.profile.name }}</span>
-        <span class="text-gray-400">@{{ message.author.username }}</span>
     </div>
 </li>
 {% endif %}

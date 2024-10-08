@@ -7,6 +7,7 @@ from .models import *
 
 class ChatroomConsumer(WebsocketConsumer):
     def connect(self):
+        print('connected')
         self.user = self.scope['user']
         self.chatroom_name = self.scope['url_route']['kwargs']['chatroom_name']
         self.chatroom = get_object_or_404(ChatGroup, group_name=self.chatroom_name)
@@ -21,9 +22,10 @@ class ChatroomConsumer(WebsocketConsumer):
             self.chatroom.users_online.add(self.user)
             self.update_online_count()
         
-        self.accept()
+        self.connect()
 
     def disconnect(self, close_code):
+        print('disconnected')
         async_to_sync(self.channel_layer.group_discard)(
             self.chatroom_name,
             self.channel_name
@@ -35,8 +37,13 @@ class ChatroomConsumer(WebsocketConsumer):
             self.update_online_count()
 
     def receive(self, text_data):
+        print('received')
         text_data_json = json.loads(text_data)
         body = text_data_json['body']
+
+        self.send(text_data=json.dumps({
+            'message': body
+        }))
 
         message = GroupMessage.objects.create(
             body = body,
