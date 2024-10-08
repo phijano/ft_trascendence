@@ -112,8 +112,9 @@
     transition: all 0.5s ease; /* Añade una transición suave para todos los cambios */
 }
 
-#sOpponentContainer, #sDifficultyContainer {
+#sOpponentContainer, #sDifficultyContainer, #sNumPlayersContainer {
     display: flex;
+    flex-direction: row;
     justify-content: center; /* Centra las opciones */
     align-items: center;
     transition: all 0.5s ease; /* Añade una transición suave */
@@ -238,4 +239,16 @@
     cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
     font-size: 50px; /* Tamaño de la fuente */
     transition: background-color 0.3s; /* Transición suave para el cambio de color */
+}
+
+#createTournament {
+    font-family: "Orbitron", sans-serif;
+    font-size: large;
+    color: cyan;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#sNumPlayersContainer {
+    margin-bottom: 20px;
 }

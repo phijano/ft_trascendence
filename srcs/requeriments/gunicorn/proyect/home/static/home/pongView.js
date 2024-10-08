@@ -608,6 +608,7 @@ function moveBall(position) {
     } else if (position === 'right') {
         ball.style.left = '95%'; // Extremo derecho
     }
+
 }
 
 function selectOption(element) {
@@ -653,6 +654,20 @@ function selectDifficulty(element) {
 	selectElement.dispatchEvent(new Event('change'));
 }
 
+function setNumPlayers(element) {
+    // Remueve la clase 'selected' de todas las opciones
+    const options = document.querySelectorAll('#sNumPlayersContainer .option');
+    options.forEach(option => option.classList.remove('selected'));
+
+    // Agrega la clase 'selected' al elemento clicado
+    element.classList.add('selected');
+
+    // Actualiza el valor del select oculto
+    const select = document.getElementById('sNumPlayers');
+    select.value = element.getAttribute('data-value');
+
+	select.dispatchEvent(new Event('change'));
+}
 
 
 //menu
@@ -663,6 +678,7 @@ window.pongShowCustomizationOptions = showCustomizationOptions;
 window.pongMoveball = moveBall;
 window.pongSelectOption = selectOption;
 window.pongSelectDifficulty = selectDifficulty;
+window.pongSetNumPlayers = setNumPlayers;
 
 //local game
 window.pongSetOpponent = setOpponent;

@@ -82,8 +82,13 @@
 			<button id="bJoinRemote" type="button" onclick="pongJoinGame()">Join game</button>
 	</div>
 	<div class="bg-dark container" id="dTournamentSettings" hidden>
-		<h4 class="p-4 text-white">CREATE TOURNAMENT</h4>
-			<select id="sNumPlayers" name="selectPlayers" onchange="pongSelectNumPlayers()">
+			<h4 id="createTournament">CREATE TOURNAMENT</h4>
+			<div id="sNumPlayersContainer">
+				<div class="option selected" data-value="4" onclick="pongSetNumPlayers(this)">4 Players</div>
+				<div class="option" data-value="8" onclick="pongSetNumPlayers(this)">8 Players</div>
+				<div class="option" data-value="16" onclick="pongSetNumPlayers(this)">16 Players</div>
+			</div>
+			<select id="sNumPlayers" name="selectPlayers" onchange="pongSelectNumPlayers()" style="display: none;">
 				<option value="4" selected> 4 Players </option>
 				<option value="8"> 8 Players </option>
 				<option value="16"> 16 Players </option>
