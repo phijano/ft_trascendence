@@ -1,3 +1,4 @@
+console.log('Chat.js cargado');
 document.addEventListener('DOMContentLoaded', (event) => {
     const chatroomName = 'public-chat'; // Cambia esto si necesitas un nombre de sala dinámico
     const chatSocket = new WebSocket(
