@@ -4,8 +4,8 @@ let errors;
 let myWebsocket;
 
 async function getWebsocket() {	
-	myWebsocket = new WebSocket('wss://' + window.location.host + '/ws');
-	//myWebsocket = new WebSocket('ws://' + window.location.host + '/ws');
+	//myWebsocket = new WebSocket('wss://' + window.location.host + '/ws');
+	myWebsocket = new WebSocket('ws://' + window.location.host + '/ws');
 	myWebsocket.onopen = socketOpen
 	myWebsocket.onmessage = socketMessage;
 	myWebsocket.onclose = socketClose;
