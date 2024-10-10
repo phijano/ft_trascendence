@@ -4,8 +4,8 @@ let errors;
 let myWebsocket;
 
 async function getWebsocket() {	
-	//myWebsocket = new WebSocket('wss://' + window.location.host + '/ws');
-	myWebsocket = new WebSocket('ws://' + window.location.host + '/ws');
+	myWebsocket = new WebSocket('wss://' + window.location.host + '/ws');
+	//myWebsocket = new WebSocket('ws://' + window.location.host + '/ws');
 	myWebsocket.onopen = socketOpen
 	myWebsocket.onmessage = socketMessage;
 	myWebsocket.onclose = socketClose;
@@ -240,8 +240,8 @@ function checkAvatar() {
 		dError.innerHTML = "wrong file, only images";
 		dError.hidden = false;
 	}
-	else if (image.size > 5_000_000) {
-		dError.innerHTML = "maximun upload size is 5MB";
+	else if (image.size > 2_000_000) {
+		dError.innerHTML = "maximun upload size is 2MB";
 		dError.hidden = false;		
 	}
 	else {
