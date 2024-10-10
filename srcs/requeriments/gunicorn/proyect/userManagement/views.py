@@ -63,7 +63,6 @@ class SignUp(View):
             mail_subject = 'Activate your account'
             message = render_to_string('registration/accountActiveEmail.html', {
                 'user': user,
-                'scheme':request.scheme,
                 'domain': currentSite.domain,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                 'token': tokenGenerator.make_token(user),
