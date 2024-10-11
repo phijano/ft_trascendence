@@ -6,6 +6,7 @@ import json
 from .models import *
 
 class ChatroomConsumer(WebsocketConsumer):
+  
     def connect(self):
         print('connected')
         self.user = self.scope['user']

@@ -1,4 +1,4 @@
-<span id="online-count" hx-swap-oob="outerHTML" class="fade-in-scale pr-1">
+<span id="online-count" hx-swap-oob="outerHTML" class="fade-in-scale pe-1">
     {{ online_count }}
     <style>
         @keyframes fadeInScale {
@@ -12,7 +12,7 @@
 </span>
 
 {% if online_count %}
-    <div id="online-icon" class="absolute top-2 left-2 rounded-full bg-green-500 p-1.5"></div>
+    <div id="online-icon" class="position-absolute top-0 start-0 rounded-circle bg-success p-2"></div>
 {% else %}
-    <div id="online-icon" class="absolute top-2 left-2 rounded-full bg-gray-500 p-1.5"></div>
+    <div id="online-icon" class="position-absolute top-0 start-0 rounded-circle bg-secondary p-2"></div>
 {% endif %}
