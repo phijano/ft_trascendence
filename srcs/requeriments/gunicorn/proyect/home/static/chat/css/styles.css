@@ -1,0 +1,81 @@
+/* Estilo para el contenedor del chat */
+#chat-container {
+    display: block; /* Mostrar inicialmente */
+    width: 100%;
+    max-width: 600px; /* Ancho máximo para el contenedor */
+    height: 400px;
+    background-color: #9c95cdd7; /* Color morado oscuro */
+    border-radius: 10px;
+    overflow: hidden; /* Ocultar el desplazamiento */
+    box-shadow: 0px 4px 10px #211e39d7; /* Sombra suave */
+    margin: auto; /* Centrar el contenedor */
+    position: relative; /* Para el posicionamiento del formulario */
+}
+
+/* Estilo para el área de mensajes */
+#chat-box {
+    height: calc(100% - 60px); /* Ajustar para que el formulario no se solape */
+    overflow-y: auto; /* Permitir desplazamiento si hay más contenido */
+    padding: 10px; /* Espaciado interior */
+    background-color: #211e39d7; /* Mantener el mismo color oscuro */
+    border-radius: 10px; /* Bordes redondeados */
+}
+
+/* Estilo para los mensajes */
+.message-container {
+    display: flex; /* Flex para alinear los mensajes */
+    margin: 10px 0; /* Espaciado entre mensajes */
+}
+
+.message {
+    padding: 10px;
+    border-radius: 20px; /* Bordes redondeados */
+    max-width: 70%; /* Ancho máximo */
+    font-family: Arial, sans-serif; /* Cambia la tipografía */
+}
+
+/* Mensajes enviados (alineados a la derecha) */
+.message.sent {
+    background-color: #dcf8c6; /* Color de fondo */
+    align-self: flex-end; /* Alinear a la derecha */
+    margin-left: auto; /* Espacio a la izquierda */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); /* Sombra para el mensaje */
+}
+
+/* Mensajes recibidos (alineados a la izquierda) */
+.message.received {
+    background-color: #ffffff; /* Color de fondo */
+    align-self: flex-start; /* Alinear a la izquierda */
+    margin-right: auto; /* Espacio a la derecha */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Sombra para el mensaje */
+}
+
+/* Formulario para enviar mensajes */
+#chat-form {
+    position: absolute; /* Posicionar el formulario */
+    bottom: 0; /* Alinear al fondo del contenedor */
+    left: 0;
+    right: 0;
+    display: flex; /* Flex para el formulario */
+    margin: 0; /* Sin margen para que esté pegado al borde */
+    padding: 10px; /* Espacio interior */
+    background-color: #9c95cdd7; /* Fondo morado oscuro para el formulario */
+}
+
+#message-input {
+    flex-grow: 1; /* El campo de entrada ocupa el espacio restante */
+    padding: 10px;
+    border: none; /* Sin bordes */
+    border-radius: 20px; /* Bordes redondeados */
+    margin-right: 10px; /* Espacio a la derecha */
+}
+
+/* Estilo para el avatar */
+.avatar {
+    width: 40px; /* Ancho del avatar */
+    height: 40px; /* Alto del avatar */
+    border-radius: 50%; /* Hacerlo redondo */
+    margin-right: 10px; /* Espacio a la derecha */
+    align-self: flex-start; /* Alinear a la izquierda */
+}
+

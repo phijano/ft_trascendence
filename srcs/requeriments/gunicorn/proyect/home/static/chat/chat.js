@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', (event) => {
+/* document.addEventListener('DOMContentLoaded', (event) => {
     const chatroomName = 'public-chat'; // Cambia esto si necesitas un nombre de sala dinámico
     const chatSocket = new WebSocket(
         'ws://' + window.location.host + '/ws/chatroom/' + chatroomName + '/'
@@ -67,4 +67,4 @@ document.addEventListener('DOMContentLoaded', (event) => {
             document.getElementById('chat_message_form').submit();
         }
     });
-});
+}); */
