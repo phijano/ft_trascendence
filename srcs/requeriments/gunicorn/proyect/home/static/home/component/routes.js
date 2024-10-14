@@ -57,7 +57,7 @@ const URL = {
 	},
 
 	"/chat": {
-		template: "/appChat",
+		template: "/appChat/",
 		title: "chat",
 		description: "This is live chat",
 	},

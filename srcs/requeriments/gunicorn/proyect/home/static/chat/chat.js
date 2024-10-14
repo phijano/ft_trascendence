@@ -1,3 +1,14 @@
+document.addEventListener('DOMContentLoaded', function() {
+    const btnMessage = document.querySelector('#btnMessage');
+    if (btnMessage) {
+        btnMessage.addEventListener('click', function(event) {
+            event.preventDefault(); // Evitar el comportamiento por defecto
+            console.log('Enviando mensaje...');
+        });
+    } else {
+        console.error('Elemento con ID "btnMessage" no encontrado.');
+    }
+});
 /* document.addEventListener('DOMContentLoaded', (event) => {
     const chatroomName = 'public-chat'; // Cambia esto si necesitas un nombre de sala dinámico
     const chatSocket = new WebSocket(

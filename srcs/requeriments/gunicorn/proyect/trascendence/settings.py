@@ -182,3 +182,4 @@ MEDIA_URL = 'avatars/'
 
 STATIC_ROOT = 'static_files/static'
 MEDIA_ROOT = 'static_files/media'
+

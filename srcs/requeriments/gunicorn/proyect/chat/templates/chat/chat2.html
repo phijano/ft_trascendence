@@ -1,0 +1,29 @@
+{% load static %}
+
+<div id="chat-container" class="container mt-4">
+    <h1>¡Live Chat en {{ room.name }}!</h1> <!-- Mostrar el nombre de la sala -->
+
+    <div id="chat-box" class="mb-4">
+        <div class="message-container">
+            <img src="{% static 'chat/images/avatar2.jpeg' %}" alt="Avatar" class="avatar">
+            <div class="message received">Hola, ¿cómo estás?</div>
+        </div>
+        <div class="message-container">
+            <div class="message sent">¡Estoy bien, gracias!</div>
+        </div>
+    </div>
+
+    <!-- Formulario para enviar mensajes -->
+    <form id="chat-form">
+        <input type="text" id="message-input" placeholder="Escribe tu mensaje..." required />
+        <button id="btnMessage" type="submit" class="btn btn-primary">Enviar</button>
+    </form>
+</div>
+
+<!-- Añadir mensajes de depuración para asegurarte de que el script está funcionando -->
+<script src="{% static 'chat/chat.js' %}"></script>
+
+<script>
+    console.log("El template ha cargado correctamente.");
+    console.log("La sala actual es: {{ room.name }}");
+</script>

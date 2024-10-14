@@ -4,19 +4,22 @@
     <h1>¡{{ room.name }} chat!</h1> <!-- Mostrar el nombre de la sala -->
 
     <div id="boxMessages" class="mb-4">
-        {% for message in room.message_set.all %}
+        {% comment %} {% for message in room.message_set.all %} {% endcomment %}
         <div class="message-container">
             <img src="{% static 'chat/images/avatar2.jpeg' %}" alt="Avatar" class="avatar">
-            <div class="message received">{{ message.user.username }}: {{ message.message }}</div>
+            <div class="message received">Hola, ¿cómo estás?</div>
         </div>
-        {% endfor %}
+        <div class="message-container">
+            <div class="message sent">¡Estoy bien, gracias!</div>
+        </div>
+        {% comment %} {% endfor %} {% endcomment %}
     </div>
 
     <!-- Formulario para enviar mensajes -->
     <div id="chat">
         <input type="text" id="message" placeholder="Escribe tu mensaje..." />
-        <button class="btn btn-success mt-1 submit id=btnMessage">Enviar</button>
+        <button class="btn btn-success mt-1 submit" id="btnMessage">Enviar</button>
     </div>
 </div>
 
-{% comment %} <script src="{% static 'chat/chat.js' %}"></script> {% endcomment %}
+<script src="{% static 'chat/chat.js' %}"></script>
