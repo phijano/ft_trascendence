@@ -13,7 +13,7 @@
 }
 
 /* Estilo para el área de mensajes */
-#chat-box {
+#boxMessages {
     height: calc(100% - 60px); /* Ajustar para que el formulario no se solape */
     overflow-y: auto; /* Permitir desplazamiento si hay más contenido */
     padding: 10px; /* Espaciado interior */
@@ -51,7 +51,7 @@
 }
 
 /* Formulario para enviar mensajes */
-#chat-form {
+#chat {
     position: absolute; /* Posicionar el formulario */
     bottom: 0; /* Alinear al fondo del contenedor */
     left: 0;
@@ -62,7 +62,7 @@
     background-color: #9c95cdd7; /* Fondo morado oscuro para el formulario */
 }
 
-#message-input {
+#message {
     flex-grow: 1; /* El campo de entrada ocupa el espacio restante */
     padding: 10px;
     border: none; /* Sin bordes */

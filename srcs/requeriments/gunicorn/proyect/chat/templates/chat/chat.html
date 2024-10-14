@@ -1,9 +1,9 @@
 {% load static %}
 
 <div id="chat-container" class="container mt-4">
-    <h1>¡Live Chat en {{ room.name }}!</h1> <!-- Mostrar el nombre de la sala -->
+    <h1>¡{{ room.name }} chat!</h1> <!-- Mostrar el nombre de la sala -->
 
-    <div id="chat-box" class="mb-4">
+    <div id="boxMessages" class="mb-4">
         {% for message in room.message_set.all %}
         <div class="message-container">
             <img src="{% static 'chat/images/avatar2.jpeg' %}" alt="Avatar" class="avatar">
@@ -13,10 +13,10 @@
     </div>
 
     <!-- Formulario para enviar mensajes -->
-    <form id="chat-form">
-        <input type="text" id="message-input" placeholder="Escribe tu mensaje..." />
-        <button type="submit" class="btn btn-primary">Enviar</button>
-    </form>
+    <div id="chat">
+        <input type="text" id="message" placeholder="Escribe tu mensaje..." />
+        <button class="btn btn-success mt-1 submit id=btnMessage">Enviar</button>
+    </div>
 </div>
 
 {% comment %} <script src="{% static 'chat/chat.js' %}"></script> {% endcomment %}
