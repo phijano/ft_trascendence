@@ -55,8 +55,6 @@ INSTALLED_APPS = [
     'userManagement',
     'pong',
     'chat',
-    'django_htmx',
-    'django_cleanup',
 ]
 
 MIDDLEWARE = [
