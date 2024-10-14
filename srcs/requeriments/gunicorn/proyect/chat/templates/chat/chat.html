@@ -1,15 +1,15 @@
 {% load static %}
 
 <div id="chat-container" class="container mt-4">
-    <h1>¡Live Chat!</h1>
+    <h1>¡Live Chat en {{ room.name }}!</h1> <!-- Mostrar el nombre de la sala -->
+
     <div id="chat-box" class="mb-4">
+        {% for message in room.message_set.all %}
         <div class="message-container">
             <img src="{% static 'chat/images/avatar2.jpeg' %}" alt="Avatar" class="avatar">
-            <div class="message received">Hola, ¿cómo estás?</div>
+            <div class="message received">{{ message.user.username }}: {{ message.message }}</div>
         </div>
-        <div class="message-container">
-            <div class="message sent">¡Estoy bien, gracias!</div>
-        </div>
+        {% endfor %}
     </div>
 
     <!-- Formulario para enviar mensajes -->
@@ -18,3 +18,5 @@
         <button type="submit" class="btn btn-primary">Enviar</button>
     </form>
 </div>
+
+{% comment %} <script src="{% static 'chat/chat.js' %}"></script> {% endcomment %}

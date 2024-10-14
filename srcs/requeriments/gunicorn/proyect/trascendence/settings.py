@@ -65,6 +65,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # Middleware para asegurar que los usuarios autenticados estén en la sala pública
+    'chat.middleware.PublicRoomMiddleware',
 ]
 
 ROOT_URLCONF = 'trascendence.urls'
