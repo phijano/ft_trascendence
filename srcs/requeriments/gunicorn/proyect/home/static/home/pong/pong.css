@@ -241,7 +241,7 @@
     transition: background-color 0.3s; /* Transición suave para el cambio de color */
 }
 
-#createTournament {
+.title-cyan-big {
     font-family: "Orbitron", sans-serif;
     font-size: large;
     color: cyan;
@@ -253,11 +253,13 @@
     margin-bottom: 20px;
 }
 
+
 #iNick {
     border-radius: 10px; /* Bordes redondeados */
     background-color: #333; /* Color de fondo oscuro */
+    font-family: "Orbitron", sans-serif;
     color: white; /* Color del texto */
-    border: 1px solid #555; /* Borde oscuro */
+    border: solid #555; /* Borde oscuro */
     padding: 10px; /* Espaciado interno */
     width: 100%; /* Ancho completo del contenedor */
     box-sizing: border-box; /* Incluye el padding y el borde en el ancho total */
@@ -267,16 +269,50 @@
     color: #aaa; /* Color del texto del placeholder */
 }
 
-#bRegisterPlayer {
+#lNickWarning {
+    color: red; /* Color rojo */
+    font-family: "Orbitron", sans-serif;
+    font-size: small;
+    background-color: transparent;
+} 
+
+.registerPlayer-button {
+    border-radius: 10px; /* Bordes redondeados */
     background-color: transparent; /* Sin fondo */
-    border: 1px solid #555; /* Borde oscuro para visibilidad */
+    border: solid #555; /* Borde oscuro para visibilidad */
     color: cyan; /* Color del texto */
     font-family: "Orbitron", sans-serif;
     padding: 10px 20px; /* Espaciado interno */
-    border-radius: 5px; /* Bordes redondeados */
     cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
 }
 
-#bRegisterPlayer:hover {
+.registerPlayer-button:hover {
     background-color: rgba(255, 255, 255, 0.1); /* Fondo ligeramente visible al pasar el cursor */
+}
+
+.custom-textarea {
+    text-align: center;
+    padding: auto;
+    background-color:#343a40;
+    font-family: "Orbitron", sans-serif;
+    color: cyan;
+    border-radius: 10px;
+    border: solid #555; /* Borde oscuro para visibilidad */
+}
+
+#customizationForm {
+    font-family: "Orbitron", sans-serif;
+    color: var(--light-color);
+}
+
+.custom-select {
+    background-color: transparent; /* Color de fondo del select */
+    color: cyan; /* Color del texto */
+    border: none; /* Sin borde */
+}
+
+.custom-select option {
+    background-color: #343a40; /* Color de fondo de las opciones */
+    color: var(--light-color); /* Color del texto de las opciones */
+    border: none; /* Sin borde */
 }
