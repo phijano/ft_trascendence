@@ -252,3 +252,31 @@
 #sNumPlayersContainer {
     margin-bottom: 20px;
 }
+
+#iNick {
+    border-radius: 10px; /* Bordes redondeados */
+    background-color: #333; /* Color de fondo oscuro */
+    color: white; /* Color del texto */
+    border: 1px solid #555; /* Borde oscuro */
+    padding: 10px; /* Espaciado interno */
+    width: 100%; /* Ancho completo del contenedor */
+    box-sizing: border-box; /* Incluye el padding y el borde en el ancho total */
+}
+
+#iNick::placeholder {
+    color: #aaa; /* Color del texto del placeholder */
+}
+
+#bRegisterPlayer {
+    background-color: transparent; /* Sin fondo */
+    border: 1px solid #555; /* Borde oscuro para visibilidad */
+    color: cyan; /* Color del texto */
+    font-family: "Orbitron", sans-serif;
+    padding: 10px 20px; /* Espaciado interno */
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+}
+
+#bRegisterPlayer:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Fondo ligeramente visible al pasar el cursor */
+}
