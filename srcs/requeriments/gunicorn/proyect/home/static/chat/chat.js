@@ -1,14 +1,18 @@
-console.log("cargando archivo chat.js");
-
 function initializeChat() {
-    console.log("Inicializando chat...");
-    const btnMessage = document.getElementById('btnMessage');
-    console.log(btnMessage);  // Para ver si el botón se encuentra correctamente
-    if (btnMessage) {
-        btnMessage.addEventListener('click', function() {
-            console.log('Enviando mensaje...');
-        });
-    } else {
-        console.error('Elemento con ID "btnMessage" no encontrado.');
+    document.querySelector('#btnMessage').addEventListener('click', sendMessage);
+    document.querySelector('#inputMessage').addEventListener('keypress', function(e) {
+        if (e.keyCode == 13) {
+            sendMessage();
+        } 
+    })
+
+
+    function sendMessage() {
+        var message = document.querySelector('#inputMessage');
+        console.log(message.value.trim());
+        if (message.value.trim() != '') {
+            message.value = '';
+        }
     }
 }
+

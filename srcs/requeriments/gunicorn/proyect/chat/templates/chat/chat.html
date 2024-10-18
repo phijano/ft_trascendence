@@ -5,19 +5,29 @@
 
     <div id="boxMessages" class="mb-4">
         {% comment %} {% for message in room.message_set.all %} {% endcomment %}
+        {% comment %} <div class="alert alert-primary" role="alert">
+            mensaje del usuario
+            <div>
+                <small class="fst-italic fw-bold">{{ request.user }}</small>
+            </div>
+        </div> {% endcomment %}
         <div class="message-container">
             <img src="{% static 'chat/images/avatar2.jpeg' %}" alt="Avatar" class="avatar">
             <div class="message received">Hola, ¿cómo estás?</div>
+            <br>
+            <small class="text-white">Usuario 1</small>
+            
         </div>
         <div class="message-container">
             <div class="message sent">¡Estoy bien, gracias!</div>
         </div>
+        
         {% comment %} {% endfor %} {% endcomment %}
     </div>
 
     <!-- Formulario para enviar mensajes -->
     <div id="chat">
-        <input type="text" id="message" placeholder="Escribe tu mensaje..." />
+        <input class="form-control" type="text" id="inputMessage" placeholder="Escribe tu mensaje..." />
         <button class="btn btn-success mt-1 submit" id="btnMessage">Enviar</button>
     </div>
 </div>

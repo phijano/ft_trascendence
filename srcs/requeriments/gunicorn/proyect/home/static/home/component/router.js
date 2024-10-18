@@ -28,7 +28,7 @@ export const locationHandler = async() => {
             const script = document.createElement('script');
             script.src = "/static/chat/chat.js";
             script.onload = () => {
-                console.log("Script chat.js cargado y ejecutado.");
+                console.log("iniciando chat...");
                 initializeChat();
             };
             document.body.appendChild(script);
@@ -52,7 +52,7 @@ function buttonRouter(ref)
 window.router = buttonRouter
 window.onpopstate = locationHandler
 
-function initializeChat() {
+/* function initializeChat() {
     console.log("Inicializando chat...");
     const btnMessage = document.getElementById('btnMessage');
     console.log(btnMessage);  // Para ver si el botón se encuentra correctamente
@@ -63,4 +63,4 @@ function initializeChat() {
     } else {
         console.error('Elemento con ID "btnMessage" no encontrado.');
     }
-}
+} */
