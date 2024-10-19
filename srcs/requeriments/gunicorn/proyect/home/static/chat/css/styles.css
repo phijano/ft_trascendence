@@ -1,81 +1,94 @@
 /* Estilo para el contenedor del chat */
 #chat-container {
-    display: block; /* Mostrar inicialmente */
+    text-align: left;
+    display: block;
     width: 100%;
-    max-width: 600px; /* Ancho máximo para el contenedor */
+    max-width: 600px;
     height: 400px;
-    background-color: #9c95cdd7; /* Color morado oscuro */
+    background-color: #9c95cdd7;
     border-radius: 10px;
-    overflow: hidden; /* Ocultar el desplazamiento */
-    box-shadow: 0px 4px 10px #211e39d7; /* Sombra suave */
-    margin: auto; /* Centrar el contenedor */
-    position: relative; /* Para el posicionamiento del formulario */
+    overflow: hidden;
+    box-shadow: 0px 4px 10px #211e39d7;
+    margin: auto;
+    position: relative;
 }
 
 /* Estilo para el área de mensajes */
 #boxMessages {
-    height: calc(100% - 60px); /* Ajustar para que el formulario no se solape */
-    overflow-y: auto; /* Permitir desplazamiento si hay más contenido */
-    padding: 10px; /* Espaciado interior */
-    background-color: #211e39d7; /* Mantener el mismo color oscuro */
-    border-radius: 10px; /* Bordes redondeados */
+    height: calc(100% - 60px);
+    overflow-y: auto;
+    padding: 10px;
+    background-color: #211e39d7;
+    border-radius: 10px;
 }
 
-/* Estilo para los mensajes */
+/* Contenedor de mensajes */
 .message-container {
-    display: flex; /* Flex para alinear los mensajes */
-    margin: 10px 0; /* Espaciado entre mensajes */
+    display: flex;
+    align-items: flex-start;
+    margin: 10px 0;
 }
 
+/* Estilos para los mensajes */
 .message {
     padding: 10px;
-    border-radius: 20px; /* Bordes redondeados */
-    max-width: 70%; /* Ancho máximo */
-    font-family: Arial, sans-serif; /* Cambia la tipografía */
+    border-radius: 20px;
+    max-width: 70%;
+    font-family: Arial, sans-serif;
 }
 
-/* Mensajes enviados (alineados a la derecha) */
+/* Mensajes enviados */
 .message.sent {
-    background-color: #dcf8c6; /* Color de fondo */
-    align-self: flex-end; /* Alinear a la derecha */
-    margin-left: auto; /* Espacio a la izquierda */
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); /* Sombra para el mensaje */
+    background-color: #dcf8c6;
+    align-self: flex-end;
+    margin-left: auto;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-/* Mensajes recibidos (alineados a la izquierda) */
+/* Mensajes recibidos */
 .message.received {
-    background-color: #ffffff; /* Color de fondo */
-    align-self: flex-start; /* Alinear a la izquierda */
-    margin-right: auto; /* Espacio a la derecha */
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Sombra para el mensaje */
+    background-color: #ffffff;
+    align-self: flex-start;
+    margin-right: auto;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Formulario para enviar mensajes */
-#chat {
-    position: absolute; /* Posicionar el formulario */
-    bottom: 0; /* Alinear al fondo del contenedor */
-    left: 0;
-    right: 0;
-    display: flex; /* Flex para el formulario */
-    margin: 0; /* Sin margen para que esté pegado al borde */
-    padding: 10px; /* Espacio interior */
-    background-color: #9c95cdd7; /* Fondo morado oscuro para el formulario */
+/* Ajustes para el nombre del usuario debajo del mensaje recibido */
+.user-info {
+    text-align: left; /* Alineación a la izquierda */
+    margin-bottom: 5px; /* Espacio debajo */
 }
 
-#message {
-    flex-grow: 1; /* El campo de entrada ocupa el espacio restante */
-    padding: 10px;
-    border: none; /* Sin bordes */
-    border-radius: 20px; /* Bordes redondeados */
-    margin-right: 10px; /* Espacio a la derecha */
+/* Estilo para el nombre del usuario NO CARGA*/
+#user-info {
+    font-size: 0.8em; /* Tamaño de la fuente */
+    color: #9c95cd; /* Color del texto */
 }
 
 /* Estilo para el avatar */
 .avatar {
-    width: 40px; /* Ancho del avatar */
-    height: 40px; /* Alto del avatar */
-    border-radius: 50%; /* Hacerlo redondo */
-    margin-right: 10px; /* Espacio a la derecha */
-    align-self: flex-start; /* Alinear a la izquierda */
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
 }
 
+/* Estilo para el formulario */
+#chat {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    margin: 0;
+    padding: 10px;
+    background-color: #9c95cdd7;
+}
+
+#message {
+    flex-grow: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 20px;
+    margin-right: 10px;
+}

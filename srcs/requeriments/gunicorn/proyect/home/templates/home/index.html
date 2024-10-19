@@ -12,9 +12,8 @@
         <script src="{% static 'home/pongView.js' %}" type="module"></script>
         <script src="{% static 'home/pong/pong.js' %}" type="module"></script>
         <link href="{% static 'chat/css/styles.css' %}" rel="stylesheet">
-         {% comment %} <script src="{% static 'chat/chat.js' %}"></script> {% endcomment %}
     </head>
-    <body class="text-center">
+    <body {% comment %} class="text-center" {% endcomment %}>
         <div id="root"></div>
         <div id="content"></div>
     </body>

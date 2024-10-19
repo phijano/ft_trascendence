@@ -9,10 +9,23 @@ function initializeChat() {
 
     function sendMessage() {
         var message = document.querySelector('#inputMessage');
-        console.log(message.value.trim());
+        
+        loadMessageHTML(message.value.trim());
+
         if (message.value.trim() != '') {
             message.value = '';
         }
+    }
+
+    function loadMessageHTML(m) {
+        console.log(m);
+        document.querySelector('#boxMessages').innerHTML += 
+        `
+        <!-- Mi mensaje-->
+        <div class="message-container">
+            <div class="message sent">${m}</div>
+        </div>
+        `
     }
 }
 

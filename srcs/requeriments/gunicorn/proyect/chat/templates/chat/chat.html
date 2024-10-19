@@ -1,28 +1,23 @@
 {% load static %}
 
 <div id="chat-container" class="container mt-4">
-    <h1>¡{{ room.name }} chat!</h1> <!-- Mostrar el nombre de la sala -->
+    <h1>¡{{ room.name }} chat!</h1>
 
     <div id="boxMessages" class="mb-4">
-        {% comment %} {% for message in room.message_set.all %} {% endcomment %}
-        {% comment %} <div class="alert alert-primary" role="alert">
-            mensaje del usuario
-            <div>
-                <small class="fst-italic fw-bold">{{ request.user }}</small>
-            </div>
-        </div> {% endcomment %}
+        <!-- Mensaje del usuario 1 -->
         <div class="message-container">
             <img src="{% static 'chat/images/avatar2.jpeg' %}" alt="Avatar" class="avatar">
             <div class="message received">Hola, ¿cómo estás?</div>
-            <br>
-            <small class="text-white">Usuario 1</small>
-            
         </div>
-        <div class="message-container">
-            <div class="message sent">¡Estoy bien, gracias!</div>
+        <!-- Nombre del usuario debajo del mensaje -->
+        <div id="user-info" class="user-info" style="margin-top: -10px; margin-left: 50px">
+            <small class="text-white">Usuario</small>
         </div>
         
-        {% comment %} {% endfor %} {% endcomment %}
+        {% comment %} <!-- Mi mensaje-->
+        <div class="message-container">
+            <div class="message sent">¡Estoy bien, gracias!</div>
+        </div> {% endcomment %}
     </div>
 
     <!-- Formulario para enviar mensajes -->
