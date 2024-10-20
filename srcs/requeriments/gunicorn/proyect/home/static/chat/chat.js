@@ -6,6 +6,7 @@ window.initializeChat = function() {
     const boxMessages = document.querySelector('#boxMessages');
     const room = boxMessages.getAttribute('data-room');
     const user = boxMessages.getAttribute('data-user');
+    const avatar = boxMessages.getAttribute('data-avatar');
     console.log('Usuario:', user, 'Sala:', room);
 
     // obtener la url del websocket
@@ -25,12 +26,28 @@ window.initializeChat = function() {
         console.error('Conexión cerrada');
     };
 
-    /* // Definir el evento onmessage
-    chatSocket.onmessage = function(e) {
-        console.log('Mensaje recibido:', e.data);
-        loadMessageHTML(e.data);
-    };
- */
+    // Definir el evento onmessage
+    chatSocket.onmessage = function(data) {
+        const datamsg = JSON.parse(data.data);
+        var msg = datamsg.message;
+        var username = datamsg.username;
+
+        document.querySelector('#boxMessages').innerHTML += 
+        `
+        <!-- Mensaje del usuario 1 -->
+        <div class="message-container">
+            <img src="${avatar}" class="avatar" alt="Avatar">
+            <div class="message received">${msg}</div>
+        </div>
+        <!-- Nombre del usuario debajo del mensaje -->
+        <div id="user-info" class="user-info" style="margin-top: -10px; margin-left: 50px">
+            <small class="text-white">${username}</small>
+        </div>
+        `;
+    }
+    
+
+    
     document.querySelector('#btnMessage').addEventListener('click', sendMessage);
     document.querySelector('#inputMessage').addEventListener('keypress', function(e) {
         if (e.keyCode === 13) {
@@ -45,12 +62,20 @@ window.initializeChat = function() {
         // Si el mensaje no está vacío
         if (message.value.trim() !== '') {
             loadMessageHTML(message.value.trim());
+            chatSocket.send(JSON.stringify({
+                'message': message.value.trim(),
+                'username': user,
+            }));
+
+            console.log(message.value.trim());
+
             message.value = '';
         } else {
             console.log('Mensaje vacío');
         }
     }
 
+    // Función para cargar un mensaje en el chat
     function loadMessageHTML(m) {
         console.log(m);
         document.querySelector('#boxMessages').innerHTML += 

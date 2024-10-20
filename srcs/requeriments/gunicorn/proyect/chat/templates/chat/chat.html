@@ -3,22 +3,7 @@
 <div id="chat-container" class="container mt-4">
     <h1>¡{{ room.name }} chat!</h1>
 
-    <div id="boxMessages" class="mb-4" data-room="{{ room.name }}" data-user="{{ user.username }}">
-        <!-- Mensaje del usuario 1 -->
-        <div class="message-container">
-            <img src="{% static 'chat/images/avatar2.jpeg' %}" alt="Avatar" class="avatar">
-            <div class="message received">Hola, ¿cómo estás?</div>
-        </div>
-        <!-- Nombre del usuario debajo del mensaje -->
-        <div id="user-info" class="user-info" style="margin-top: -10px; margin-left: 50px">
-            <small class="text-white">Usuario</small>
-        </div>
-        
-        {% comment %} <!-- Mi mensaje-->
-        <div class="message-container">
-            <div class="message sent">¡Estoy bien, gracias!</div>
-        </div> {% endcomment %}
-    </div>
+    <div id="boxMessages" class="mb-4" data-room="{{ room.name }}" data-user="{{ user.username }}" data-avatar="{{ user_avatar }}"></div>
 
     <!-- Formulario para enviar mensajes -->
     <div id="chat">
@@ -27,4 +12,3 @@
     </div>
 </div>
 
-<script src="{% static 'chat/jquery-3.7.1.min.js' %}"></script>
