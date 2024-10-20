@@ -3,7 +3,7 @@
 <div id="chat-container" class="container mt-4">
     <h1>¡{{ room.name }} chat!</h1>
 
-    <div id="boxMessages" class="mb-4">
+    <div id="boxMessages" class="mb-4" data-room="{{ room.name }}" data-user="{{ user.username }}">
         <!-- Mensaje del usuario 1 -->
         <div class="message-container">
             <img src="{% static 'chat/images/avatar2.jpeg' %}" alt="Avatar" class="avatar">
@@ -26,3 +26,5 @@
         <button class="btn btn-success mt-1 submit" id="btnMessage">Enviar</button>
     </div>
 </div>
+
+<script src="{% static 'chat/jquery-3.7.1.min.js' %}"></script>

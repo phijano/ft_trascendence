@@ -14,12 +14,12 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 from channels.security.websocket import AllowedHostsOriginValidator
 from userManagement.routing import websocket_urlpatterns as user_ws_urlpatterns
-#from chat.routing import websocket_urlpatterns as chat_ws_urlpatterns
+from chat.routing import websocket_urlpatterns as chat_ws_urlpatterns
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'trascendence.settings')
 
 # combinamos las rutas de los websockets de las aplicaciones
-websocket_urlpatterns = user_ws_urlpatterns #+ chat_ws_urlpatterns
+websocket_urlpatterns = user_ws_urlpatterns + chat_ws_urlpatterns
 
 application = ProtocolTypeRouter(
     {
