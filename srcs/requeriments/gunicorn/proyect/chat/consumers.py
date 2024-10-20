@@ -4,11 +4,11 @@ import json
 class ChatConsumer(WebsocketConsumer):
 
     def connect(self):
-        print('connected')
+        print('conexion establecida')
         self.accept()
 
     def disconnect(self, close_code):
-        print('disconnected')
+        print('desconectando websocket chat')
         pass
 
     def receive(self, text_data):

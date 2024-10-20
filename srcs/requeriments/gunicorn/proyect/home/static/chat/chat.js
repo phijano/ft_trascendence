@@ -38,12 +38,16 @@ window.initializeChat = function() {
         }
     });
 
+    // Función para enviar un mensaje
     function sendMessage() {
         var message = document.querySelector('#inputMessage');
-        loadMessageHTML(message.value.trim());
-
+        
+        // Si el mensaje no está vacío
         if (message.value.trim() !== '') {
+            loadMessageHTML(message.value.trim());
             message.value = '';
+        } else {
+            console.log('Mensaje vacío');
         }
     }
 
