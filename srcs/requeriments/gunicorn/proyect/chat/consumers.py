@@ -26,13 +26,13 @@ class ChatConsumer(WebsocketConsumer):
         # Aceptar la conexión WebSocket
         self.accept()
 
-        """  # **Recuperar los últimos 15 mensajes de la sala**
-        last_15_messages = Message.objects.filter(room__name=self.id).order_by('-timestamp')[:15]
-        for message in reversed(last_15_messages):
+        # Recuperar los últimos 3 mensajes de la sala
+        last_messages = Message.objects.filter(room__name=self.id).order_by('-timestamp')[:3]
+        for message in reversed(last_messages):
             self.send(text_data=json.dumps({
                 'message': message.content,
                 'username': message.user.username,
-            })) """
+            }))
 
     def disconnect(self, close_code):
         # Remover el canal del usuario del grupo de la sala
@@ -94,6 +94,7 @@ class ChatConsumer(WebsocketConsumer):
 
         # Enviar mensaje a WebSocket
         current_user_id = self.scope['user'].id
+        
         if sender_id != current_user_id:
             self.send(text_data=json.dumps({
                 'message': message,

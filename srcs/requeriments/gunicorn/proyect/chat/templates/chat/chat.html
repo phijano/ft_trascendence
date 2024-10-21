@@ -1,9 +1,13 @@
 {% load static %}
 
 <div id="chat-container" class="container mt-4">
-    <h1>¡{{ room.name }} chat!</h1>
+    <h1 class="text-center">{{ room.name }} chat</h1>
 
-    <div id="boxMessages" class="mb-4" data-room="{{ room.name }}" data-user="{{ user.username }}" data-avatar="{{ user_avatar }}"></div>
+    <div id="boxMessages" class="mb-8" 
+        data-room="{{ room.name }}" 
+        data-user="{{ user.username }}" 
+        data-avatar="{{ user_avatar }}">
+    </div>
 
     <!-- Formulario para enviar mensajes -->
     <div id="chat">

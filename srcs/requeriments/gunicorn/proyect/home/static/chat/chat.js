@@ -32,6 +32,7 @@ window.initializeChat = function() {
         var msg = datamsg.message;
         var username = datamsg.username;
 
+
         document.querySelector('#boxMessages').innerHTML += 
         `
         <!-- Mensaje del usuario 1 -->
@@ -44,9 +45,19 @@ window.initializeChat = function() {
             <small class="text-white">${username}</small>
         </div>
         `;
+
+        // Hacer scroll hacia abajo
+        scrollToBottom();
     }
     
-
+    // Funcion para hacer scroll hacia abajo
+    /**
+     * !IMPORTANTE: Esta función no está funcionando correctamente
+     */
+    /* function scrollToBottom() {
+        const boxMessages = document.querySelector('#boxMessages');
+        boxMessages.scrollTop = boxMessages.scrollHeight;
+    } */
     
     document.querySelector('#btnMessage').addEventListener('click', sendMessage);
     document.querySelector('#inputMessage').addEventListener('keypress', function(e) {
