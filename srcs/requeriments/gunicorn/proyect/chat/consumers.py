@@ -5,7 +5,6 @@ from .models import *
 from userManagement.models import Profile
 
 class ChatConsumer(WebsocketConsumer):
-
     def connect(self):
         # Obtener el nombre de la sala desde la URL
         self.id = self.scope['url_route']['kwargs']['room_name']
@@ -28,15 +27,15 @@ class ChatConsumer(WebsocketConsumer):
         self.accept()
 
         # **Recuperar los últimos 3 mensajes de la sala**
-        user = self.user # Cargamos el usuario
-        user_profile = Profile.objects.get(user_id=user)  # Accedemos al perfil del usuario
-        user_avatar = user_profile.avatar.url if user_profile.avatar else None 
         last_messages = Message.objects.filter(room__name=self.id).order_by('-timestamp')[:3]
         for message in reversed(last_messages):
+            msg_user_id = message.user
+            user_profile = Profile.objects.get(user_id = msg_user_id) 
+            user_avatar = user_profile.avatar.url if user_profile.avatar else None 
             self.send(text_data=json.dumps({
                 'message': message.content,
                 'username': message.user.username,
-                'avatar': user_avatar, # ! Muestra avatar de usuario actual, cambiar
+                'avatar': user_avatar, 
             }))
 
     def disconnect(self, close_code):

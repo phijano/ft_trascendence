@@ -52,9 +52,6 @@ window.initializeChat = function() {
     }
     
     // Funcion para hacer scroll hacia abajo
-    /**
-     * !IMPORTANTE: Esta función no está funcionando correctamente
-     */
     function scrollToBottom() {
         const boxMessages = document.querySelector('#boxMessages');
         boxMessages.scrollTop = boxMessages.scrollHeight;
