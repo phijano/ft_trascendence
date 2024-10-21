@@ -34,6 +34,23 @@ window.initializeChat = function() {
         var avatar = datamsg.avatar;
 
 
+        /* if (username === user) {
+            user_class = ' sent';
+            } else {
+            user_class = '';
+            }
+
+        document.querySelector('#boxMessages').innerHTML += 
+        `
+        <div class="message-container${user_class}">
+            <img src="${avatar}" class="avatar" alt="Avatar">
+            <div class="message received">${msg}</div>
+        </div>
+        <div id="user-info" class="user-info${user_class}" style="margin-top: -10px; margin-left: 50px">
+            <small class="text-white">${username}</small>
+        </div>
+        `; */
+
         document.querySelector('#boxMessages').innerHTML += 
         `
         <!-- Mensaje del usuario 1 -->

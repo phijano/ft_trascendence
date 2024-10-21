@@ -43,6 +43,10 @@
     margin: 10px 0;
 }
 
+.message-container.sent {
+    justify-content: flex-end;
+}
+
 /* Estilos para los mensajes */
 .message {
     padding: 10px;
@@ -79,6 +83,9 @@
     color: #9c95cd; /* Color del texto */
 }
 
+.user-info.sent {
+    text-align: right; /* Alineación a la derecha */
+}
 /* Estilo para el avatar */
 .avatar {
     width: 40px;
