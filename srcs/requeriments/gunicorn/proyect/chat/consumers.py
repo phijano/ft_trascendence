@@ -1,22 +1,21 @@
 import json
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
+from .models import *
 
 class ChatConsumer(WebsocketConsumer):
 
     def connect(self):
         # Obtener el nombre de la sala desde la URL
         self.id = self.scope['url_route']['kwargs']['room_name']
-
-        # Crear un nombre de grupo para el canal de chat
         self.room_group_name = 'chat_%s' % self.id
         
         # Obtener el usuario desde el scope
         self.user = self.scope['user']
 
-        # Nombre de la sala y hash de la sala
+        """ # Nombre de la sala y hash de la sala
         print('conexion establecida al room: ', self.room_group_name)
-        print("channel_name: ", self.channel_name)
+        print("channel_name: ", self.channel_name) """
 
         # Agregar el canal del usuario al grupo de la sala
         async_to_sync(self.channel_layer.group_add)(
@@ -26,6 +25,14 @@ class ChatConsumer(WebsocketConsumer):
     
         # Aceptar la conexión WebSocket
         self.accept()
+
+        """  # **Recuperar los últimos 15 mensajes de la sala**
+        last_15_messages = Message.objects.filter(room__name=self.id).order_by('-timestamp')[:15]
+        for message in reversed(last_15_messages):
+            self.send(text_data=json.dumps({
+                'message': message.content,
+                'username': message.user.username,
+            })) """
 
     def disconnect(self, close_code):
         # Remover el canal del usuario del grupo de la sala
@@ -38,6 +45,7 @@ class ChatConsumer(WebsocketConsumer):
         print('Mensaje recibido')
 
         try:
+            # Decodificar el mensaje
             text_data_json = json.loads(text_data)
             message = text_data_json['message']
 
@@ -45,9 +53,22 @@ class ChatConsumer(WebsocketConsumer):
             if self.user.is_authenticated:
                 sender_id = self.scope['user'].id
             else:
-                None
+                sender_id = None
 
+             # Obtenemos el objeto Room usuando el nombre de la sala
+            room = Room.objects.get(name=self.id)
+           
             if sender_id:
+                # Mandamos datos a la base de datos
+                message_save = Message.objects.create(
+                    user_id=sender_id,
+                    content=message,
+                    room=room,
+                )
+                message_save.save()
+
+
+                # Enviar mensaje al grupo de la sala
                 async_to_sync(self.channel_layer.group_send)(
                     self.room_group_name, {
                         'type': 'chat_message',

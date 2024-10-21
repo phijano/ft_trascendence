@@ -8,3 +8,11 @@ class Room(models.Model):
     def __str__(self):
         return self.name
 
+class Message(models.Model):
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='messages', verbose_name='room')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='messages', verbose_name='user')
+    timestamp = models.DateTimeField(auto_now_add=True, verbose_name='timestamp')
+    content = models.TextField(verbose_name='content')
+
+    def __str__(self):
+        return f'{self.user.username} @ {self.room.name}: {self.content}'
