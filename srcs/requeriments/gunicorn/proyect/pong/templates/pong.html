@@ -12,9 +12,6 @@
 	<link rel="stylesheet" href="{% static 'home/pong/pong.css' %}">
 </head>
 <body>
-    <script>
-        console.log("prueba de script");
-    </script>
 {% if user.is_authenticated %}
 	{% csrf_token %}
 	<input hidden id="hNick" value="{{profile}}">
@@ -58,11 +55,13 @@
 	<div class="container" id="dLocalSettings" hidden>
 			<div id="sOpponentContainer">
 				<div class="option selected" data-value="0" onclick="pongSelectOption(this)">Player VS Player</div>
-				<div class="option" data-value="1" onclick="pongSelectOption(this)">Player Vs AI</div>
+				<div class="option" data-value="1" onclick="pongSelectOption(this)">Multiplayer</div>
+				<div class="option" data-value="2" onclick="pongSelectOption(this)">Player Vs AI</div>
 			</div>
 			<select id="sOpponent" onchange="pongSetOpponent()" style="display: none;">
 				<option value="0" selected> Player Vs Player </option>
-				<option value="1"> Player Vs AI </option>
+				<option value="1"> Multiplayer </option>
+				<option value="2"> Player Vs AI </option>
 			</select>
 			<div id="sDifficultyContainer">
 				<div class="option" data-value="0" onclick="pongSelectDifficulty(this)">Easy</div>
@@ -81,6 +80,19 @@
 			<button id="bCreateRemote" type="button" onclick="pongCreateGame()">Create game</button>
 			<button id="bJoinRemote" type="button" onclick="pongJoinGame()">Join game</button>
 	</div>
+    <div id="dMultiplayerSettings" hidden>
+        <div class="display-column-content">
+            <div class="scoreboard mt-4">
+				<span class="players-font">Player 1: <span id="player1Score">0</span></span> 
+				<span class="players-font">Player 2: <span id="player2Score">0</span></span> 
+				<span class="players-font">Player 3: <span id="player3Score">0</span></span> 
+				<span class="players-font">Player 4: <span id="player4Score">0</span></span> 
+				<span class="players-font">Time: <span id="timeCountdown">0</span></span>
+            </div>
+            <canvas id="pongCanvas"></canvas>
+            <button id="start-button-multi" type="button" class="start-button" onclick="pongStartMultiReady()">Start</button>
+        </div>
+    </div>
 	<div class="bg-dark container" id="dTournamentSettings" hidden>
 			<h4 id="createTournament" class ="title-cyan-big">CREATE TOURNAMENT</h4>
 			<div id="sNumPlayersContainer">

@@ -231,6 +231,7 @@
 }
 
 .start-button {
+    position: absolute; /* Posicionamiento absoluto */
     font-family: "Bungee Tint", sans-serif;
     border-radius: 15px; /* Bordes redondeados */
     background-color: transparent; /* Color de fondo */
@@ -315,4 +316,29 @@
     background-color: #343a40; /* Color de fondo de las opciones */
     color: var(--light-color); /* Color del texto de las opciones */
     border: none; /* Sin borde */
+}
+
+
+#dMultiplayerSettings {
+    position: relative;
+}
+
+#pongCanvas {
+ /* Asegúrate de que el canvas esté visible */
+    width: 600px;
+    height: 600px;
+    background-color: black;
+    margin: 20px auto;
+    border: 3px solid var(--accent-color);
+}
+
+.scoreboard span {
+    margin-right: 10px;
+}
+
+.display-column-content {
+    display: flex;                /* Activar flexbox */
+    flex-direction: column;       /* Alinear los elementos en columna */
+    justify-content: center;      /* Centrar los elementos verticalmente */
+    align-items: center;          /* Centrar los elementos horizontalmente */
 }
