@@ -2,6 +2,7 @@ import json
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 from .models import *
+from userManagement.models import Profile
 
 class ChatConsumer(WebsocketConsumer):
 
@@ -26,7 +27,7 @@ class ChatConsumer(WebsocketConsumer):
         # Aceptar la conexión WebSocket
         self.accept()
 
-        # Recuperar los últimos 3 mensajes de la sala
+        # **Recuperar los últimos 3 mensajes de la sala**
         last_messages = Message.objects.filter(room__name=self.id).order_by('-timestamp')[:3]
         for message in reversed(last_messages):
             self.send(text_data=json.dumps({
@@ -52,8 +53,12 @@ class ChatConsumer(WebsocketConsumer):
             # Obtenemos el nombre de usuario
             if self.user.is_authenticated:
                 sender_id = self.scope['user'].id
+                sender_profile = Profile.objects.get(user_id=sender_id)
+                sender_profile = Profile.objects.get(user_id=sender_id)
+                sender_avatar = sender_profile.avatar.url if sender_profile.avatar else None
             else:
                 sender_id = None
+                sender_avatar = None
 
              # Obtenemos el objeto Room usuando el nombre de la sala
             room = Room.objects.get(name=self.id)
@@ -75,6 +80,7 @@ class ChatConsumer(WebsocketConsumer):
                         'message': message,
                         'username': self.user.username,
                         'sender_id': sender_id,
+                        'avatar': sender_avatar,
                     }
                 )
             else:
@@ -91,12 +97,13 @@ class ChatConsumer(WebsocketConsumer):
         message = event['message']
         username = event['username']
         sender_id = event['sender_id']
+        avatar = event['avatar']
 
         # Enviar mensaje a WebSocket
         current_user_id = self.scope['user'].id
-        
         if sender_id != current_user_id:
             self.send(text_data=json.dumps({
                 'message': message,
                 'username': username,
+                'avatar': avatar,
             }))

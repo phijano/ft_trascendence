@@ -31,6 +31,7 @@ window.initializeChat = function() {
         const datamsg = JSON.parse(data.data);
         var msg = datamsg.message;
         var username = datamsg.username;
+        var avatar = datamsg.avatar;
 
 
         document.querySelector('#boxMessages').innerHTML += 
@@ -54,10 +55,10 @@ window.initializeChat = function() {
     /**
      * !IMPORTANTE: Esta función no está funcionando correctamente
      */
-    /* function scrollToBottom() {
+    function scrollToBottom() {
         const boxMessages = document.querySelector('#boxMessages');
         boxMessages.scrollTop = boxMessages.scrollHeight;
-    } */
+    }
     
     document.querySelector('#btnMessage').addEventListener('click', sendMessage);
     document.querySelector('#inputMessage').addEventListener('keypress', function(e) {
@@ -79,6 +80,8 @@ window.initializeChat = function() {
             }));
 
             console.log(message.value.trim());
+
+            scrollToBottom();
 
             message.value = '';
         } else {
