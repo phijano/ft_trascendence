@@ -39,13 +39,15 @@ class ChatConsumer(WebsocketConsumer):
         # Aceptar la conexión WebSocket
         self.accept()
 
+        # ! Comprobar este if, quitarlo si no es necesario, esto bloquea la conexión
         # Enviamos la lista de usuarios conectados
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name, {
-                'type': 'user_list',
-                'users': self.connected_users[self.room_group_name],
-            }
-        )
+        if self.connected_users[self.room_group_name]:
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name, {
+                    'type': 'user_list',
+                    'users': self.connected_users[self.room_group_name],
+                }
+            )
 
         # **Recuperar los últimos 3 mensajes de la sala**
         last_messages = Message.objects.filter(room__name=self.id).order_by('-timestamp')[:3]
