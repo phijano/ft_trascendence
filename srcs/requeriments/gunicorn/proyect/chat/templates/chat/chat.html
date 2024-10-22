@@ -1,24 +1,35 @@
-{% load static %}
-
-<div id="chat-container" class="container">
-    <h1 class="text-center">{{ room.name }} chat</h1>
-
-    <div id="boxMessages" class="mb-8" 
-        data-room="{{ room.name }}" 
-        data-user="{{ user.username }}" 
-        data-avatar="{{ user_avatar }}">
+<div class="chat-wrapper">
+    <!-- Botones superiores -->
+    <div id="topButtons" class="chat-actions">
+        <button id="blockUserBtn" class="chat-btn">Block User</button>
+        <button id="viewProfileBtn" class="chat-btn">View Profile</button>
     </div>
 
-    <!-- Formulario para enviar mensajes -->
-    <div id="chat">
-        <input class="form-control" type="text" id="inputMessage" placeholder="Escribe tu mensaje..." />
-        <button class="btn btn-success mb-1 submit" id="btnMessage">Enviar</button>
+    <div id="chat-container" class="container">
+        <div class="online-status">
+            <span id="onlineIndicator" class="indicator"></span>
+            <span id="onlineCount">0 Online</span>
+        </div>
+        {% comment %} <h1 class="text-center">{{ room.name }} chat</h1> {% endcomment %}
+
+        <!-- Contenedor de los mensajes -->
+        <div id="boxMessages" class="mb-8" 
+            data-room="{{ room.name }}" 
+            data-user="{{ user.username }}" 
+            data-avatar="{{ user_avatar }}">
+        </div>
+
+        <!-- Formulario para enviar mensajes -->
+        <div id="chat">
+            <input class="form-control" type="text" id="inputMessage" placeholder="Escribe tu mensaje..." />
+            <button class="btn btn-success mb-1 submit" id="btnMessage">Enviar</button>
+        </div>
     </div>
-</div>
-<br>
-<div id="chatActions" class="chat-actions">
-    <button id="blockUserBtn" class="chat-btn">Block User</button>
-    <button id="inviteGameBtn" class="chat-btn">Invite to Game</button>
-    <button id="tournamentNoticeBtn" class="chat-btn">Tournament Notice</button>
-    <button id="viewProfileBtn" class="chat-btn">View Profile</button>
+
+    <br>
+    <!-- Botones inferiores -->
+    <div id="bottomButtons" class="chat-actions">
+        <button id="inviteGameBtn" class="chat-btn">Invite to Game</button>
+        <button id="tournamentNoticeBtn" class="chat-btn">Tournament Notice</button>
+    </div>
 </div>

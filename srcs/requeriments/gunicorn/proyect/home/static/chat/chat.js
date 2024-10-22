@@ -1,17 +1,13 @@
 // Definir la función en el objeto global window
 window.initializeChat = function() {
-    console.log("Inicializando chat...");
-
     // Obtener el usuario y la sala desde los atributos data
     const boxMessages = document.querySelector('#boxMessages');
     const room = boxMessages.getAttribute('data-room');
     const user = boxMessages.getAttribute('data-user');
     const avatar = boxMessages.getAttribute('data-avatar');
-    console.log('Usuario:', user, 'Sala:', room);
 
     // obtener la url del websocket
     const wsUrl = `ws://${window.location.host}/ws/chat/${room}/`;
-    console.log('URL del websocket:', wsUrl);
 
     // Crear una instancia de WebSocket
     var chatSocket = new WebSocket(wsUrl);
@@ -27,45 +23,52 @@ window.initializeChat = function() {
     };
 
     // Definir el evento onmessage
-    chatSocket.onmessage = function(data) {
-        const datamsg = JSON.parse(data.data);
-        var msg = datamsg.message;
-        var username = datamsg.username;
-        var avatar = datamsg.avatar;
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        console.log(data);
 
+        if (data.type === 'chat_message') {
+            const msg = data.message;
+            const username = data.username;
+            const avatar = data.avatar;
 
-        /* if (username === user) {
-            user_class = ' sent';
-            } else {
-            user_class = '';
-            }
+            /* if (username === user) {
+                user_class = ' sent';
+                } else {
+                user_class = '';
+                }
 
-        document.querySelector('#boxMessages').innerHTML += 
-        `
-        <div class="message-container${user_class}">
-            <img src="${avatar}" class="avatar" alt="Avatar">
-            <div class="message received">${msg}</div>
-        </div>
-        <div id="user-info" class="user-info${user_class}" style="margin-top: -10px; margin-left: 50px">
-            <small class="text-white">${username}</small>
-        </div>
-        `; */
+            document.querySelector('#boxMessages').innerHTML += 
+            `
+            <div class="message-container${user_class}">
+                <img src="${avatar}" class="avatar" alt="Avatar">
+                <div class="message received">${msg}</div>
+            </div>
+            <div id="user-info" class="user-info${user_class}" style="margin-top: -10px; margin-left: 50px">
+                <small class="text-white">${username}</small>
+            </div>
+            `; */
 
-        document.querySelector('#boxMessages').innerHTML += 
-        `
-        <!-- Mensaje del usuario 1 -->
-        <div class="message-container">
-            <img src="${avatar}" class="avatar mt-1" alt="Avatar">
-            <div class="message received">${msg}</div>
-        </div>
-        <!-- Nombre del usuario debajo del mensaje -->
-        <div id="user-info" class="user-info" style="margin-top: -10px; margin-left: 50px">
-            <small class="text-white">${username}</small>
-        </div>
-        `;
+            document.querySelector('#boxMessages').innerHTML += 
+            `
+            <!-- Mensaje del usuario 1 -->
+            <div class="message-container">
+                <img src="${avatar}" class="avatar mt-1" alt="Avatar">
+                <div class="message received">${msg}</div>
+            </div>
+            <!-- Nombre del usuario debajo del mensaje -->
+            <div id="user-info" class="user-info" style="margin-top: -10px; margin-left: 50px">
+                <small class="text-">${username}</small>
+            </div>
+            `;
 
-        // Hacer scroll hacia abajo
-        scrollToBottom();
+            // Hacer scroll hacia abajo
+            scrollToBottom();
+        } else if (data.type === 'user_list') {
+            pass
+        }
+
+        
     }
     
     // Funcion para hacer scroll hacia abajo

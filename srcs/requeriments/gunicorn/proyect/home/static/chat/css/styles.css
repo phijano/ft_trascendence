@@ -1,9 +1,11 @@
-/* Estilo para el contenedor del chat */
+/* ? -------------------------------------
+*    Estilo para el contenedor del chat 
+   ? -------------------------------------*/
 #chat-container {
     text-align: left; /* Alinea el texto a la izquierda */
     display: block; /* Muestra el contenedor como un bloque */
     width: 100%; /* Ancho completo del contenedor */
-    max-width: 600px; /* Ancho máximo de 600px */
+    max-width: 350px; /* Ancho máximo de 600px */
     /* height: 725px; /* Altura de 700px <---------cambiar luego esto para tamono normal */
     height: 400px;
     background-color: #4a3f8a; /* Color de fondo con transparencia */
@@ -47,6 +49,76 @@
     flex-shrink: 0; /* Evita que el botón se reduzca */
 }
 
+/* ? Estilo para el avatar */
+/* ? -------------------------------------
+*    Estilo para el contenedor del chat 
+   ? -------------------------------------*/
+.avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 100%;
+    margin-right: 10px;
+}
+
+/* ? -------------------------------------
+*    Estilo para el contador de usuarios en línea
+   ? -------------------------------------*/
+
+#online-status {
+
+    display: flex;
+    justify-content: center; /* Asegura que los elementos se centren horizontalmente */
+    align-items: center; /* Alinea verticalmente los elementos */
+    background-color: #4a3f8a;
+    color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 20px;
+    margin: 10px 0;
+    width: 100%; /* Asegura que el contenedor ocupe el ancho completo */
+    text-align: center; /* Alinea el texto al centro */
+}
+
+#onlineCount {
+    color: #ffffff;
+    font-size: 0.8em;
+    margin-left: 135px;
+}
+
+#onlineIndicator {
+    width: 100px; /* Ancho del indicador */
+    height: 100px; /* Alto del indicador */
+    border-radius: 50%; /* Hace que el indicador sea circular */
+    background-color: grey; /* Color por defecto (sin conexión) */
+    margin-right: 5px; /* Espacio entre el indicador y el texto */
+}
+
+/* Cambia el color del indicador cuando hay conexión */
+.online .indicator {
+    background-color: green; /* Color cuando hay usuarios en línea */
+}
+
+/* ? -------------------------------------
+*    Estilos para los mensajes
+   ? -------------------------------------*/
+.message {
+    padding: 10px;
+    border-radius: 20px;
+    max-width: 70%; /* Limita el ancho máximo de la caja */
+    font-family: Arial, sans-serif;
+    word-wrap: break-word; /* Asegura que las palabras largas se dividan si es necesario */
+    word-break: break-word; /* Evita que las palabras largas se desborden */
+    white-space: pre-wrap; /* Mantiene los saltos de línea y ajusta el texto */
+    overflow-wrap: break-word; /* Asegura que las palabras demasiado largas se dividan correctamente */
+}
+
+#message {
+    flex-grow: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 20px;
+    margin-right: 10px;
+}
+
 /* Contenedor de mensajes */
 .message-container {
     display: flex;
@@ -56,14 +128,6 @@
 
 .message-container.sent {
     justify-content: flex-end;
-}
-
-/* Estilos para los mensajes */
-.message {
-    padding: 10px;
-    border-radius: 20px;
-    max-width: 70%;
-    font-family: Arial, sans-serif;
 }
 
 /* Mensajes enviados */
@@ -82,7 +146,9 @@
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Ajustes para el nombre del usuario debajo del mensaje recibido */
+/* ? -------------------------------------
+*    Ajustes para el nombre del usuario debajo del mensaje recibido 
+   ? -------------------------------------*/
 .user-info {
     text-align: left; /* Alineación a la izquierda */
     margin-bottom: 5px; /* Espacio debajo */
@@ -91,39 +157,27 @@
 /* Estilo para el nombre del usuario NO CARGA*/
 #user-info {
     font-size: 0.8em; /* Tamaño de la fuente */
-    color: #9c95cd; /* Color del texto */
+    color: #dbd829; /* Color del texto */
 }
 
 .user-info.sent {
     text-align: right; /* Alineación a la derecha */
 }
-/* Estilo para el avatar */
-.avatar {
-    width: 35px;
-    height: 35px;
-    border-radius: 100%;
-    margin-right: 10px;
-}
 
-#message {
-    flex-grow: 1;
-    padding: 10px;
-    border: none;
-    border-radius: 20px;
-    margin-right: 10px;
-}
+/* ? -------------------------------------
+*    Diseño para los botones de acciones
+   ? -------------------------------------*/
 
-/*? Diseño para los botones de acciones */
-
-#chatActions {
-    display: flex; /* Asegúrate de que el contenedor use flexbox */
-    justify-content: center; /* Centra los elementos horizontalmente */
-    align-items: center; /* Centra los elementos verticalmente */
+/* Estilos para los botones superiores e inferiores */
+#topButtons, #bottomButtons {
+    display: flex;
+    justify-content: center; /* Alinea los botones horizontalmente al centro */
     gap: 15px; /* Espacio entre los botones */
-    margin-bottom: 100px; /* Aumenta el margen debajo del contenedor */
+    margin-bottom: 15px; /* Espacio entre el contenedor y los botones */
+
 }
 
-/* Estilo para los botones */
+/* Estilo general para los botones */
 .chat-btn {
     background-color: #4e4caf; /* Color de fondo */
     color: white; /* Color del texto */
@@ -134,14 +188,13 @@
     font-size: 16px; /* Tamaño de la fuente */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra */
     transition: background-color 0.3s, transform 0.2s; /* Transiciones suaves */
-    box-shadow: 0px 4px 10px #4a3f8a;
+    box-shadow: 0px 4px 10px #4a3f8a; /* Sombra alrededor de los botones */
 }
 
 /* Efecto al pasar el ratón sobre los botones */
 .chat-btn:hover {
     background-color: #45a049; /* Color de fondo al pasar el ratón */
     transform: translateY(-2px); /* Sombra superior */
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* Sombra más fuerte */
 }
 
 /* Efecto al presionar el botón */
@@ -149,3 +202,4 @@
     transform: translateY(1px); /* Movimiento hacia abajo */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra más débil */
 }
+
