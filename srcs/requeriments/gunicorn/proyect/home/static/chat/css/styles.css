@@ -6,35 +6,49 @@
     max-width: 600px; /* Ancho máximo de 600px */
     /* height: 725px; /* Altura de 700px <---------cambiar luego esto para tamono normal */
     height: 400px;
-    background-color: #9c95cdd7; /* Color de fondo con transparencia */
+    background-color: #4a3f8a; /* Color de fondo con transparencia */
     border-radius: 10px; /* Bordes redondeados */
     overflow: hidden; /* Oculta el contenido que se desborda */
-    box-shadow: 0px 4px 10px #211e39d7; /* Sombra alrededor del contenedor */
+    box-shadow: 0px 4px 10px #4a3f8a; /* Sombra alrededor del contenedor */
     margin: auto; /* Centra el contenedor horizontalmente */
     position: relative; /* Posiciona el contenedor de forma relativa */
 }
 
 /* Estilo para el área de mensajes */
 #boxMessages {
-    height: calc(100% - 100px);
+    height: calc(100% - 120px);
     /* height: 600px; <---------cambiar esto al tamaño normal qque se vera*/
     overflow-y: auto;
     padding: 10px;
-    background-color: #211e39d7;
+    background-color: #4a3f8a;
     border-radius: 10px;
 }
 
 /* Estilo para el formulario */
 #chat {
-    display: flex; /* Muestra el formulario como bloque */
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: 0;
+    display: flex; /* Asegura que el formulario use flexbox */
+    align-items: center; /* Alinea los elementos verticalmente */
     padding: 10px;
-    background-color: #9c95cdd7;
+    background-color: #4a3f8a;
 }
+
+/* Estilo para el input de mensaje */
+#inputMessage {
+    flex-grow: 1; /* Ocupa el espacio restante */
+    margin-right: 10px; /* Espacio entre el input y el botón */
+    padding: 10px; /* Asegúrate de que el padding sea igual al botón */
+    border-radius: 20px; /* Bordes redondeados */
+}
+
+/* Estilo para el botón de enviar */
+#btnMessage {
+    padding: 10px 15px; /* Espaciado interno */
+    border-radius: 20px; /* Bordes redondeados */
+    flex-shrink: 0; /* Evita que el botón se reduzca */
+}
+
+
+
 
 /* Contenedor de mensajes */
 .message-container {
@@ -100,4 +114,40 @@
     border: none;
     border-radius: 20px;
     margin-right: 10px;
+}
+
+/* Contenedor de acciones del chat */
+#chatActions {
+    display: flex; /* Asegúrate de que el contenedor use flexbox */
+    justify-content: center; /* Centra los elementos horizontalmente */
+    align-items: center; /* Centra los elementos verticalmente */
+    gap: 15px; /* Espacio entre los botones */
+    margin-bottom: 100px; /* Aumenta el margen debajo del contenedor */
+}
+
+/* Estilo para los botones */
+.chat-btn {
+    background-color: #4e4caf; /* Color de fondo */
+    color: white; /* Color del texto */
+    padding: 10px 15px; /* Espaciado interno */
+    border: none; /* Sin borde */
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Cursor de puntero */
+    font-size: 16px; /* Tamaño de la fuente */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra */
+    transition: background-color 0.3s, transform 0.2s; /* Transiciones suaves */
+    box-shadow: 0px 4px 10px #4a3f8a;
+}
+
+/* Efecto al pasar el ratón sobre los botones */
+.chat-btn:hover {
+    background-color: #45a049; /* Color de fondo al pasar el ratón */
+    transform: translateY(-2px); /* Sombra superior */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* Sombra más fuerte */
+}
+
+/* Efecto al presionar el botón */
+.chat-btn:active {
+    transform: translateY(1px); /* Movimiento hacia abajo */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra más débil */
 }

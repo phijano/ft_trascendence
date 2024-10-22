@@ -1,6 +1,6 @@
 {% load static %}
 
-<div id="chat-container" class="container mt-4">
+<div id="chat-container" class="container mt-8">
     <h1 class="text-center">{{ room.name }} chat</h1>
 
     <div id="boxMessages" class="mb-8" 
@@ -12,7 +12,13 @@
     <!-- Formulario para enviar mensajes -->
     <div id="chat">
         <input class="form-control" type="text" id="inputMessage" placeholder="Escribe tu mensaje..." />
-        <button class="btn btn-success mt-1 submit" id="btnMessage">Enviar</button>
+        <button class="btn btn-success mb-1 submit" id="btnMessage">Enviar</button>
     </div>
 </div>
-
+<br>
+<div id="chatActions" class="chat-actions">
+    <button id="blockUserBtn" class="chat-btn">Block User</button>
+    <button id="inviteGameBtn" class="chat-btn">Invite to Game</button>
+    <button id="tournamentNoticeBtn" class="chat-btn">Tournament Notice</button>
+    <button id="viewProfileBtn" class="chat-btn">View Profile</button>
+</div>

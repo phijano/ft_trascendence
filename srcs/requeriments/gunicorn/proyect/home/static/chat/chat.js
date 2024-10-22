@@ -114,6 +114,38 @@ window.initializeChat = function() {
         </div>
         `;
     }
+
+    
+
+    document.getElementById('blockUserBtn').addEventListener('click', function() {
+        const usernameToBlock = prompt("Ingrese el nombre de usuario que desea bloquear:");
+        if (usernameToBlock) {
+            // Lógica para bloquear al usuario
+            blockUser(usernameToBlock);
+        }
+    });
+    
+    /* document.getElementById('inviteGameBtn').addEventListener('click', function() {
+        const usernameToInvite = prompt("Ingrese el nombre de usuario al que desea invitar a un juego:");
+        if (usernameToInvite) {
+            // Lógica para enviar invitación a jugar
+            inviteToGame(usernameToInvite);
+        }
+    });
+    
+    document.getElementById('tournamentNoticeBtn').addEventListener('click', function() {
+        // Lógica para mostrar aviso de torneo
+        showTournamentNotice();
+    });
+    
+    document.getElementById('viewProfileBtn').addEventListener('click', function() {
+        const usernameToView = prompt("Ingrese el nombre de usuario cuyo perfil desea ver:");
+        if (usernameToView) {
+            // Lógica para redirigir a la página del perfil
+            window.location.href = `/profile/${usernameToView}`;
+        }
+    }); */
+    
 };
 
 // Ejecutar la función cuando el DOM esté completamente cargado
