@@ -55,7 +55,7 @@ window.initializeChat = function() {
         `
         <!-- Mensaje del usuario 1 -->
         <div class="message-container">
-            <img src="${avatar}" class="avatar" alt="Avatar">
+            <img src="${avatar}" class="avatar mt-1" alt="Avatar">
             <div class="message received">${msg}</div>
         </div>
         <!-- Nombre del usuario debajo del mensaje -->

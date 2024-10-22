@@ -47,9 +47,6 @@
     flex-shrink: 0; /* Evita que el botón se reduzca */
 }
 
-
-
-
 /* Contenedor de mensajes */
 .message-container {
     display: flex;
@@ -102,9 +99,9 @@
 }
 /* Estilo para el avatar */
 .avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    border-radius: 100%;
     margin-right: 10px;
 }
 
@@ -116,7 +113,8 @@
     margin-right: 10px;
 }
 
-/* Contenedor de acciones del chat */
+/*? Diseño para los botones de acciones */
+
 #chatActions {
     display: flex; /* Asegúrate de que el contenedor use flexbox */
     justify-content: center; /* Centra los elementos horizontalmente */
