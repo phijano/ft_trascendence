@@ -1,4 +1,3 @@
-// Definir la función en el objeto global window
 window.initializeChat = function() {
     // Obtener el usuario y la sala desde los atributos data
     const boxMessages = document.querySelector('#boxMessages');
@@ -6,52 +5,31 @@ window.initializeChat = function() {
     const user = boxMessages.getAttribute('data-user');
     const avatar = boxMessages.getAttribute('data-avatar');
 
-    // obtener la url del websocket
+    // Obtener la URL del WebSocket
     const wsUrl = `ws://${window.location.host}/ws/chat/${room}/`;
 
     // Crear una instancia de WebSocket
     var chatSocket = new WebSocket(wsUrl);
 
-    // Definir el evento onopen
     chatSocket.onopen = function(e) {
         console.log('Conexión abierta');
     };
     
-    // Definir el evento onclose
     chatSocket.onclose = function(e) {
         console.error('Conexión cerrada');
     };
 
-    // Definir el evento onmessage
     chatSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
-        console.log(data);
 
         if (data.type === 'chat_message') {
             const msg = data.message;
             const username = data.username;
             const avatar = data.avatar;
 
-            /* if (username === user) {
-                user_class = ' sent';
-                } else {
-                user_class = '';
-                }
-
             document.querySelector('#boxMessages').innerHTML += 
             `
-            <div class="message-container${user_class}">
-                <img src="${avatar}" class="avatar" alt="Avatar">
-                <div class="message received">${msg}</div>
-            </div>
-            <div id="user-info" class="user-info${user_class}" style="margin-top: -10px; margin-left: 50px">
-                <small class="text-white">${username}</small>
-            </div>
-            `; */
-
-            document.querySelector('#boxMessages').innerHTML += 
-            `
-            <!-- Mensaje del usuario 1 -->
+            <!-- Mensaje recibido -->
             <div class="message-container">
                 <img src="${avatar}" class="avatar mt-1" alt="Avatar">
                 <div class="message received">${msg}</div>
@@ -64,14 +42,15 @@ window.initializeChat = function() {
 
             // Hacer scroll hacia abajo
             scrollToBottom();
+            
         } else if (data.type === 'user_list') {
-            pass
+            // Actualizar la cantidad de usuarios conectados
+            const onlineCount = document.querySelector('#onlineCount');
+            onlineCount.textContent = `${data.users.length} Online`;
         }
-
-        
-    }
+    };
     
-    // Funcion para hacer scroll hacia abajo
+    // Función para hacer scroll hacia abajo
     function scrollToBottom() {
         const boxMessages = document.querySelector('#boxMessages');
         boxMessages.scrollTop = boxMessages.scrollHeight;
@@ -92,6 +71,7 @@ window.initializeChat = function() {
         if (message.value.trim() !== '') {
             loadMessageHTML(message.value.trim());
             chatSocket.send(JSON.stringify({
+                'type': 'chat_message',
                 'message': message.value.trim(),
                 'username': user,
             }));
@@ -111,44 +91,12 @@ window.initializeChat = function() {
         console.log(m);
         document.querySelector('#boxMessages').innerHTML += 
         `
-        <!-- Mi mensaje-->
+        <!-- Mi mensaje -->
         <div class="message-container">
             <div class="message sent">${m}</div>
         </div>
         `;
     }
-
-    
-
-    document.getElementById('blockUserBtn').addEventListener('click', function() {
-        const usernameToBlock = prompt("Ingrese el nombre de usuario que desea bloquear:");
-        if (usernameToBlock) {
-            // Lógica para bloquear al usuario
-            blockUser(usernameToBlock);
-        }
-    });
-    
-    /* document.getElementById('inviteGameBtn').addEventListener('click', function() {
-        const usernameToInvite = prompt("Ingrese el nombre de usuario al que desea invitar a un juego:");
-        if (usernameToInvite) {
-            // Lógica para enviar invitación a jugar
-            inviteToGame(usernameToInvite);
-        }
-    });
-    
-    document.getElementById('tournamentNoticeBtn').addEventListener('click', function() {
-        // Lógica para mostrar aviso de torneo
-        showTournamentNotice();
-    });
-    
-    document.getElementById('viewProfileBtn').addEventListener('click', function() {
-        const usernameToView = prompt("Ingrese el nombre de usuario cuyo perfil desea ver:");
-        if (usernameToView) {
-            // Lógica para redirigir a la página del perfil
-            window.location.href = `/profile/${usernameToView}`;
-        }
-    }); */
-    
 };
 
 // Ejecutar la función cuando el DOM esté completamente cargado

@@ -7,7 +7,7 @@ from userManagement.models import Profile
 class ChatConsumer(WebsocketConsumer):
 
     # Definimos una lista de usuarios conectados
-    connected_users = {}
+    connected_users = []
 
     def connect(self):
         # Obtener el nombre de la sala desde la URL
@@ -20,15 +20,10 @@ class ChatConsumer(WebsocketConsumer):
         else:
             None
 
-        # Agregamos al usuario a la lista de usuarios conectados
-        if self.room_group_name not in self.connected_users:
-            self.connected_users[self.room_group_name] = []
-        if self.username:
-            self.connected_users[self.room_group_name].append(self.username)
+        # Agregar al usuario autenticado a la lista de conectados si no está ya
+        if self.username and self.username not in self.connected_users:
+            self.connected_users.append(self.username)
 
-        """ # Nombre de la sala y hash de la sala
-        print('conexion establecida al room: ', self.room_group_name)
-        print("channel_name: ", self.channel_name) """
 
         # Agregar el canal del usuario al grupo de la sala
         async_to_sync(self.channel_layer.group_add)(
@@ -39,45 +34,43 @@ class ChatConsumer(WebsocketConsumer):
         # Aceptar la conexión WebSocket
         self.accept()
 
-        # ! Comprobar este if, quitarlo si no es necesario, esto bloquea la conexión
         # Enviamos la lista de usuarios conectados
-        if self.connected_users[self.room_group_name]:
-            async_to_sync(self.channel_layer.group_send)(
-                self.room_group_name, {
-                    'type': 'user_list',
-                    'users': self.connected_users[self.room_group_name],
-                }
-            )
+        self.send_user_list()
 
-        # **Recuperar los últimos 3 mensajes de la sala**
+        # Recuperar los últimos 3 mensajes de la sala
         last_messages = Message.objects.filter(room__name=self.id).order_by('-timestamp')[:3]
         for message in reversed(last_messages):
             msg_user_id = message.user
             user_profile = Profile.objects.get(user_id = msg_user_id) 
             user_avatar = user_profile.avatar.url if user_profile.avatar else None 
             self.send(text_data=json.dumps({
+                'type': 'chat_message',
                 'message': message.content,
                 'username': message.user.username,
                 'avatar': user_avatar, 
             }))
 
-    # Remover el canal del usuario del grupo de la sala
     def disconnect(self, close_code):
-        # Eliminar al usuario de la lista de usuarios conectados
-        if self.username in self.connected_users[self.room_group_name]:
-            self.connected_users[self.room_group_name].remove(self.username)
+        # Remover al usuario de la lista de conectados
+        if self.username in self.connected_users:
+            self.connected_users.remove(self.username)
 
-        # Enviamos la lista de usuarios conectados Actualizada
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name, {
-                'type': 'user_list',
-                'users': self.connected_users[self.room_group_name],
-            }
-        )
+        # Actualizar la lista de usuarios conectados
+        self.send_user_list()
 
+        # Salir del grupo de la sala pública
         async_to_sync(self.channel_layer.group_discard)(
             self.room_group_name,
             self.channel_name
+        )
+
+    # Enviar la lista de usuarios conectados a todos en la sala pública
+    def send_user_list(self):
+        async_to_sync(self.channel_layer.group_send)(
+            self.room_group_name, {
+                'type': 'user_list',
+                'users': self.connected_users,
+            }
         )
 
     # Enviar la lista de usuarios conectados
@@ -91,25 +84,22 @@ class ChatConsumer(WebsocketConsumer):
         try:
             # Decodificar el mensaje
             text_data_json = json.loads(text_data)
-            event_type = text_data_json['type']
+            event_type = text_data_json.get('type', '')
 
             if event_type == 'chat_message':
                 message = text_data_json['message']
+
                 # Obtenemos el nombre de usuario
                 if self.user.is_authenticated:
                     sender_id = self.scope['user'].id
-                    sender_profile = Profile.objects.get(user_id=sender_id)
                     sender_profile = Profile.objects.get(user_id=sender_id)
                     sender_avatar = sender_profile.avatar.url if sender_profile.avatar else None
                 else:
                     sender_id = None
                     sender_avatar = None
-
-                # Obtenemos el objeto Room usuando el nombre de la sala
-                room = Room.objects.get(name=self.id)
             
                 if sender_id:
-                    # Mandamos datos a la base de datos
+                    room = Room.objects.get(name=self.id)
                     message_save = Message.objects.create(
                         user_id=sender_id,
                         content=message,
