@@ -6,7 +6,7 @@ from userManagement.models import Profile
 
 class ChatConsumer(WebsocketConsumer):
 
-    # Definimos una lista de usuarios conectados
+    # lista de usuarios conectados
     connected_users = []
 
     def connect(self):
@@ -51,6 +51,7 @@ class ChatConsumer(WebsocketConsumer):
             }))
 
     def disconnect(self, close_code):
+        print(f'Disconnect user: {self.username}')
         # Remover al usuario de la lista de conectados
         if self.username in self.connected_users:
             self.connected_users.remove(self.username)
@@ -64,7 +65,7 @@ class ChatConsumer(WebsocketConsumer):
             self.channel_name
         )
 
-    # Enviar la lista de usuarios conectados a todos en la sala pública
+    # Envia la lista de usuarios conectados al grupo de WebSocket.
     def send_user_list(self):
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name, {
@@ -73,7 +74,8 @@ class ChatConsumer(WebsocketConsumer):
             }
         )
 
-    # Enviar la lista de usuarios conectados
+    # Maneja el evento cuando la lista de usuarios conectados es recibida 
+    # y envía esos datos al cliente.
     def user_list(self, event):
         self.send(text_data=json.dumps({
             'type': "user_list",

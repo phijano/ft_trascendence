@@ -8,6 +8,8 @@ window.initializeChat = function() {
     // Obtener la URL del WebSocket
     const wsUrl = `ws://${window.location.host}/ws/chat/${room}/`;
 
+    let connectedUsers = new Set();
+
     // Crear una instancia de WebSocket
     var chatSocket = new WebSocket(wsUrl);
 
@@ -97,6 +99,11 @@ window.initializeChat = function() {
         </div>
         `;
     }
+
+    // Evento unload para cerrar el WebSocket al abandonar la página
+    window.addEventListener('unload', function() {
+        chatSocket.close(); // Cerrar el WebSocket
+    });
 };
 
 // Ejecutar la función cuando el DOM esté completamente cargado
