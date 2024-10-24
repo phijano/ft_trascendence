@@ -655,7 +655,7 @@ function selectOption(element) {
 		document.getElementById("dStartGame").hidden = true;
 		document.getElementById("dWinner").hidden = true;
 		document.getElementById("chooseIndicator").hidden = true;
-
+		canvasResize();
 		document.getElementById("dMultiplayerSettings").hidden = false;
 	}
 
@@ -740,15 +740,42 @@ window.pongToggleRules = toggleRules;
 
 window.pongStartMultiReady = startMultiReady;
 
+function canvasResize() {
+	let canvas = document.getElementById("pongCanvas");
+	let canvasSize = document.getElementById("boardSize").value;
+	switch (canvasSize) 
+	{
+		case "small":
+			canvas.width = 400;
+			canvas.height = 400;
+			canvas.style.width = "400px";
+			canvas.style.height = "400px";
+			break;
+		case "normal":
+			canvas.width = 600;
+			canvas.height = 600;
+			canvas.style.width = "600px";
+			canvas.style.height = "600px";
+			break;
+		case "big":
+			canvas.width = 800;
+			canvas.height = 800;
+			canvas.style.width = "800px";
+			canvas.style.height = "800px";
+			break;
+		default:
+			canvas.width = 600;
+			canvas.height = 600;
+			break;
+	}
+}
+
 function startMultiReady() {
 
 	const startButton = document.getElementById('start-button-multi');
 	startButton.style.display = 'none';
 
     const canvas = document.getElementById('pongCanvas');
-
-	canvas.width = 600;  // Ancho del canvas
-	canvas.height = 600;
 
 	if (!canvas) {
         console.error("Canvas not found!");
@@ -772,13 +799,14 @@ function startMultiReady() {
 	let player3Score = 0;
 	let player4Score = 0;
 
-	let countdown = 20;
+ 	let countdown = 20;
 	document.getElementById('timeCountdown').textContent = countdown;
 
 	let intervalDraw;
 	let intervalTime;
 
 	let timeEnd = false;
+
 
 	function generateRandom(min, max) {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -848,33 +876,35 @@ function startMultiReady() {
 		//ball.dx = -ball.dx;
 
 		// Asigna una velocidad y dirección aleatoria de la pelota
-		ball.dx = generatePositiveNegative() * generateRandom(4, 6);
-		ball.dy = generatePositiveNegative() * generateRandom(4, 6);
+		let ball_speed = parseFloat(document.getElementById("ballSpeed").value) / 12;
+
+		ball.dx = generatePositiveNegative() * generateRandom(4, 6) * ball_speed;
+		ball.dy = generatePositiveNegative() * generateRandom(4, 6) * ball_speed;
 	}
 
 	function movePaddles() {
 		if (paddle1.moveUp && paddle1.y > 0) {
-			paddle1.y -= paddle1.dy;
+			paddle1.y = Math.max(0, paddle1.y - paddle1.dy);
 		} else if (paddle1.moveDown && paddle1.y + paddle1.height < canvas.height) {
-			paddle1.y += paddle1.dy;
+			paddle1.y = Math.min(canvas.height - paddle1.height, paddle1.y + paddle1.dy);
 		}
 
 		if (paddle3.moveUp && paddle3.y > 0) {
-			paddle3.y -= paddle3.dy;
+			paddle3.y = Math.max(0, paddle3.y - paddle3.dy);
 		} else if (paddle3.moveDown && paddle3.y + paddle3.height < canvas.height) {
-			paddle3.y += paddle3.dy;
+			paddle3.y = Math.min(canvas.height - paddle3.height, paddle3.y + paddle3.dy);
 		}
 
 		if (paddle2.moveLeft && paddle2.x > 0) {
-			paddle2.x -= paddle2.dx;
+			paddle2.x = Math.max(0, paddle2.x - paddle2.dx);
 		} else if (paddle2.moveRight && paddle2.x + paddle2.width < canvas.width) {
-			paddle2.x += paddle2.dx;
+			paddle2.x = Math.min(canvas.width - paddle2.width, paddle2.x + paddle2.dx);
 		}
 
 		if (paddle4.moveLeft && paddle4.x > 0) {
-			paddle4.x -= paddle4.dx;
+			paddle4.x = Math.max(0, paddle4.x - paddle4.dx);
 		} else if (paddle4.moveRight && paddle4.x + paddle4.width < canvas.width) {
-			paddle4.x += paddle4.dx;
+			paddle4.x = Math.min(canvas.width - paddle4.width, paddle4.x + paddle4.dx);
 		}
 	}
 
@@ -906,50 +936,55 @@ function startMultiReady() {
 		countdown = 20;
 		document.getElementById('timeCountdown').textContent = countdown;
 
+		let paddle_size = parseFloat(document.getElementById("playerSize").value); 
+		let paddle_speed = parseFloat(document.getElementById("playerSpeed").value);
+		let ball_size = parseFloat(document.getElementById("ballSize").value);
+		let ball_speed = parseFloat(document.getElementById("ballSpeed").value) / 12;
+
 		ball = {
 			x: canvas.width / 2,
 			y: canvas.height / 2,
-			radius: 10,
-			dx: generatePositiveNegative() * generateRandom(4, 6),
-			dy: generatePositiveNegative() * generateRandom(4, 6)
+			radius: ball_size / 2,
+			dx: generatePositiveNegative() * generateRandom(4, 6) * ball_speed,
+			dy: generatePositiveNegative() * generateRandom(4, 6) * ball_speed
 		};
 
 		paddle1 = {
 			width: 10,
-			height: 100,
+			height: paddle_size,
 			x: 0,
-			y: canvas.height / 2 - 50,
-			dy: 8,
+			y: canvas.height / 2 - paddle_size / 2,
+			dy: paddle_speed,
 			moveUp: false,
 			moveDown: false
 		};
 
 		paddle3 = {
 			width: 10,
-			height: 100,
+			height: paddle_size,
 			x: canvas.width - 10,
-			y: canvas.height / 2 - 50,
-			dy: 8,
+			y: canvas.height / 2 - paddle_size / 2,
+			dy: paddle_speed,
 			moveUp: false,
 			moveDown: false
 		};
 
 		paddle2 = {
-			width: 100,
+			width: paddle_size,
 			height: 10,
-			x: canvas.width / 2 - 50,
+			x: canvas.width / 2 - paddle_size / 2,
 			y: 0,
-			dx: 8,
+			dx: paddle_speed,
 			moveLeft: false,
 			moveRight: false
 		}
 
 		paddle4 = {
-			width: 100,
+			width: paddle_size,
 			height: 10,
-			x: canvas.width / 2 - 50,
+			x: canvas.width / 2 - paddle_size / 2,
 			y: canvas.height - 10,
-			dx: 8,
+			dx: paddle_speed,
 			moveLeft: false,
 			moveRight: false
 		}
