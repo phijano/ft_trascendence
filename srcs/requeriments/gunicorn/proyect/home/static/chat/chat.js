@@ -1,5 +1,4 @@
 window.initializeChat = function() {
-    // Obtener el usuario y la sala desde los atributos data
     const boxMessages = document.querySelector('#boxMessages');
     const room = boxMessages.getAttribute('data-room');
     const user = boxMessages.getAttribute('data-user');
@@ -24,32 +23,26 @@ window.initializeChat = function() {
     chatSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
 
-        if (data.type === 'chat_message') {
-            const msg = data.message;
-            const username = data.username;
-            const avatar = data.avatar;
+        const msg = data.message;
+        const username = data.username;
+        const avatar = data.avatar;
 
-            document.querySelector('#boxMessages').innerHTML += 
-            `
-            <!-- Mensaje recibido -->
-            <div class="message-container">
-                <img src="${avatar}" class="avatar mt-1" alt="Avatar">
-                <div class="message received">${msg}</div>
-            </div>
-            <!-- Nombre del usuario debajo del mensaje -->
-            <div id="user-info" class="user-info" style="margin-top: -10px; margin-left: 50px">
-                <small class="text-">${username}</small>
-            </div>
-            `;
+        document.querySelector('#boxMessages').innerHTML += 
+        `
+        <!-- Mensaje recibido -->
+        <div class="message-container">
+            <img src="${avatar}" class="avatar mt-1" alt="Avatar">
+            <div class="message received">${msg}</div>
+        </div>
+        <!-- Nombre del usuario debajo del mensaje -->
+        <div id="user-info" class="user-info" style="margin-top: -10px; margin-left: 50px">
+            <small class="text-">${username}</small>
+        </div>
+        `;
 
-            // Hacer scroll hacia abajo
-            scrollToBottom();
-            
-        } else if (data.type === 'user_list') {
-            // Actualizar la cantidad de usuarios conectados
-            const onlineCount = document.querySelector('#onlineCount');
-            onlineCount.textContent = `${data.users.length} Online`;
-        }
+        // Hacer scroll hacia abajo
+        scrollToBottom();
+
     };
     
     // Función para hacer scroll hacia abajo
@@ -99,11 +92,6 @@ window.initializeChat = function() {
         </div>
         `;
     }
-
-    // Evento unload para cerrar el WebSocket al abandonar la página
-    window.addEventListener('unload', function() {
-        chatSocket.close(); // Cerrar el WebSocket
-    });
 };
 
 // Ejecutar la función cuando el DOM esté completamente cargado

@@ -5,10 +5,6 @@ from .models import *
 from userManagement.models import Profile
 
 class ChatConsumer(WebsocketConsumer):
-
-    # lista de usuarios conectados
-    connected_users = []
-
     def connect(self):
         # Obtener el nombre de la sala desde la URL
         self.id = self.scope['url_route']['kwargs']['room_name']
@@ -20,11 +16,6 @@ class ChatConsumer(WebsocketConsumer):
         else:
             None
 
-        # Agregar al usuario autenticado a la lista de conectados si no está ya
-        if self.username and self.username not in self.connected_users:
-            self.connected_users.append(self.username)
-
-
         # Agregar el canal del usuario al grupo de la sala
         async_to_sync(self.channel_layer.group_add)(
             self.room_group_name,
@@ -34,9 +25,6 @@ class ChatConsumer(WebsocketConsumer):
         # Aceptar la conexión WebSocket
         self.accept()
 
-        # Enviamos la lista de usuarios conectados
-        self.send_user_list()
-
         # Recuperar los últimos 3 mensajes de la sala
         last_messages = Message.objects.filter(room__name=self.id).order_by('-timestamp')[:3]
         for message in reversed(last_messages):
@@ -44,7 +32,6 @@ class ChatConsumer(WebsocketConsumer):
             user_profile = Profile.objects.get(user_id = msg_user_id) 
             user_avatar = user_profile.avatar.url if user_profile.avatar else None 
             self.send(text_data=json.dumps({
-                'type': 'chat_message',
                 'message': message.content,
                 'username': message.user.username,
                 'avatar': user_avatar, 
@@ -52,26 +39,11 @@ class ChatConsumer(WebsocketConsumer):
 
     def disconnect(self, close_code):
         print(f'Disconnect user: {self.username}')
-        # Remover al usuario de la lista de conectados
-        if self.username in self.connected_users:
-            self.connected_users.remove(self.username)
-
-        # Actualizar la lista de usuarios conectados
-        self.send_user_list()
 
         # Salir del grupo de la sala pública
         async_to_sync(self.channel_layer.group_discard)(
             self.room_group_name,
             self.channel_name
-        )
-
-    # Envia la lista de usuarios conectados al grupo de WebSocket.
-    def send_user_list(self):
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name, {
-                'type': 'user_list',
-                'users': self.connected_users,
-            }
         )
 
     # Maneja el evento cuando la lista de usuarios conectados es recibida 
@@ -86,45 +58,40 @@ class ChatConsumer(WebsocketConsumer):
         try:
             # Decodificar el mensaje
             text_data_json = json.loads(text_data)
-            event_type = text_data_json.get('type', '')
 
-            if event_type == 'chat_message':
-                message = text_data_json['message']
+            message = text_data_json['message']
 
-                # Obtenemos el nombre de usuario
-                if self.user.is_authenticated:
-                    sender_id = self.scope['user'].id
-                    sender_profile = Profile.objects.get(user_id=sender_id)
-                    sender_avatar = sender_profile.avatar.url if sender_profile.avatar else None
-                else:
-                    sender_id = None
-                    sender_avatar = None
-            
-                if sender_id:
-                    room = Room.objects.get(name=self.id)
-                    message_save = Message.objects.create(
-                        user_id=sender_id,
-                        content=message,
-                        room=room,
-                    )
-                    message_save.save()
+            # Obtenemos el nombre de usuario
+            if self.user.is_authenticated:
+                sender_id = self.scope['user'].id
+                sender_profile = Profile.objects.get(user_id=sender_id)
+                sender_avatar = sender_profile.avatar.url if sender_profile.avatar else None
+            else:
+                sender_id = None
+                sender_avatar = None
+        
+            if sender_id:
+                room = Room.objects.get(name=self.id)
+                message_save = Message.objects.create(
+                    user_id=sender_id,
+                    content=message,
+                    room=room,
+                )
+                message_save.save()
 
 
-                    # Enviar mensaje al grupo de la sala
-                    async_to_sync(self.channel_layer.group_send)(
-                        self.room_group_name, {
-                            'type': 'chat_message',
-                            'message': message,
-                            'username': self.user.username,
-                            'sender_id': sender_id,
-                            'avatar': sender_avatar,
-                        }
-                    )
-                else:
-                    print('Usuario no autenticado')
-            elif event_type == 'user_list':
-                # Este evento se maneja del lado del cliente
-                pass
+                # Enviar mensaje al grupo de la sala
+                async_to_sync(self.channel_layer.group_send)(
+                    self.room_group_name, {
+                        'type': 'chat_message',
+                        'message': message,
+                        'username': self.user.username,
+                        'sender_id': sender_id,
+                        'avatar': sender_avatar,
+                    }
+                )
+            else:
+                print('Usuario no autenticado')
 
         except json.JSONDecodeError as e:
             print('Error al decodificar el mensaje: ', e)
