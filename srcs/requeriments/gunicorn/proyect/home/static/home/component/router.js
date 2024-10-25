@@ -13,12 +13,12 @@ export const locationHandler = async() => {
         location = location.substring(0, location.length - 1);
         window.history.replaceState({}, "", location);
     }
-    console.log("handler: " + location)
+    /* console.log("handler: " + location) */
     const route = routes.URL[location] || routes.URL["404"];
     const origin = window.location.origin;
     const search = window.location.search;
-    console.log(route);
-    console.log(route.template);
+    /* console.log(route);
+    console.log(route.template); */
     try {
         const html = await fetch(origin + route.template + search).then((response) => response.text());
         document.getElementById("content").innerHTML = html;
@@ -33,7 +33,7 @@ export const locationHandler = async() => {
         document.body.appendChild(script);
     }
     } catch (e) {
-        console.log(e);
+        /* console.log(e); */
     }
     document.title = route.title;
 /*	document

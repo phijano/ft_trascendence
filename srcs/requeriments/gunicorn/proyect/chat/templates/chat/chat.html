@@ -1,8 +1,7 @@
 <div class="chat-wrapper">
-    <!-- Botones superiores -->
+    <!-- Botón para abrir el modal de usuarios -->
     <div id="topButtons" class="chat-actions">
-        <button id="blockUserBtn" class="chat-btn" onclick="promptBlockUser()">Block User</button>
-        <button id="unblockUserBtn" class="chat-btn" onclick="promptUnblockUser()">Unblock User</button> <!-- Botón para desbloquear -->
+        <button id="usersBtn" class="chat-btn" data-bs-toggle="modal" data-bs-target="#usersModal">USERS</button>
         <button id="viewProfileBtn" class="chat-btn">View Profile</button>
     </div>
 
@@ -14,6 +13,7 @@
             data-room="{{ room.name }}" 
             data-user="{{ user.username }}" 
             data-avatar="{{ user_avatar }}">
+            <!-- Los mensajes se insertarán aquí -->
         </div>
 
         <!-- Formulario para enviar mensajes -->
@@ -29,4 +29,22 @@
         <button id="inviteGameBtn" class="chat-btn">Invite to Game</button>
         <button id="tournamentNoticeBtn" class="chat-btn">Tournament Notice</button>
     </div>
+</div>
+
+<!-- Modal para mostrar usuarios conectados -->
+<div class="modal fade" id="usersModal" tabindex="-1" aria-labelledby="usersModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="usersModalLabel">Usuarios Conectados</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="connectedUsersList">
+        <!-- Lista de usuarios conectados se generará aquí -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
 </div>

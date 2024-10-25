@@ -6,7 +6,6 @@ from userManagement.models import Profile
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
-        # Obtener el nombre de la sala desde la URL
         self.id = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f'chat_{self.id}'
         self.user = self.scope['user']
@@ -14,29 +13,20 @@ class ChatConsumer(WebsocketConsumer):
         if self.user.is_authenticated:
             self.username = self.user.username
 
-        # Agregar el canal del usuario al grupo de la sala
         async_to_sync(self.channel_layer.group_add)(self.room_group_name, self.channel_name)
 
-        # Aceptar la conexión WebSocket
         self.accept()
-
-        # Recuperar los últimos 3 mensajes de la sala
         self.fetch_last_messages()
-
-        # Obtener y enviar lista de usuarios conectados
         self.send_connected_users()
 
     def disconnect(self, close_code):
         print(f'Disconnect user: {self.username}')
-        # Salir del grupo de la sala pública
         async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
 
     def receive(self, text_data):
         try:
-            # Decodificar el mensaje
             data = json.loads(text_data)
 
-            # Manejar bloqueos y mensajes
             if data['type'] == 'block_user':
                 self.block_user(data['user_id'])
             elif data['type'] == 'unblock_user':
@@ -54,13 +44,11 @@ class ChatConsumer(WebsocketConsumer):
     def handle_message(self, data):
         message = data['message']
 
-        # Verificar si el usuario está autenticado
         if not self.user.is_authenticated:
             print('Usuario no autenticado')
             return
 
         sender_id = self.scope['user'].id
-        sender_avatar = self.get_avatar(sender_id)
 
         # Verificar si el usuario está bloqueado
         if self.is_user_blocked(sender_id):
@@ -71,7 +59,7 @@ class ChatConsumer(WebsocketConsumer):
         self.save_message(sender_id, message)
 
         # Enviar mensaje al grupo de la sala
-        self.send_chat_message(message, sender_id, sender_avatar)
+        self.send_chat_message(message, sender_id, self.get_avatar(sender_id))
 
     def send_connected_users(self):
         connected_users = self.get_connected_users()
@@ -87,7 +75,9 @@ class ChatConsumer(WebsocketConsumer):
     def fetch_last_messages(self):
         last_messages = Message.objects.filter(room__name=self.id).order_by('-timestamp')[:3]
         for message in reversed(last_messages):
-            self.send_last_message(message)
+            # Solo enviar mensajes que no sean de usuarios bloqueados
+            if not self.is_user_blocked(message.user.id):
+                self.send_last_message(message)
 
     def send_last_message(self, message):
         user_profile = Profile.objects.get(user_id=message.user.id)
@@ -117,7 +107,7 @@ class ChatConsumer(WebsocketConsumer):
     def send_blocked_notification(self):
         self.send(text_data=json.dumps({
             'type': 'error',
-            'message': 'You are blocked from sending messages in this chat.',
+            'message': 'Estás bloqueado para enviar mensajes en este chat.',
         }))
 
     def save_message(self, sender_id, message):
@@ -125,16 +115,13 @@ class ChatConsumer(WebsocketConsumer):
         Message.objects.create(user_id=sender_id, content=message, room=room)
 
     def send_chat_message(self, message, sender_id, avatar):
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name,
-            {
-                'type': 'chat_message',
-                'message': message,
-                'username': self.user.username,
-                'sender_id': sender_id,
-                'avatar': avatar,
-            }
-        )
+        async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+            'type': 'chat_message',
+            'message': message,
+            'username': self.user.username,
+            'sender_id': sender_id,
+            'avatar': avatar,
+        })
 
     def chat_message(self, event):
         message = event['message']
@@ -143,6 +130,10 @@ class ChatConsumer(WebsocketConsumer):
         avatar = event['avatar']
 
         current_user_id = self.scope['user'].id
+
+        # No enviar mensajes a uno mismo
+        if sender_id == current_user_id:
+            return
 
         # Verificar bloqueos entre el remitente y el receptor
         if Block.objects.filter(blocker_id=current_user_id, blocked_id=sender_id).exists() or \

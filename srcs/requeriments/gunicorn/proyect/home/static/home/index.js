@@ -11,7 +11,7 @@ document.addEventListener("click", (ev) => {
 	ev.preventDefault();
 	dropGame();
 	stop();
-	console.log("router: " + ev.target.href);
+	/* console.log("router: " + ev.target.href); */
 	router(ev.target.href);
 });
 

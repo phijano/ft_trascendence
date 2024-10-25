@@ -9,6 +9,7 @@ window.initializeChat = function() {
 
     // Mapa para usuarios conectados
     let connectedUserMap = new Map();
+    let blockedUsers = new Set(); // Para rastrear usuarios bloqueados
 
     // Eventos del WebSocket
     chatSocket.onopen = () => console.log('Conexión abierta');
@@ -26,37 +27,39 @@ window.initializeChat = function() {
                 updateConnectedUsers(data.users);
                 break;
             case 'chat_message':
-                displayChatMessage(data);
+                handleChatMessage(data);
                 break;
             default:
                 console.warn('Tipo de mensaje desconocido:', data.type);
         }
     }
 
-    // Actualiza la lista de usuarios conectados
-    function updateConnectedUsers(users) {
-        connectedUserMap.clear();
-        users.forEach(user => {
-            connectedUserMap.set(user.username, user.id);
-        });
-        console.log("Usuarios conectados:", connectedUserMap);
+    // Manejar el mensaje del chat
+    function handleChatMessage(data) {
+        const { message, username, avatar } = data;
+
+        if (blockedUsers.has(username)) {
+            console.log(`Mensaje de ${username} bloqueado y no guardado.`);
+            return; // No mostrar ni guardar mensajes de usuarios bloqueados
+        }
+
+        if (message && username) {
+            displayChatMessage(message, username, avatar);
+        }
     }
 
     // Muestra un mensaje en el chat
-    function displayChatMessage(data) {
-        const { message, username, avatar } = data;
-        if (message && username) {
-            boxMessages.innerHTML += `
-                <div class="message-container">
-                    <img src="${avatar}" class="avatar mt-1" alt="Avatar">
-                    <div class="message received">${message}</div>
-                </div>
-                <div id="user-info" class="user-info" style="margin-top: -10px; margin-left: 50px">
-                    <small class="text-">${username}</small>
-                </div>
-            `;
-            scrollToBottom();
-        }
+    function displayChatMessage(message, username, avatar) {
+        boxMessages.innerHTML += `
+            <div class="message-container">
+                <img src="${avatar}" class="avatar mt-1" alt="Avatar">
+                <div class="message received">${message}</div>
+            </div>
+            <div class="user-info" style="margin-top: -10px; margin-left: 50px">
+                <small class="text-">${username}</small>
+            </div>
+        `;
+        scrollToBottom();
     }
 
     // Desplaza la vista hacia abajo
@@ -69,7 +72,6 @@ window.initializeChat = function() {
         const messageInput = document.querySelector('#inputMessage');
         const messageValue = messageInput.value.trim();
         if (messageValue !== '') {
-            loadSentMessageHTML(messageValue);
             chatSocket.send(JSON.stringify({
                 'type': 'chat_message',
                 'message': messageValue,
@@ -80,21 +82,17 @@ window.initializeChat = function() {
         }
     }
 
-    // Cargar el mensaje enviado en el chat
-    function loadSentMessageHTML(message) {
-        boxMessages.innerHTML += `
-            <div class="message-container">
-                <div class="message sent">${message}</div>
-            </div>
-        `;
-    }
-
     // Manejo de bloqueo de usuarios
     function blockUser(userId) {
         chatSocket.send(JSON.stringify({
             'type': 'block_user',
             'user_id': userId,
         }));
+        const username = Array.from(connectedUserMap.keys()).find(u => connectedUserMap.get(u) === userId);
+        if (username) {
+            blockedUsers.add(username); // Agregar a la lista de usuarios bloqueados
+            console.log(`${username} ha sido bloqueado.`);
+        }
     }
 
     function unblockUser(userId) {
@@ -102,26 +100,78 @@ window.initializeChat = function() {
             'type': 'unblock_user',
             'user_id': userId,
         }));
+        const username = Array.from(connectedUserMap.keys()).find(u => connectedUserMap.get(u) === userId);
+        if (username) {
+            blockedUsers.delete(username); // Eliminar de la lista de usuarios bloqueados
+            console.log(`${username} ha sido desbloqueado.`);
+        }
     }
 
     function promptBlockUser() {
-        const username = prompt("Enter the username to block:");
-        const userId = connectedUserMap.get(username);
-        if (userId) {
-            blockUser(userId);
+        const usernames = Array.from(connectedUserMap.keys());
+
+        if (usernames.length === 0) {
+            alert("No hay usuarios conectados para bloquear.");
+            return;
+        }
+
+        const userList = usernames.map((username, index) => `${index + 1}. ${username}`).join("\n");
+        const username = prompt(`Selecciona un usuario para bloquear:\n\n${userList}`);
+
+        if (usernames.includes(username)) {
+            const userId = connectedUserMap.get(username);
+            if (userId) {
+                blockUser(userId);
+            }
         } else {
             console.log("Usuario no encontrado o no conectado.");
         }
     }
 
     function promptUnblockUser() {
-        const username = prompt("Enter the username to unblock:");
-        const userId = connectedUserMap.get(username);
-        if (userId) {
-            unblockUser(userId);
+        const usernames = Array.from(connectedUserMap.keys());
+
+        if (usernames.length === 0) {
+            alert("No hay usuarios conectados para desbloquear.");
+            return;
+        }
+
+        const userList = usernames.map((username, index) => `${index + 1}. ${username}`).join("\n");
+        const username = prompt(`Selecciona un usuario para desbloquear:\n\n${userList}`);
+
+        if (usernames.includes(username)) {
+            const userId = connectedUserMap.get(username);
+            if (userId) {
+                unblockUser(userId);
+            }
         } else {
             console.log("Usuario no encontrado o no conectado.");
         }
+    }
+
+    // Actualiza la lista de usuarios conectados
+    function updateConnectedUsers(users) {
+        connectedUserMap.clear();
+        users.forEach(user => {
+            connectedUserMap.set(user.username, user.id);
+        });
+
+        const connectedUsersList = document.getElementById('connectedUsersList');
+        if (!connectedUsersList) {
+            return;
+        }
+
+        connectedUsersList.innerHTML = '';
+        users.forEach(user => {
+            const userItem = document.createElement('div');
+            userItem.className = 'user-item';
+            userItem.innerHTML = `
+                <span>${user.username}</span>
+                <button class="btn btn-danger btn-sm ms-2" onclick="blockUser(${user.id})">Block</button>
+                <button class="btn btn-success btn-sm ms-1" onclick="unblockUser(${user.id})">Unblock</button>
+            `;
+            connectedUsersList.appendChild(userItem);
+        });
     }
 
     // Configurar eventos
@@ -132,8 +182,9 @@ window.initializeChat = function() {
         }
     });
 
-    document.querySelector('#blockUserBtn').onclick = promptBlockUser;
-    document.querySelector('#unblockUserBtn').onclick = promptUnblockUser;
+    // Exponer funciones de bloqueo y desbloqueo al ámbito global
+    window.blockUser = blockUser;
+    window.unblockUser = unblockUser;
 };
 
 document.addEventListener('DOMContentLoaded', () => {

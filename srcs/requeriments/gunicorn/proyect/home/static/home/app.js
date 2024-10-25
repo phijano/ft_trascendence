@@ -3,7 +3,7 @@ import { locationHandler } from "./component/router.js"
 
 export async function App() {
 
-    console.log("new page");
+    /* console.log("new page"); */
     const root = document.getElementById("root");
     root.appendChild(Header());
     await userLogged();
@@ -21,6 +21,6 @@ async function userLogged() {
 	    setUser();
 	}
     } catch(e) {
-	console.log(e);		
+	/* console.log(e); */		
     }
 }
