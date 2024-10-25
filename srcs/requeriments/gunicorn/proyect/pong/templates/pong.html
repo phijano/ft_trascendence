@@ -82,13 +82,16 @@
 	</div>
     <div id="dMultiplayerSettings" hidden>
         <div class="display-column-content">
-            <div class="scoreboard mt-4">
+            <div id ="multiplayerSpans" class="scoreboard mt-4">
 				<span class="players-font">Player 1: <span id="player1Score">0</span></span> 
 				<span class="players-font">Player 2: <span id="player2Score">0</span></span> 
 				<span class="players-font">Player 3: <span id="player3Score">0</span></span> 
 				<span class="players-font">Player 4: <span id="player4Score">0</span></span> 
 				<span class="players-font">Time: <span id="timeCountdown">0</span></span>
             </div>
+			<div id="winnerMessage" class="players-font mt-4" style="display: none;">
+				<span id="winnerText"></span>
+			</div>
             <canvas id="pongCanvas"></canvas>
             <button id="start-button-multi" type="button" class="start-button" onclick="pongStartMultiReady()">Start</button>
         </div>

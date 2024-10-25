@@ -62,8 +62,19 @@ function startLocal() {
 	hideRemote();
 	hideTournament();
     hideCustomizationOptions();
-    setLocal();
+    // Obtén el valor de la opción seleccionada
+    const selectedOption = document.querySelector("#sOpponentContainer .option.selected");
+    const selectedValue = selectedOption ? selectedOption.getAttribute("data-value") : null;
+
+    // Ejecuta acciones según la opción seleccionada
+    if (selectedValue === "1") {  // Multiplayer seleccionado
+        show_multi();
+    } else {  // Cualquier otro valor
+		hideMultiplayer();
+		setLocal();
+	}
 }
+
 
 function startRemote() {
     applySettings();
@@ -647,19 +658,28 @@ function selectOption(element) {
 		document.getElementById("dMultiplayerSettings").hidden = true;
 		pongStartLocal();
     } else if (value === '1') {
-		difficultyContainer.classList.remove('visible');
-        localSettingsContainer.classList.add('centered');
-		document.getElementById("bLocalGame").disabled = false;
-		document.getElementById("board").style.visibility = "hidden";
-		document.getElementById("dMatchPlayers").hidden = true;
-		document.getElementById("dStartGame").hidden = true;
-		document.getElementById("dWinner").hidden = true;
-		document.getElementById("chooseIndicator").hidden = true;
-		canvasResize();
-		document.getElementById("dMultiplayerSettings").hidden = false;
-	}
 
-	
+  
+		show_multi();
+	}
+}
+
+function show_multi(){
+    const difficultyContainer = document.getElementById('sDifficultyContainer');
+    const localSettingsContainer = document.getElementById('dLocalSettings');
+
+	document.getElementById("dLocalSettings").hidden = false;
+	difficultyContainer.classList.remove('visible');
+	localSettingsContainer.classList.add('centered');
+	document.getElementById("bLocalGame").disabled = false;
+	document.getElementById("board").style.visibility = "hidden";
+	document.getElementById("dMatchPlayers").hidden = true;
+	document.getElementById("dStartGame").hidden = true;
+	document.getElementById("dWinner").hidden = true;
+	document.getElementById("chooseIndicator").hidden = true;
+	canvasResize();
+	document.getElementById("dMultiplayerSettings").hidden = false;
+
 }
 
 function selectDifficulty(element) {
@@ -774,6 +794,12 @@ function startMultiReady() {
 
 	const startButton = document.getElementById('start-button-multi');
 	startButton.style.display = 'none';
+
+	const scoreContainer = document.getElementById("multiplayerSpans");
+	scoreContainer.style.display = "block";
+
+	const winnerMessage = document.getElementById("winnerMessage");
+	winnerMessage.style.display = "none";
 
     const canvas = document.getElementById('pongCanvas');
 
@@ -998,7 +1024,7 @@ function startMultiReady() {
 	}
 
 	function drawWinnerMessage(winner) {
-		ctx.font = "48px Arial";
+/* 		ctx.font = "48px Arial";
 		ctx.fillStyle = "#fff";
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
@@ -1006,7 +1032,25 @@ function startMultiReady() {
 			ctx.fillText("PLAYER " + winner + " WINS!", canvas.width / 2, canvas.height / 2);
 		} else {
 			ctx.fillText("TIE!", canvas.width / 2, canvas.height / 2);
+		} */
+
+		const scoreContainer = document.getElementById("multiplayerSpans");
+		const winnerMessage = document.getElementById("winnerMessage");
+		const winnerText = document.getElementById("winnerText");
+	
+		// Ocultar el contenedor de puntuación
+		scoreContainer.style.display = "none";
+	
+		// Mostrar el mensaje del ganador
+		winnerMessage.style.display = "block";
+		if (winner != 0) {
+			winnerText.textContent = "WINNER Player " + winner;
+		} else {
+			winnerText.textContent = "TIE!";
 		}
+		const startButton = document.getElementById('start-button-multi');
+		startButton.style.display = "block";
+
 	}
 
 	function declareWinner() {
