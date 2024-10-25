@@ -26,16 +26,7 @@ class ChatConsumer(WebsocketConsumer):
         self.accept()
 
         # Recuperar los últimos 3 mensajes de la sala
-        last_messages = Message.objects.filter(room__name=self.id).order_by('-timestamp')[:3]
-        for message in reversed(last_messages):
-            msg_user_id = message.user
-            user_profile = Profile.objects.get(user_id = msg_user_id) 
-            user_avatar = user_profile.avatar.url if user_profile.avatar else None 
-            self.send(text_data=json.dumps({
-                'message': message.content,
-                'username': message.user.username,
-                'avatar': user_avatar, 
-            }))
+        self.last_messages();
 
     def disconnect(self, close_code):
         print(f'Disconnect user: {self.username}')
@@ -114,4 +105,16 @@ class ChatConsumer(WebsocketConsumer):
                 'message': message,
                 'username': username,
                 'avatar': avatar,
+            }))
+
+    def last_messages(self):
+        last_messages = Message.objects.filter(room__name=self.id).order_by('-timestamp')[:3]
+        for message in reversed(last_messages):
+            msg_user_id = message.user
+            user_profile = Profile.objects.get(user_id = msg_user_id) 
+            user_avatar = user_profile.avatar.url if user_profile.avatar else None 
+            self.send(text_data=json.dumps({
+                'message': message.content,
+                'username': message.user.username,
+                'avatar': user_avatar, 
             }))
