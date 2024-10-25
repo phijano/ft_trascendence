@@ -1,16 +1,13 @@
 <div class="chat-wrapper">
     <!-- Botones superiores -->
     <div id="topButtons" class="chat-actions">
-        <button id="blockUserBtn" class="chat-btn">Block User</button>
+        <button id="blockUserBtn" class="chat-btn" onclick="promptBlockUser()">Block User</button>
+        <button id="unblockUserBtn" class="chat-btn" onclick="promptUnblockUser()">Unblock User</button> <!-- Botón para desbloquear -->
         <button id="viewProfileBtn" class="chat-btn">View Profile</button>
     </div>
 
     <div id="chat-container" class="container">
-        <div class="online-status">
-            <span id="onlineIndicator" class="indicator"></span>
-            <span id="onlineCount">0 Online</span>
-        </div>
-        {% comment %} <h1 class="text-center">{{ room.name }} chat</h1> {% endcomment %}
+        <h1 class="text-center">{{ room.name }} chat</h1>
 
         <!-- Contenedor de los mensajes -->
         <div id="boxMessages" class="mb-8" 
