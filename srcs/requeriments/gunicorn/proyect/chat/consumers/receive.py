@@ -33,20 +33,16 @@ class ReceiveMixin:
             sender_id = None
             sender_avatar = None
 
-        if sender_id:
-            self.save_message(sender_id, message)
-            self.send_chat_message(message, sender_id, sender_avatar)
-        else:
-            print('Usuario no autenticado')
-
         # Verificar si el usuario está bloqueado
         if self.is_user_blocked(sender_id):
             self.send_blocked_notification()
             return
 
-        # Guardar mensaje en la base de datos y Enviar mensaje al grupo de la sala
-        self.save_message(sender_id, message)
-        self.send_chat_message(message, sender_id, self.get_avatar(sender_id))
+        if sender_id:
+            self.save_message(sender_id, message)
+            self.send_chat_message(message, sender_id, sender_avatar)
+        else:
+            print('Usuario no autenticado')
 
     def save_message(self, sender_id, message):
         room = Room.objects.get(name=self.id)
