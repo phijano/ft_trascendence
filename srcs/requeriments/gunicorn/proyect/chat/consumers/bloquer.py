@@ -1,4 +1,5 @@
 from chat.models import Block
+
 import json
 
 class BloquerUserMixin:
@@ -18,3 +19,9 @@ class BloquerUserMixin:
             'type': 'error',
             'message': 'Estás bloqueado para enviar mensajes en este chat.',
         }))
+
+    def check_blocked(self, sender_id, username, current_user_id):
+        if Block.objects.filter(blocker_id=current_user_id, blocked_id=sender_id).exists() or \
+           Block.objects.filter(blocker_id=sender_id, blocked_id=current_user_id).exists():
+            print(f'Mensaje bloqueado entre {self.user.username} y {username}')
+            return

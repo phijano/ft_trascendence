@@ -24,11 +24,8 @@ class MessageMixin:
         current_user_id = self.scope['user'].id
 
         # Verificar bloqueos entre el remitente y el receptor
-        if Block.objects.filter(blocker_id=current_user_id, blocked_id=sender_id).exists() or \
-           Block.objects.filter(blocker_id=sender_id, blocked_id=current_user_id).exists():
-            print(f'Mensaje bloqueado entre {self.user.username} y {username}')
-            return
-
+        self.check_blocked(sender_id, username, current_user_id)
+        
         if sender_id != current_user_id:
             self.send(text_data=json.dumps({
                 'type': 'chat_message',
