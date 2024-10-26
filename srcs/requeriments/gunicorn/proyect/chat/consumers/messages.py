@@ -11,6 +11,7 @@ class MessageMixin:
             user_profile = Profile.objects.get(user_id=msg_user_id)
             user_avatar = user_profile.avatar.url if user_profile.avatar else None
             self.send(text_data=json.dumps({
+                'type': 'chat_message',
                 'message': message.content,
                 'username': message.user.username,
                 'avatar': user_avatar,

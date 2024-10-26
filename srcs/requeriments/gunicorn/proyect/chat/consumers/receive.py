@@ -7,14 +7,13 @@ class ReceiveMixin:
     def receive(self, text_data):
         try:
             data = json.loads(text_data)
-            self.handle_message(data)
 
-            """ if data['type'] == 'block_user':
+            if data['type'] == 'block_user':
                 self.block_user(data['user_id'])
             elif data['type'] == 'unblock_user':
                 self.unblock_user(data['user_id'])
             else:
-                self.handle_message(data) """
+                self.handle_message(data)
 
         except json.JSONDecodeError as e:
             print('Error al decodificar el mensaje: ', e)
@@ -61,21 +60,3 @@ class ReceiveMixin:
             'sender_id': sender_id,
             'avatar': avatar,
         })
-
-    import json
-from chat.models import Message
-from chat.models import Block
-from userManagement.models import Profile
-
-class MessageMixin:
-    def fetch_last_messages(self):
-        last_messages = Message.objects.filter(room__name=self.id).order_by('-timestamp')[:3]
-        for message in reversed(last_messages):
-            msg_user_id = message.user
-            user_profile = Profile.objects.get(user_id=msg_user_id)
-            user_avatar = user_profile.avatar.url if user_profile.avatar else None
-            self.send(text_data=json.dumps({
-                'message': message.content,
-                'username': message.user.username,
-                'avatar': user_avatar,
-            }))
