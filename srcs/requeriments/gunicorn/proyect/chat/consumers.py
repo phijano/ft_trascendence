@@ -22,6 +22,7 @@ class ChatConsumer(WebsocketConsumer):
     def disconnect(self, close_code):
         print(f'Disconnect user: {self.username}')
         async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
+        self.send_connected_users()
 
     def receive(self, text_data):
         try:
@@ -43,12 +44,11 @@ class ChatConsumer(WebsocketConsumer):
 
     def handle_message(self, data):
         message = data['message']
+        sender_id = self.scope['user'].id
 
         if not self.user.is_authenticated:
             print('Usuario no autenticado')
             return
-
-        sender_id = self.scope['user'].id
 
         # Verificar si el usuario está bloqueado
         if self.is_user_blocked(sender_id):

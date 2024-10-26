@@ -2,7 +2,6 @@ window.initializeChat = function() {
     const boxMessages = document.querySelector('#boxMessages');
     const room = boxMessages.getAttribute('data-room');
     const user = boxMessages.getAttribute('data-user');
-    const avatar = boxMessages.getAttribute('data-avatar');
 
     const wsUrl = `ws://${window.location.host}/ws/chat/${room}/`;
     const chatSocket = new WebSocket(wsUrl);
