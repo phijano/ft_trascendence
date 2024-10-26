@@ -146,6 +146,48 @@ window.initializeChat = function() {
         }
     }
 
+    function promptBlockUser() {
+        const usernames = Array.from(connectedUserMap.keys());
+
+        if (usernames.length === 0) {
+            alert("No hay usuarios conectados para bloquear.");
+            return;
+        }
+
+        const userList = usernames.map((username, index) => `${index + 1}. ${username}`).join("\n");
+        const username = prompt(`Selecciona un usuario para bloquear:\n\n${userList}`);
+
+        if (usernames.includes(username)) {
+            const userId = connectedUserMap.get(username);
+            if (userId) {
+                blockUser(userId);
+            }
+        } else {
+            console.log("Usuario no encontrado o no conectado.");
+        }
+    }
+
+    function promptUnblockUser() {
+        const usernames = Array.from(connectedUserMap.keys());
+
+        if (usernames.length === 0) {
+            alert("No hay usuarios conectados para desbloquear.");
+            return;
+        }
+
+        const userList = usernames.map((username, index) => `${index + 1}. ${username}`).join("\n");
+        const username = prompt(`Selecciona un usuario para desbloquear:\n\n${userList}`);
+
+        if (usernames.includes(username)) {
+            const userId = connectedUserMap.get(username);
+            if (userId) {
+                unblockUser(userId);
+            }
+        } else {
+            console.log("Usuario no encontrado o no conectado.");
+        }
+    }
+
     // Configurar eventos
     document.querySelector('#btnMessage').addEventListener('click', sendMessage);
     document.querySelector('#inputMessage').addEventListener('keypress', function(e) {

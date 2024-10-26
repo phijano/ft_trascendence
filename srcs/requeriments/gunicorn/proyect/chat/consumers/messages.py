@@ -7,15 +7,19 @@ class MessageMixin:
     def fetch_last_messages(self):
         last_messages = Message.objects.filter(room__name=self.id).order_by('-timestamp')[:3]
         for message in reversed(last_messages):
-            msg_user_id = message.user
-            user_profile = Profile.objects.get(user_id=msg_user_id)
-            user_avatar = user_profile.avatar.url if user_profile.avatar else None
-            self.send(text_data=json.dumps({
-                'type': 'chat_message',
-                'message': message.content,
-                'username': message.user.username,
-                'avatar': user_avatar,
-            }))
+            # Solo enviar mensajes que no sean de usuarios bloqueados
+            if not self.is_user_blocked(message.user.id):
+                self.send_last_message(message)
+
+    def send_last_message(self, message):
+        user_profile = Profile.objects.get(user_id=message.user.id)
+        user_avatar = user_profile.avatar.url if user_profile.avatar else None
+        self.send(text_data=json.dumps({
+            'type': 'chat_message',
+            'message': message.content,
+            'username': message.user.username,
+            'avatar': user_avatar,
+        }))
 
     def chat_message(self, event):
         message = event['message']

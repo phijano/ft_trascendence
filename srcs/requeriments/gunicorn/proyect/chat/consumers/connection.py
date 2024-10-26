@@ -14,4 +14,4 @@ class ConnectionMixin:
         )
         self.accept()
         self.fetch_last_messages()
-        #self.send_connected_users()
+        self.send_connected_users()
