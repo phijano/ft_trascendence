@@ -138,21 +138,21 @@
 		<form id="customizationForm">
 			<div class="container py-3">
 				<div class="row py-3">
-					<div class="col-sm"></div>
-					<div class="col-sm text-start">
+					<div class="col-sm border-top border-secondary text-danger">General</div>
+					<div class="col-sm text-start border-top border-secondary">
 						<label for="playerSize">Paddle Size:</label>
 					</div>
-					<div class="col-sm text-start">
+					<div class="col-sm text-start border-top border-secondary">
 						<select id="playerSize" class = "custom-select">
 							<option value=30>Small</option>
 							<option value=50 selected>Normal</option>
 							<option value=70>Big</option>
 						</select>
 					</div>
-					<div class="col-sm text-start">
+					<div class="col-sm text-start border-top border-secondary">
 						<label for="ballSpeed">Ball Start Speed:</label>
 					</div>
-					<div class="col-sm text-start">
+					<div class="col-sm text-start border-top border-secondary">
 						<select id="ballSpeed" class = "custom-select">
 							<option value=6>Slow</option>
 							<option value=7.5 selected>Normal</option>
@@ -188,14 +188,13 @@
 				<div class="row py-3">
 					<div class="col-sm"></div>
 					<div class="col-sm text-start">
-						<label for="pointsToWin">Points to win:</label>
+						<label for="boardSize">Board size:</label>
 					</div>
 					<div class="col-sm text-start">
-						<select id="pointsToWin" class = "custom-select">
-							<option value=1>1</option>
-							<option value=3 selected>3</option>
-							<option value=5>5</option>
-							<option value=10>10</option>
+						<select id="boardSize" class = "custom-select">
+							<option value="small">Small</option>
+							<option value="normal" selected>Normal</option>
+							<option value="big">Big</option>
 						</select>
 					</div>
 					<div class="col-sm text-start">
@@ -211,28 +210,47 @@
 					<div class="col-sm"></div>
 				</div>
 				<div class="row py-3">
-					<div class="col-sm"></div>
-					<div class="col-sm text-start">
-						<label for="boardSize">Board size:</label>
+					<div class="col-sm border-top border-secondary text-danger">Two Players</div>
+					<div class="col-sm text-start border-top border-secondary">
+						<label for="pointsToWin">Points to win:</label>
 					</div>
-					<div class="col-sm text-start">
-						<select id="boardSize" class = "custom-select">
-							<option value="small">Small</option>
-							<option value="normal" selected>Normal</option>
-							<option value="big">Big</option>
+					<div class="col-sm text-start border-top border-secondary">
+						<select id="pointsToWin" class = "custom-select">
+							<option value=1>1</option>
+							<option value=3 selected>3</option>
+							<option value=5>5</option>
+							<option value=10>10</option>
 						</select>
 					</div>
-					<div class="col-sm text-start">
+
+					<div class="col-sm text-start border-top border-secondary">
 						<label for="allowFreezeFlip">Allow Freeze Flip power up:</label>
 					</div>
-					<div class="col-sm text-start">
+					<div class="col-sm text-start border-top border-secondary">
 						<input type="checkbox" id="allowFreezeFlip" />
 					</div>
 					<div class="col-sm"></div>
 				</div>
+				<div class="row py-3">
+					<div class="col-sm border-top border-secondary text-danger">Multiplayer</div>
+					<div class="col-sm text-start border-top border-secondary">
+						<label for="countdown">Countdown:</label>
+					</div>
+					<div class="col-sm text-start border-top border-secondary">
+						<select id="countdown" class = "custom-select">
+							<option value="20">20</option>
+							<option value="30" selected>30</option>
+							<option value="40">40</option>
+						</select>					
+					</div>
+					<div class="col-sm border-top border-secondary"></div>
+					<div class="col-sm border-top border-secondary"></div>
+					<div class="col-sm"></div>
+				</div>
 			</div>
-		</form>
-	</div>			
+		</form>	
+	</div>
+	
 		<div class="mt-4" hidden id="dMatchPlayers">
 			<div class="d-inline-flex flex-row align-self-center container-players">
 				<div class="container-players-inside">

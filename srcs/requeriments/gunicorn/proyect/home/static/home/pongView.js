@@ -657,9 +657,7 @@ function selectOption(element) {
         localSettingsContainer.classList.remove('centered');
 		document.getElementById("dMultiplayerSettings").hidden = true;
 		pongStartLocal();
-    } else if (value === '1') {
-
-  
+    } else if (value === '1') { 
 		show_multi();
 	}
 }
@@ -803,6 +801,7 @@ function startMultiReady() {
 
     const canvas = document.getElementById('pongCanvas');
 
+
 	if (!canvas) {
         console.error("Canvas not found!");
         return;
@@ -859,8 +858,10 @@ function startMultiReady() {
 	}
 
 	function moveBallMulti() {
-		ball.x += ball.dx;
-		ball.y += ball.dy;
+		const speedUpMultiple = parseFloat(document.getElementById("ballSpeedUp").value); 
+
+		ball.x += ball.dx * speedUpMultiple;
+		ball.y += ball.dy * speedUpMultiple;
 
 		/* REBOTE EN LAS PAREDES SUPERIOR E INFERIOR
 		if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
@@ -902,7 +903,7 @@ function startMultiReady() {
 		//ball.dx = -ball.dx;
 
 		// Asigna una velocidad y dirección aleatoria de la pelota
-		let ball_speed = parseFloat(document.getElementById("ballSpeed").value) / 12;
+		let ball_speed = parseFloat(document.getElementById("ballSpeed").value) / 15;
 
 		ball.dx = generatePositiveNegative() * generateRandom(4, 6) * ball_speed;
 		ball.dy = generatePositiveNegative() * generateRandom(4, 6) * ball_speed;
@@ -959,13 +960,13 @@ function startMultiReady() {
 		player4Score = 0;
 		updateScore();
 
-		countdown = 20;
+		countdown = parseFloat(document.getElementById("countdown").value);
 		document.getElementById('timeCountdown').textContent = countdown;
 
 		let paddle_size = parseFloat(document.getElementById("playerSize").value); 
 		let paddle_speed = parseFloat(document.getElementById("playerSpeed").value);
 		let ball_size = parseFloat(document.getElementById("ballSize").value);
-		let ball_speed = parseFloat(document.getElementById("ballSpeed").value) / 12;
+		let ball_speed = parseFloat(document.getElementById("ballSpeed").value) / 15;
 
 		ball = {
 			x: canvas.width / 2,
@@ -1082,6 +1083,7 @@ function startMultiReady() {
 	}
 
 	function updateCountdown() {
+
 		const timeCountdownElement = document.getElementById('timeCountdown');
 		
 		// Decrementa el valor de la cuenta atrás
