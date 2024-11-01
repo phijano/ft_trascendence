@@ -116,6 +116,7 @@ window.initializeChat = function() {
                 <span>${user.username}</span>
                 <button class="btn btn-danger btn-sm ms-2" onclick="blockUser(${user.id})">Block</button>
                 <button class="btn btn-success btn-sm ms-1" onclick="unblockUser(${user.id})">Unblock</button>
+                <button class="btn btn-primary btn-sm ms-1" onclick="openPrivateChat(${user.id})">Private Chat</button>
             `;
             connectedUsersList.appendChild(userItem);
         });
@@ -143,48 +144,6 @@ window.initializeChat = function() {
         if (username) {
             blockedUsers.delete(username); // Eliminar de la lista de usuarios bloqueados
             console.log(`${username} ha sido desbloqueado.`);
-        }
-    }
-
-    function promptBlockUser() {
-        const usernames = Array.from(connectedUserMap.keys());
-
-        if (usernames.length === 0) {
-            alert("No hay usuarios conectados para bloquear.");
-            return;
-        }
-
-        const userList = usernames.map((username, index) => `${index + 1}. ${username}`).join("\n");
-        const username = prompt(`Selecciona un usuario para bloquear:\n\n${userList}`);
-
-        if (usernames.includes(username)) {
-            const userId = connectedUserMap.get(username);
-            if (userId) {
-                blockUser(userId);
-            }
-        } else {
-            console.log("Usuario no encontrado o no conectado.");
-        }
-    }
-
-    function promptUnblockUser() {
-        const usernames = Array.from(connectedUserMap.keys());
-
-        if (usernames.length === 0) {
-            alert("No hay usuarios conectados para desbloquear.");
-            return;
-        }
-
-        const userList = usernames.map((username, index) => `${index + 1}. ${username}`).join("\n");
-        const username = prompt(`Selecciona un usuario para desbloquear:\n\n${userList}`);
-
-        if (usernames.includes(username)) {
-            const userId = connectedUserMap.get(username);
-            if (userId) {
-                unblockUser(userId);
-            }
-        } else {
-            console.log("Usuario no encontrado o no conectado.");
         }
     }
 
