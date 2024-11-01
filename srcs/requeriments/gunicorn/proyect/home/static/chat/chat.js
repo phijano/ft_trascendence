@@ -29,9 +29,53 @@ window.initializeChat = function() {
             case 'chat_message':
                 handleChatMessage(data);
                 break;
+            case 'private_chat_notification':
+                displayPrivateChatNotification(data);
+                break;
+            case 'private_chat_accepted':
+                handlePrivateChatAccepted(data);
+                break;
             default:
                 console.warn('Tipo de mensaje desconocido:', data.type);
         }
+    }
+
+    // Función para manejar la aceptación de la solicitud
+    function handlePrivateChatAccepted(data) {
+        const messageContainer = document.getElementById('boxMessages');
+        const messageElement = document.createElement('div');
+        messageElement.className = 'private-chat-accepted alert alert-success';
+        messageElement.innerHTML = `<strong>${data.message}</strong>`;
+        messageContainer.appendChild(messageElement);
+        scrollToBottom();
+
+        // Aquí puedes redirigir a la sala de chat privado
+        // Por ejemplo: window.location.href = `/private_chat/${data.receiver_id}/`;
+    }
+
+    // Función para mostrar la notificación de solicitud de chat privado
+    function displayPrivateChatNotification(data) {
+        const { message, sender_id, username } = data;
+        const messageContainer = document.getElementById('boxMessages');
+        const messageElement = document.createElement('div');
+        messageElement.className = 'private-chat-request alert alert-info';
+        messageElement.innerHTML = `
+            <strong>${username}</strong> te ha enviado una solicitud de chat privado.
+            <button class="btn btn-sm btn-success ms-2" onclick="acceptPrivateChat(${sender_id})">Aceptar</button>
+            <button class="btn btn-sm btn-danger ms-1" onclick="declinePrivateChat(${sender_id})">Rechazar</button>
+        `;
+        messageContainer.appendChild(messageElement);
+        scrollToBottom();
+    }
+
+    // Función para aceptar la solicitud de chat privado
+    function acceptPrivateChat(senderId) {
+        chatSocket.send(JSON.stringify({
+            'type': 'accept_private_chat',
+            'sender_id': senderId,
+        }));
+        // Aquí puedes redirigir a la sala de chat privado
+        // Por ejemplo: window.location.href = `/private_chat/${senderId}/`;
     }
 
     // Manejar el mensaje del chat
@@ -116,14 +160,23 @@ window.initializeChat = function() {
                 <span>${user.username}</span>
                 <button class="btn btn-danger btn-sm ms-2" onclick="blockUser(${user.id})">Block</button>
                 <button class="btn btn-success btn-sm ms-1" onclick="unblockUser(${user.id})">Unblock</button>
-                <button class="btn btn-primary btn-sm ms-1" onclick="openPrivateChat(${user.id})">Private Chat</button>
+                <button class="btn btn-primary btn-sm ms-1" onclick="openPrivateChat(${user.id})">Private</button>
             `;
             connectedUsersList.appendChild(userItem);
         });
     }
 
+    // Función para enviar una solicitud de chat privado
+    window.openPrivateChat = function(userId) {
+        chatSocket.send(JSON.stringify({
+            'type': 'private_chat_request',
+            'target_user_id': userId,
+        }));
+        loadMessageHTML('Solicitud de chat privado enviada.');
+    };
+
      // Manejo de bloqueo de usuarios
-     function blockUser(userId) {
+    function blockUser(userId) {
         chatSocket.send(JSON.stringify({
             'type': 'block_user',
             'user_id': userId,

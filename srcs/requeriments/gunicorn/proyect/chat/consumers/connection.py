@@ -12,6 +12,11 @@ class ConnectionMixin:
         async_to_sync(self.channel_layer.group_add)(
             self.room_group_name, self.channel_name
         )
+        # Grupo único del usuario
+        async_to_sync(self.channel_layer.group_add)(
+            f'user_{self.user.id}',
+            self.channel_name
+        )
         self.accept()
         self.fetch_last_messages()
         self.send_connected_users()
