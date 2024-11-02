@@ -42,29 +42,25 @@ window.initializeChat = function() {
 
     // Función para manejar la aceptación de la solicitud
     function handlePrivateChatAccepted(data) {
-        const messageContainer = document.getElementById('boxMessages');
-        const messageElement = document.createElement('div');
-        messageElement.className = 'private-chat-accepted alert alert-success';
-        messageElement.innerHTML = `<strong>${data.message}</strong>`;
-        messageContainer.appendChild(messageElement);
+        const template = document.querySelector('#privateChatAcceptedTemplate').content.cloneNode(true);
+        template.querySelector('[data-content="message"]').textContent = data.message;
+        
+        boxMessages.appendChild(template);
         scrollToBottom();
-
-        // Aquí puedes redirigir a la sala de chat privado
-        // Por ejemplo: window.location.href = `/private_chat/${data.receiver_id}/`;
     }
 
     // Función para mostrar la notificación de solicitud de chat privado
     function displayPrivateChatNotification(data) {
-        const { message, sender_id, username } = data;
-        const messageContainer = document.getElementById('boxMessages');
-        const messageElement = document.createElement('div');
-        messageElement.className = 'private-chat-request alert alert-info';
-        messageElement.innerHTML = `
-            <strong>${username}</strong> te ha enviado una solicitud de chat privado.
-            <button class="btn btn-sm btn-success ms-2" onclick="acceptPrivateChat(${sender_id})">Aceptar</button>
-            <button class="btn btn-sm btn-danger ms-1" onclick="declinePrivateChat(${sender_id})">Rechazar</button>
-        `;
-        messageContainer.appendChild(messageElement);
+        const template = document.querySelector('#privateChatRequestTemplate').content.cloneNode(true);
+        template.querySelector('[data-content="username"]').textContent = data.username;
+        
+        const acceptBtn = template.querySelector('[data-action="accept"]');
+        const declineBtn = template.querySelector('[data-action="decline"]');
+        
+        acceptBtn.onclick = () => acceptPrivateChat(data.sender_id);
+        declineBtn.onclick = () => declinePrivateChat(data.sender_id);
+        
+        boxMessages.appendChild(template);
         scrollToBottom();
     }
 
@@ -94,15 +90,12 @@ window.initializeChat = function() {
 
     // Muestra un mensaje en el chat
     function displayChatMessage(message, username, avatar) {
-        boxMessages.innerHTML += `
-            <div class="message-container">
-                <img src="${avatar}" class="avatar mt-1" alt="Avatar">
-                <div class="message received">${message}</div>
-            </div>
-            <div class="user-info" style="margin-top: -10px; margin-left: 50px">
-                <small class="text-">${username}</small>
-            </div>
-        `;
+        const template = document.querySelector('#receivedMessageTemplate').content.cloneNode(true);
+        template.querySelector('[data-content="message"]').textContent = message;
+        template.querySelector('[data-content="username"]').textContent = username;
+        template.querySelector('[data-content="avatar"]').src = avatar;
+        
+        boxMessages.appendChild(template);
         scrollToBottom();
     }
     
@@ -131,13 +124,11 @@ window.initializeChat = function() {
 
     // Función para cargar un mensaje en el chat
     function loadMessageHTML(m) {
-        document.querySelector('#boxMessages').innerHTML += 
-        `
-        <!-- Mi mensaje -->
-        <div class="message-container">
-            <div class="message sent">${m}</div>
-        </div>
-        `;
+        const template = document.querySelector('#sentMessageTemplate').content.cloneNode(true);
+        template.querySelector('[data-content="message"]').textContent = m;
+        
+        boxMessages.appendChild(template);
+        scrollToBottom();
     }
 
     // Actualiza la lista de usuarios conectados
@@ -154,15 +145,18 @@ window.initializeChat = function() {
 
         connectedUsersList.innerHTML = '';
         users.forEach(user => {
-            const userItem = document.createElement('div');
-            userItem.className = 'user-item';
-            userItem.innerHTML = `
-                <span>${user.username}</span>
-                <button class="btn btn-danger btn-sm ms-2" onclick="blockUser(${user.id})">Block</button>
-                <button class="btn btn-success btn-sm ms-1" onclick="unblockUser(${user.id})">Unblock</button>
-                <button class="btn btn-primary btn-sm ms-1" onclick="openPrivateChat(${user.id})">Private</button>
-            `;
-            connectedUsersList.appendChild(userItem);
+            const template = document.querySelector('#userItemTemplate').content.cloneNode(true);
+            template.querySelector('[data-content="username"]').textContent = user.username;
+            
+            const blockBtn = template.querySelector('[data-action="block"]');
+            const unblockBtn = template.querySelector('[data-action="unblock"]');
+            const privateBtn = template.querySelector('[data-action="private"]');
+            
+            blockBtn.onclick = () => blockUser(user.id);
+            unblockBtn.onclick = () => unblockUser(user.id);
+            privateBtn.onclick = () => openPrivateChat(user.id);
+            
+            connectedUsersList.appendChild(template);
         });
     }
 
@@ -214,3 +208,4 @@ window.initializeChat = function() {
 document.addEventListener('DOMContentLoaded', function() {
     window.initializeChat(); // Inicializamos el chat
 });
+
