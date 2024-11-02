@@ -134,8 +134,8 @@ window.initializeChat = function() {
     // Actualiza la lista de usuarios conectados
     function updateConnectedUsers(users) {
         connectedUserMap.clear();
-        users.forEach(user => {
-            connectedUserMap.set(user.username, user.id);
+        users.forEach(userObj => {
+            connectedUserMap.set(userObj.username, userObj.id);
         });
 
         const connectedUsersList = document.getElementById('connectedUsersList');
@@ -144,17 +144,22 @@ window.initializeChat = function() {
         }
 
         connectedUsersList.innerHTML = '';
-        users.forEach(user => {
+        users.forEach(userObj => {
             const template = document.querySelector('#userItemTemplate').content.cloneNode(true);
-            template.querySelector('[data-content="username"]').textContent = user.username;
+            template.querySelector('[data-content="username"]').textContent = userObj.username;
             
             const blockBtn = template.querySelector('[data-action="block"]');
             const unblockBtn = template.querySelector('[data-action="unblock"]');
             const privateBtn = template.querySelector('[data-action="private"]');
             
-            blockBtn.onclick = () => blockUser(user.id);
-            unblockBtn.onclick = () => unblockUser(user.id);
-            privateBtn.onclick = () => openPrivateChat(user.id);
+            blockBtn.onclick = () => blockUser(userObj.id);
+            unblockBtn.onclick = () => unblockUser(userObj.id);
+            
+            if (userObj.username === user) {
+                privateBtn.style.display = 'none'; // Ocultar el botón de chat privado para el usuario actual
+            } else {
+                privateBtn.onclick = () => openPrivateChat(userObj.id);
+            }
             
             connectedUsersList.appendChild(template);
         });
@@ -162,6 +167,10 @@ window.initializeChat = function() {
 
     // Función para enviar una solicitud de chat privado
     window.openPrivateChat = function(userId) {
+        if (userId === connectedUserMap.get(user)) {
+            console.log('No puedes enviarte una solicitud de chat privado a ti mismo.');
+            return;
+        }
         chatSocket.send(JSON.stringify({
             'type': 'private_chat_request',
             'target_user_id': userId,
