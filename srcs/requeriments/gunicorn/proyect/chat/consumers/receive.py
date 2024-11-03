@@ -27,16 +27,17 @@ class ReceiveMixin:
 
     # ? función para manejar la solicitud de chat privado
     def handle_private_chat_request(self, data):
-        target_user_id = data['target_user_id']
-        sender = self.user
-
-        try:
-            target_user = User.objects.get(id=target_user_id)
-        except User.DoesNotExist:
-            # Opcional: enviar un mensaje de error al remitente
+        # Verifica que 'target_user_id' esté en 'data'
+        target_user_id = data.get('target_user_id')
+        if not target_user_id:
+            print("Error: 'target_user_id' no está presente en los datos recibidos.")
             return
 
-        # Enviar la notificación al usuario objetivo
+        # Obtiene el usuario objetivo
+        target_user = User.objects.get(id=target_user_id)
+        sender = self.user
+
+        # Envía notificación al usuario objetivo a través de WebSocket
         async_to_sync(self.channel_layer.group_send)(
             f'user_{target_user.id}',
             {
@@ -44,16 +45,17 @@ class ReceiveMixin:
                 'message': f'{sender.username} te ha enviado una solicitud de chat privado.',
                 'sender_id': sender.id,
                 'username': sender.username,
-                'target_user_id': target_user_id,  # Agregar esta línea
+                'target_user_id': target_user_id,
             }
         )
 
     def handle_accept_private_chat(self, data):
+        # Maneja la aceptación de una invitación
         sender_id = data['sender_id']
         sender = User.objects.get(id=sender_id)
         receiver = self.user
 
-        # Enviar una notificación al remitente
+        # Notifica al remitente que su invitación fue aceptada
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {

@@ -1,6 +1,11 @@
 from django.urls import path
-from .views import *
+from . import views
+
+app_name = 'chat'
 
 urlpatterns = [
-    path('', home, name='home'),
+    path('', views.home, name='home'),  # Sala pública por defecto
+    path('send-invitation/<int:user_id>/', views.send_invitation, name='send_invitation'),
+    path('private-chat/<int:room_id>/', views.private_chat, name='private_chat'),
+    path('accept-invitation/<int:invitation_id>/', views.accept_invitation, name='accept_invitation'),
 ]

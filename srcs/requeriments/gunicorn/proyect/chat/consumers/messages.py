@@ -40,20 +40,18 @@ class MessageMixin:
             }))
 
     def private_chat_notification(self, event):
+        # Maneja la notificación de solicitud de chat privado
         message = event['message']
         sender_id = event['sender_id']
         username = event['username']
-        target_user_id = event['target_user_id']
-        current_user_id = self.scope['user'].id
 
-        # Enviar el mensaje solo al usuario objetivo
-        if current_user_id == target_user_id:
-            self.send(text_data=json.dumps({
-                'type': 'private_chat_notification',
-                'message': message,
-                'sender_id': sender_id,
-                'username': username,
-            }))
+        # Envía la notificación al usuario objetivo
+        self.send(text_data=json.dumps({
+            'type': 'private_chat_notification',
+            'message': message,
+            'sender_id': sender_id,
+            'username': username,
+        }))
 
     def private_chat_accepted(self, event):
         message = event['message']
