@@ -1,4 +1,5 @@
 from asgiref.sync import async_to_sync
+from chat.consumers.users import connected_users_by_room
 
 class ConnectionMixin:
     def connect(self):
@@ -8,15 +9,20 @@ class ConnectionMixin:
 
         if self.user.is_authenticated:
             self.username = self.user.username
+            # Inicializar el conjunto para la sala si no existe
+            if self.id not in connected_users_by_room:
+                connected_users_by_room[self.id] = set()
+            # Agregar usuario a la sala específica
+            connected_users_by_room[self.id].add(self.user)
 
         async_to_sync(self.channel_layer.group_add)(
-            self.room_group_name, self.channel_name
+            self.room_group_name,
+            self.channel_name
         )
-        # Grupo único del usuario
         async_to_sync(self.channel_layer.group_add)(
             f'user_{self.user.id}',
             self.channel_name
         )
         self.accept()
         self.fetch_last_messages()
-        self.send_connected_users()
+        self.broadcast_user_list()  # Broadcast en lugar de send_connected_users
