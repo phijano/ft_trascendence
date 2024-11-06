@@ -19,10 +19,12 @@ class ConnectionMixin:
             self.room_group_name,
             self.channel_name
         )
+        
         async_to_sync(self.channel_layer.group_add)(
             f'user_{self.user.id}',
             self.channel_name
         )
+        
         self.accept()
         self.fetch_last_messages()
-        self.broadcast_user_list()  # Broadcast en lugar de send_connected_users
+        self.broadcast_user_list()  # Notifica a todos los usuarios

@@ -3,9 +3,22 @@ from chat.models import *
 from userManagement.models import Profile
 from asgiref.sync import async_to_sync
 from django.contrib.auth.models import User
+from chat.consumers.users import connected_users_by_room
+
 
 class ReceiveMixin:
     def receive(self, text_data):
+        data = json.loads(text_data)
+        message_type = data.get('type', '')
+
+        if message_type == 'disconnect_user':
+            self.handle_disconnect_user()
+        elif message_type == 'reconnect_user':
+            self.handle_reconnect_user()
+        else:
+            # Manejar otros tipos de mensajes
+            pass
+
         try:
             data = json.loads(text_data)
 
@@ -24,6 +37,23 @@ class ReceiveMixin:
             print('Error al obtener el mensaje: ', e)
         except Exception as e:
             print('Error: ', e)
+            
+    def handle_disconnect_user(self):
+        print(f'Disconnect user: {self.username}')
+        if self.user.is_authenticated:
+            if self.id in connected_users_by_room:
+                connected_users_by_room[self.id].discard(self.user)
+                if not connected_users_by_room[self.id]:
+                    del connected_users_by_room[self.id]
+            self.broadcast_user_list()
+
+    def handle_reconnect_user(self):
+        print(f'Reconnect user: {self.username}')
+        if self.user.is_authenticated:
+            if self.id not in connected_users_by_room:
+                connected_users_by_room[self.id] = set()
+            connected_users_by_room[self.id].add(self.user)
+            self.broadcast_user_list()
 
     # ? función para manejar la solicitud de chat privado
     def handle_private_chat_request(self, data):

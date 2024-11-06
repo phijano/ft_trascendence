@@ -19,6 +19,7 @@ class DisconnectMixin:
             self.room_group_name,
             self.channel_name
         )
+        
         async_to_sync(self.channel_layer.group_discard)(
             f'user_{self.user.id}',
             self.channel_name

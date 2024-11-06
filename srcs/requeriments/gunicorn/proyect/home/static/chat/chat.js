@@ -211,6 +211,35 @@ window.initializeChat = function() {
     // Exponer funciones de bloqueo y desbloqueo al ámbito global
     window.blockUser = blockUser;
     window.unblockUser = unblockUser;
+
+    // Agregar el evento beforeunload
+    window.addEventListener('beforeunload', function() {
+        if (chatSocket.readyState === WebSocket.OPEN) {
+            chatSocket.send(JSON.stringify({
+                'type': 'disconnect_user',
+                'username': user
+            }));
+        }
+    });
+
+    // Agregar el evento visibilitychange para detectar cuando el usuario cambia de pestaña
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'hidden') {
+            if (chatSocket.readyState === WebSocket.OPEN) {
+                chatSocket.send(JSON.stringify({
+                    'type': 'disconnect_user',
+                    'username': user
+                }));
+            }
+        } else if (document.visibilityState === 'visible') {
+            if (chatSocket.readyState === WebSocket.OPEN) {
+                chatSocket.send(JSON.stringify({
+                    'type': 'reconnect_user',
+                    'username': user
+                }));
+            }
+        }
+    });
 };
 
 // Ejecutar la función cuando el DOM esté completamente cargado
