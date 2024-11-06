@@ -1,26 +1,32 @@
 <div class="chat-wrapper">
-    <!-- Botón para abrir el modal de usuarios -->
-    <div id="topButtons" class="chat-actions">
-        <button id="usersBtn" class="chat-btn" data-bs-toggle="modal" data-bs-target="#usersModal">USERS</button>
-        <button id="viewProfileBtn" class="chat-btn">View Profile</button>
-    </div>
+  <!-- Título del chat -->
+  <h1 class="text-center">{{ room.name }} chat</h1>
 
-    <div id="chat-container" class="container">
-        <h1 class="text-center">{{ room.name }} chat</h1>
+  <!-- Botón para abrir el modal de usuarios -->
+  <div id="topButtons" class="chat-actions">
+    <button id="usersBtn" class="chat-btn" data-bs-toggle="modal" data-bs-target="#usersModal">USERS</button>
+    <button id="viewProfileBtn" class="chat-btn">View Profile</button>
+  </div>
+  
+  <!-- Contenedor del chat -->
+  <div id="chat-container" class="container">
+      <!-- Contador de usuarios en línea -->
+      {% include 'chat/partials/user_count_template.html' %}
 
-        <!-- Contenedor de los mensajes -->
-        <div id="boxMessages" class="mb-8" 
-            data-room="{{ room.name }}" 
-            data-user="{{ user.username }}" 
-            data-avatar="{{ user_avatar }}">
-            <!-- Los mensajes se insertarán aquí -->
-        </div>
+        
+    <!-- Contenedor de los mensajes -->
+      <div id="boxMessages" class="mb-8" 
+          data-room="{{ room.name }}" 
+          data-user="{{ user.username }}" 
+          data-avatar="{{ user_avatar }}">
+          <!-- Los mensajes se insertarán aquí -->
+      </div>
 
-        <!-- Formulario para enviar mensajes -->
-        <div id="chat">
-            <input class="form-control" type="text" id="inputMessage" placeholder="Escribe tu mensaje..." />
-            <button class="btn btn-success mb-1 submit" id="btnMessage">Enviar</button>
-        </div>
+      <!-- Formulario para enviar mensajes -->
+      <div id="chat">
+          <input class="form-control" type="text" id="inputMessage" placeholder="Escribe tu mensaje..." />
+          <button class="btn btn-success mb-1 submit" id="btnMessage">Enviar</button>
+      </div>
     </div>
 
     <br>
@@ -53,3 +59,4 @@
 {% include 'chat/partials/message_templates.html' %}
 {% include 'chat/partials/private_chat_invitations.html' %}
 {% include 'chat/partials/user_list_template.html' %}
+

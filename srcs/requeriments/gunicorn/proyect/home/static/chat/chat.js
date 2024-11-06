@@ -138,6 +138,9 @@ window.initializeChat = function() {
             connectedUserMap.set(userObj.username, userObj.id);
         });
 
+        // Llamar a updateOnlineCounter para actualizar el contador
+        updateOnlineCounter(users); 
+
         const connectedUsersList = document.getElementById('connectedUsersList');
         if (!connectedUsersList) {
             return;
@@ -163,6 +166,31 @@ window.initializeChat = function() {
             
             connectedUsersList.appendChild(template);
         });
+    }
+
+    function updateOnlineCounter(users) {
+        // Filtra al usuario actual de la lista
+        const currentUserName = user; // 'user' es la variable global que definiste antes
+        const otherUsers = users.filter(u => u.username !== currentUserName);
+        const onlineUsersCount = otherUsers.length;
+
+        const onlineCounter = document.getElementById('onlineCounter');
+        if (!onlineCounter) {
+            console.warn('Elemento onlineCounter no encontrado');
+            return;
+        }
+
+        // Actualiza el texto del contador
+        onlineCounter.textContent = `${onlineUsersCount} Online`;
+        onlineCounter.style.color = '#dbd829'; // Asegura que el color se aplique
+
+        // Añade la clase para la animación
+        onlineCounter.classList.add('user-count-updated');
+
+        // Remueve la clase después de que termine la animación
+        setTimeout(() => {
+            onlineCounter.classList.remove('user-count-updated');
+        }, 500);
     }
 
     // Función para enviar una solicitud de chat privado

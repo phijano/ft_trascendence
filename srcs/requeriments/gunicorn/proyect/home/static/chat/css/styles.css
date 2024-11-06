@@ -64,37 +64,58 @@
 *    Estilo para el contador de usuarios en línea
    ? -------------------------------------*/
 
-#online-status {
-
-    display: flex;
-    justify-content: center; /* Asegura que los elementos se centren horizontalmente */
-    align-items: center; /* Alinea verticalmente los elementos */
+#onlineCounter {
+    position: absolute;
+    top: 10px;
+    right: 10px;
     background-color: #4a3f8a;
-    color: #ffffff;
+    color: #dbd829 !important;
     padding: 5px 10px;
     border-radius: 20px;
-    margin: 10px 0;
-    width: 100%; /* Asegura que el contenedor ocupe el ancho completo */
-    text-align: center; /* Alinea el texto al centro */
-}
-
-#onlineCount {
-    color: #ffffff;
     font-size: 0.8em;
-    margin-left: 135px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    margin: 0;
+    z-index: 1;
 }
 
-#onlineIndicator {
-    width: 100px; /* Ancho del indicador */
-    height: 100px; /* Alto del indicador */
-    border-radius: 50%; /* Hace que el indicador sea circular */
-    background-color: grey; /* Color por defecto (sin conexión) */
-    margin-right: 5px; /* Espacio entre el indicador y el texto */
+.online-counter {
+    color: #dbd829 !important;
+    font-weight: bold;
 }
 
-/* Cambia el color del indicador cuando hay conexión */
-.online .indicator {
-    background-color: green; /* Color cuando hay usuarios en línea */
+.message-container #onlineCounter {
+    position: absolute; /* Posiciona el contador de forma absoluta */
+    top: 10px; /* Espacio superior */
+    right: 10px; /* Espacio derecho */
+    background-color: #4a3f8a; /* Color de fondo */
+    color: white; /* Color del texto */
+    padding: 5px 10px; /* Espaciado interno */
+    border-radius: 20px; /* Bordes redondeados */
+    font-size: 0.8em; /* Tamaño de la fuente */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); /* Sombra */
+}
+
+.message-container h3#onlineCounter {
+    font-size: 0.8em; /* Tamaño de la fuente */
+    color: #dbd829; /* Color del texto */
+}
+
+.message-container #onlineCounter {
+    color: #dbd829 !important; /* Usa !important si es necesario */
+}
+
+.message-container h3#onlineCounter {
+    color: #dbd829;
+}
+
+@keyframes userCountChange {
+    0% { transform: scale(1); color: #dbd829; }
+    50% { transform: scale(1.2); color: #ff0000; } /* Cambia el color temporalmente */
+    100% { transform: scale(1); color: #dbd829; }
+}
+
+.user-count-updated {
+    animation: userCountChange 0.5s;
 }
 
 /* ? -------------------------------------
