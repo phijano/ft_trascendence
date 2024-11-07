@@ -4,6 +4,7 @@ from userManagement.models import Profile
 from asgiref.sync import async_to_sync
 from django.contrib.auth.models import User
 from chat.consumers.users import connected_users_by_room
+import time
 
 
 class ReceiveMixin:
@@ -68,34 +69,72 @@ class ReceiveMixin:
         target_user = User.objects.get(id=target_user_id)
         sender = self.user
 
-        # Envía notificación al usuario objetivo a través de WebSocket
-        async_to_sync(self.channel_layer.group_send)(
-            f'user_{target_user.id}',
-            {
-                'type': 'private_chat_notification',
-                'message': f'{sender.username} te ha enviado una solicitud de chat privado.',
-                'sender_id': sender.id,
-                'username': sender.username,
-                'target_user_id': target_user_id,
-            }
-        )
+        try:
+            # Crear una nueva sala privada
+            room = Room.objects.create(
+                name=f'private_{sender.id}_{target_user.id}_{int(time.time())}',
+                is_private=True,
+                status='pending'
+            )
+            room.users.add(sender, target_user)
+
+            # Crear la invitación en la base de datos
+            ChatInvitation.objects.create(
+                sender=sender,
+                receiver=target_user,
+                room=room,
+                status='pending'
+            )
+
+            # Envía notificación al usuario objetivo a través de WebSocket
+            async_to_sync(self.channel_layer.group_send)(
+                f'user_{target_user.id}',
+                {
+                    'type': 'private_chat_notification',
+                    'message': f'{sender.username} te ha enviado una solicitud de chat privado.',
+                    'sender_id': sender.id,
+                    'username': sender.username,
+                    'target_user_id': target_user_id,
+                }
+            )
+        except Exception as e:
+            print(f'Error al crear la invitación de chat: {e}')
 
     def handle_accept_private_chat(self, data):
-        # Maneja la aceptación de una invitación
         sender_id = data['sender_id']
         sender = User.objects.get(id=sender_id)
         receiver = self.user
 
-        # Notifica al remitente que su invitación fue aceptada
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name,
-            {
-                'type': 'private_chat_accepted',
-                'message': f'{receiver.username} ha aceptado tu solicitud de chat privado.',
-                'receiver_id': receiver.id,
-                'sender_id': sender_id,
-            }
-        )
+        try:
+            # Actualizar el estado de la invitación
+            invitation = ChatInvitation.objects.get(
+                sender=sender,
+                receiver=receiver,
+                status='pending'
+            )
+            invitation.status = 'accepted'
+            invitation.save()
+
+            # Actualizar el estado de la sala
+            if invitation.room:
+                invitation.room.status = 'active'
+                invitation.room.save()
+
+            # Notifica al remitente que su invitación fue aceptada
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'private_chat_accepted',
+                    'message': f'{receiver.username} ha aceptado tu solicitud de chat privado.',
+                    'receiver_id': receiver.id,
+                    'sender_id': sender_id,
+                    'room_id': invitation.room.id if invitation.room else None,
+                }
+            )
+        except ChatInvitation.DoesNotExist:
+            print(f'No se encontró la invitación pendiente entre {sender} y {receiver}')
+        except Exception as e:
+            print(f'Error al aceptar la invitación de chat: {e}')
 
     def handle_message(self, data):
         message = data['message']
