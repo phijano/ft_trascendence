@@ -11,14 +11,6 @@ class ReceiveMixin:
         data = json.loads(text_data)
         message_type = data.get('type', '')
 
-        if message_type == 'disconnect_user':
-            self.handle_disconnect_user()
-        elif message_type == 'reconnect_user':
-            self.handle_reconnect_user()
-        else:
-            # Manejar otros tipos de mensajes
-            pass
-
         try:
             data = json.loads(text_data)
 
@@ -28,6 +20,16 @@ class ReceiveMixin:
                 self.unblock_user(data['user_id'])
             elif data['type'] == 'private_chat_request':
                 self.handle_private_chat_request(data)
+            elif message_type == 'disconnect_user':
+                self.handle_disconnect_user()
+            elif message_type == 'reconnect_user':
+                self.handle_reconnect_user()
+            elif message_type == 'private_chat_request':
+                self.handle_private_chat_request(data)
+            elif message_type == 'accept_private_chat':
+                self.handle_accept_private_chat(data)
+            elif message_type == 'message':
+                self.handle_message(data)
             else:
                 self.handle_message(data)
 
@@ -57,7 +59,6 @@ class ReceiveMixin:
 
     # ? función para manejar la solicitud de chat privado
     def handle_private_chat_request(self, data):
-        # Verifica que 'target_user_id' esté en 'data'
         target_user_id = data.get('target_user_id')
         if not target_user_id:
             print("Error: 'target_user_id' no está presente en los datos recibidos.")

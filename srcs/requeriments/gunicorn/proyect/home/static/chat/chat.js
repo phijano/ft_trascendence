@@ -9,7 +9,7 @@ window.initializeChat = function() {
     var chatSocket = new WebSocket(wsUrl);
 
     // Mapa para usuarios conectados
-    let connectedUserMap = new Map();
+    let connectedUserMap = new Map(); // Para rastrear usuarios conectados
     let blockedUsers = new Set(); // Para rastrear usuarios bloqueados
 
     // Eventos del WebSocket
@@ -122,6 +122,7 @@ window.initializeChat = function() {
         }
     }
 
+    
     // Función para cargar un mensaje en el chat
     function loadMessageHTML(m) {
         const template = document.querySelector('#sentMessageTemplate').content.cloneNode(true);
@@ -130,22 +131,30 @@ window.initializeChat = function() {
         boxMessages.appendChild(template);
         scrollToBottom();
     }
-
-    // Actualiza la lista de usuarios conectados
+    
     function updateConnectedUsers(users) {
+        updateConnectedUserMap(users);
+        updateConnectedUsersList(users);
+    }
+    
+    // Actualiza la lista de usuarios conectados
+    function updateConnectedUserMap(users) {
         connectedUserMap.clear();
         users.forEach(userObj => {
+            console.log(`Usuario: ${userObj.username}, ID: ${userObj.id}`);
             connectedUserMap.set(userObj.username, userObj.id);
         });
-
+    
         // Llamar a updateOnlineCounter para actualizar el contador
-        updateOnlineCounter(users); 
+        updateOnlineCounter(users);
+    }
 
+    function updateConnectedUsersList(users) {
         const connectedUsersList = document.getElementById('connectedUsersList');
         if (!connectedUsersList) {
             return;
         }
-
+    
         connectedUsersList.innerHTML = '';
         users.forEach(userObj => {
             const template = document.querySelector('#userItemTemplate').content.cloneNode(true);
@@ -196,6 +205,8 @@ window.initializeChat = function() {
     // Función para enviar una solicitud de chat privado
     window.openPrivateChat = function(userId) {
         if (userId === connectedUserMap.get(user)) {
+            console.log(`userId: ${userId} (tipo: ${typeof userId})`);
+            console.log(`ID del usuario actual: ${connectedUserMap.get(user)} (tipo: ${typeof connectedUserMap.get(user)})`);
             console.log('No puedes enviarte una solicitud de chat privado a ti mismo.');
             return;
         }
