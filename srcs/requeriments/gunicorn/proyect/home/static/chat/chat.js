@@ -35,6 +35,9 @@ window.initializeChat = function() {
             case 'private_chat_accepted':
                 handlePrivateChatAccepted(data);
                 break;
+            case 'private_chat_rejected':
+                handlePrivateChatRejected(data);
+                break;
             default:
                 console.warn('Tipo de mensaje desconocido:', data.type);
         }
@@ -43,6 +46,22 @@ window.initializeChat = function() {
     // Función para manejar la aceptación de la solicitud
     function handlePrivateChatAccepted(data) {
         const template = document.querySelector('#privateChatAcceptedTemplate').content.cloneNode(true);
+        template.querySelector('[data-content="message"]').textContent = data.message;
+        
+        boxMessages.appendChild(template);
+        scrollToBottom();
+
+        // Redirigir a la sala privada después de un breve retraso
+        if (data.room_id) {
+            setTimeout(() => {
+                window.location.href = `/chat/private/${data.room_id}/`;
+            }, 1500);
+        }
+    }
+
+    // Añadir esta nueva función
+    function handlePrivateChatRejected(data) {
+        const template = document.querySelector('#privateChatDeclinedTemplate').content.cloneNode(true);
         template.querySelector('[data-content="message"]').textContent = data.message;
         
         boxMessages.appendChild(template);
@@ -74,6 +93,14 @@ window.initializeChat = function() {
         // Por ejemplo: window.location.href = `/private_chat/${senderId}/`;
     }
 
+    function declinePrivateChat(senderId) {
+        const message = {
+            'type': 'reject_private_chat',
+            'sender_id': senderId
+        };
+        chatSocket.send(JSON.stringify(message));
+    }
+
     // Manejar el mensaje del chat
     function handleChatMessage(data) {
         const { message, username, avatar } = data;
@@ -92,8 +119,22 @@ window.initializeChat = function() {
     function displayChatMessage(message, username, avatar) {
         const template = document.querySelector('#receivedMessageTemplate').content.cloneNode(true);
         template.querySelector('[data-content="message"]').textContent = message;
-        template.querySelector('[data-content="username"]').textContent = username;
-        template.querySelector('[data-content="avatar"]').src = avatar;
+        
+        // Solo mostrar username y avatar si están presentes
+        const usernameElement = template.querySelector('[data-content="username"]');
+        const avatarElement = template.querySelector('[data-content="avatar"]');
+        
+        if (username) {
+            usernameElement.textContent = username;
+        } else {
+            usernameElement.style.display = 'none';  // Ocultar el elemento username
+        }
+        
+        if (avatar) {
+            avatarElement.src = avatar;
+        } else {
+            avatarElement.style.display = 'none';  // Ocultar el elemento avatar
+        }
         
         boxMessages.appendChild(template);
         scrollToBottom();

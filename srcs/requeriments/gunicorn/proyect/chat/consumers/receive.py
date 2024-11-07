@@ -15,12 +15,10 @@ class ReceiveMixin:
         try:
             data = json.loads(text_data)
 
-            if data['type'] == 'block_user':
+            if message_type == 'block_user':
                 self.block_user(data['user_id'])
-            elif data['type'] == 'unblock_user':
+            elif message_type == 'unblock_user':
                 self.unblock_user(data['user_id'])
-            elif data['type'] == 'private_chat_request':
-                self.handle_private_chat_request(data)
             elif message_type == 'disconnect_user':
                 self.handle_disconnect_user()
             elif message_type == 'reconnect_user':
@@ -29,6 +27,8 @@ class ReceiveMixin:
                 self.handle_private_chat_request(data)
             elif message_type == 'accept_private_chat':
                 self.handle_accept_private_chat(data)
+            elif message_type == 'reject_private_chat':
+                self.handle_reject_private_chat(data)
             elif message_type == 'message':
                 self.handle_message(data)
             else:
@@ -85,7 +85,7 @@ class ReceiveMixin:
                 room=room,
                 status='pending'
             )
-
+            
             # Envía notificación al usuario objetivo a través de WebSocket
             async_to_sync(self.channel_layer.group_send)(
                 f'user_{target_user.id}',
@@ -97,6 +97,8 @@ class ReceiveMixin:
                     'target_user_id': target_user_id,
                 }
             )
+            
+            
         except Exception as e:
             print(f'Error al crear la invitación de chat: {e}')
 
@@ -126,6 +128,42 @@ class ReceiveMixin:
                 {
                     'type': 'private_chat_accepted',
                     'message': f'{receiver.username} ha aceptado tu solicitud de chat privado.',
+                    'receiver_id': receiver.id,
+                    'sender_id': sender_id,
+                    'room_id': invitation.room.id if invitation.room else None,
+                }
+            )
+        except ChatInvitation.DoesNotExist:
+            print(f'No se encontró la invitación pendiente entre {sender} y {receiver}')
+        except Exception as e:
+            print(f'Error al aceptar la invitación de chat: {e}')
+            
+    def handle_reject_private_chat(self, data):
+        sender_id = data['sender_id']
+        sender = User.objects.get(id=sender_id)
+        receiver = self.user
+
+        try:
+            # Actualizar el estado de la invitación
+            invitation = ChatInvitation.objects.get(
+                sender=sender,
+                receiver=receiver,
+                status='pending'
+            )
+            invitation.status = 'decline'
+            invitation.save()
+
+            # Actualizar el estado de la sala
+            if invitation.room:
+                invitation.room.status = 'decline'
+                invitation.room.save()
+
+            # Notifica al remitente que su invitación fue aceptada
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'private_chat_rejected',
+                    'message': f'{receiver.username} ha rechazado tu solicitud de chat privado.',
                     'receiver_id': receiver.id,
                     'sender_id': sender_id,
                     'room_id': invitation.room.id if invitation.room else None,

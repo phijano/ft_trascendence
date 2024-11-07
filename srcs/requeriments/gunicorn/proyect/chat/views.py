@@ -1,5 +1,5 @@
-from django.shortcuts import render, redirect
-from django.http import JsonResponse, HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from .models import *
 from django.contrib.auth.decorators import login_required
 from userManagement.models import Profile
@@ -98,5 +98,29 @@ def accept_invitation(request, invitation_id):
         'status': 'success',
         'room_id': room.id,
         'room_name': room.name
+    })
+
+@login_required
+def private_chat_room(request, room_id):
+    room = get_object_or_404(Room, id=room_id, is_private=True)
+    
+    # Verificar si el usuario tiene permiso para acceder a la sala
+    if not room.users.filter(id=request.user.id).exists():
+        return HttpResponseForbidden("No tienes permiso para acceder a esta sala")
+    
+    # Verificar si la invitación fue aceptada
+    invitation = ChatInvitation.objects.filter(
+        room=room,
+        status='accepted'
+    ).first()
+    
+    if not invitation:
+        return HttpResponseForbidden("Esta sala no está activa")
+
+    messages = room.messages.order_by('timestamp')
+    return render(request, 'chat/private_chat.html', {
+        'room': room,
+        'messages': messages,
+        'room_name': room.id  # Para el WebSocket
     })
 

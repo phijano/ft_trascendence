@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="chat-container">
+    <div class="chat-header">
+        <h2>Chat Privado</h2>
+        <div class="chat-participants">
+            {% for user in room.users.all %}
+                {% if user != request.user %}
+                    Chateando con: {{ user.username }}
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="boxMessages" class="chat-messages" 
+         data-room="{{ room_name }}"
+         data-user="{{ request.user.username }}"
+         data-avatar="{{ request.user.profile.avatar.url }}">
+        {% for message in messages %}
+            <!-- Template para mensajes existentes -->
+        {% endfor %}
+    </div>
+
+    <div class="chat-input">
+        <input type="text" id="inputMessage" placeholder="Escribe un mensaje...">
+        <button id="btnMessage">Enviar</button>
+    </div>
+</div>
+
+{% include 'chat/message_templates.html' %}
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/chat/chat.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        window.initializeChat();
+    });
+</script>
+{% endblock %}

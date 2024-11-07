@@ -66,3 +66,17 @@ class MessageMixin:
                 'message': message,
                 'receiver_id': receiver_id,
             }))
+            
+    def private_chat_rejected(self, event):
+        message = event['message']
+        sender_id = event['sender_id']
+        receiver_id = event['receiver_id']
+        current_user_id = self.scope['user'].id
+
+        # Enviar el mensaje solo al remitente
+        if current_user_id == sender_id:
+            self.send(text_data=json.dumps({
+                'type': 'private_chat_rejected',
+                'message': message,
+                'receiver_id': receiver_id,
+            }))
