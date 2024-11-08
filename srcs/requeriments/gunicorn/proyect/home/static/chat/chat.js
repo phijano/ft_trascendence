@@ -43,6 +43,25 @@ window.initializeChat = function() {
         }
     }
 
+    // ╔═════════════════════════════════════════════════════════════════════════════╗
+    // ║                           FUNCIONES DE CHAT PRIVADO                         ║
+    // ╚═════════════════════════════════════════════════════════════════════════════╝
+
+    // Funcion para enviar una solicitud de chat privado
+    function openPrivateChat(userId) {
+        if (userId === connectedUserMap.get(user)) {
+            console.log(`userId: ${userId} (tipo: ${typeof userId})`);
+            console.log(`ID del usuario actual: ${connectedUserMap.get(user)} (tipo: ${typeof connectedUserMap.get(user)})`);
+            console.log('No puedes enviarte una solicitud de chat privado a ti mismo.');
+            return;
+        }
+        chatSocket.send(JSON.stringify({
+            'type': 'private_chat_request',
+            'target_user_id': userId,
+        }));
+        loadMessageHTML('Solicitud de chat privado enviada.');
+    }
+    
     // Función para manejar la aceptación de la solicitud
     function handlePrivateChatAccepted(data) {
         const template = document.querySelector('#privateChatAcceptedTemplate').content.cloneNode(true);
@@ -100,6 +119,10 @@ window.initializeChat = function() {
         };
         chatSocket.send(JSON.stringify(message));
     }
+
+    // ╔═════════════════════════════════════════════════════════════════════════════╗
+    // ║                           FUNCIONES DE MENSAJES                             ║
+    // ╚═════════════════════════════════════════════════════════════════════════════╝
 
     // Manejar el mensaje del chat
     function handleChatMessage(data) {
@@ -172,6 +195,10 @@ window.initializeChat = function() {
         boxMessages.appendChild(template);
         scrollToBottom();
     }
+
+    // ╔═════════════════════════════════════════════════════════════════════════════╗
+    // ║                       FUNCIONES DE USUARIOS CONECTADOS                      ║
+    // ╚═════════════════════════════════════════════════════════════════════════════╝
     
     function updateConnectedUsers(users) {
         updateConnectedUserMap(users);
@@ -210,6 +237,8 @@ window.initializeChat = function() {
             
             if (userObj.username === user) {
                 privateBtn.style.display = 'none'; // Ocultar el botón de chat privado para el usuario actual
+                blockBtn.style.display = 'none'; // Ocultar el botón de bloqueo para el usuario actual
+                unblockBtn.style.display = 'none'; // Ocultar el botón de desbloqueo para el usuario actual
             } else {
                 privateBtn.onclick = () => openPrivateChat(userObj.id);
             }
@@ -243,22 +272,11 @@ window.initializeChat = function() {
         }, 500);
     }
 
-    // Función para enviar una solicitud de chat privado
-    window.openPrivateChat = function(userId) {
-        if (userId === connectedUserMap.get(user)) {
-            console.log(`userId: ${userId} (tipo: ${typeof userId})`);
-            console.log(`ID del usuario actual: ${connectedUserMap.get(user)} (tipo: ${typeof connectedUserMap.get(user)})`);
-            console.log('No puedes enviarte una solicitud de chat privado a ti mismo.');
-            return;
-        }
-        chatSocket.send(JSON.stringify({
-            'type': 'private_chat_request',
-            'target_user_id': userId,
-        }));
-        loadMessageHTML('Solicitud de chat privado enviada.');
-    };
+    // ╔═════════════════════════════════════════════════════════════════════════════╗
+    // ║                           FUNCIONES DE BLOQUEO                              ║
+    // ╚═════════════════════════════════════════════════════════════════════════════╝
 
-     // Manejo de bloqueo de usuarios
+    // Manejo de bloqueo de usuarios
     function blockUser(userId) {
         chatSocket.send(JSON.stringify({
             'type': 'block_user',
@@ -283,16 +301,26 @@ window.initializeChat = function() {
         }
     }
 
-    // Configurar eventos
+    // ╔═════════════════════════════════════════════════════════════════════════════╗
+    // ║                        FUNCIONES DE OBJETO GLOBAL                           ║
+    // ╚═════════════════════════════════════════════════════════════════════════════╝
+
+    // solicitud de chat privado
+    window.openPrivateChat = openPrivateChat;
+    // bloqueo y desbloqueo 
+    window.blockUser = blockUser;
+    window.unblockUser = unblockUser;
+
+    // ╔═════════════════════════════════════════════════════════════════════════════╗
+    // ║                           EVENTOS DE LA INTERFAZ                            ║
+    // ╚═════════════════════════════════════════════════════════════════════════════╝
+
     document.querySelector('#btnMessage').addEventListener('click', sendMessage);
     document.querySelector('#inputMessage').addEventListener('keypress', function(e) {
         if (e.keyCode === 13) {sendMessage()}});
 
-    // Exponer funciones de bloqueo y desbloqueo al ámbito global
-    window.blockUser = blockUser;
-    window.unblockUser = unblockUser;
 
-    // Agregar el evento beforeunload
+    // Agregar el evento beforeunload para desconectar al usuario antes de cerrar la pestaña
     window.addEventListener('beforeunload', function() {
         if (chatSocket.readyState === WebSocket.OPEN) {
             chatSocket.send(JSON.stringify({
