@@ -1,6 +1,12 @@
 <div class="chat-wrapper">
   <!-- Título del chat -->
-  <h1 class="text-center">{{ room.name }} chat</h1>
+  <h1 class="text-center">
+    {% if is_private %}
+      Chat privado con {{ other_user.username }}
+    {% else %}
+      {{ room.name }} chat
+    {% endif %}
+  </h1>
 
   <!-- Botón para abrir el modal de usuarios -->
   <div id="topButtons" class="chat-actions">

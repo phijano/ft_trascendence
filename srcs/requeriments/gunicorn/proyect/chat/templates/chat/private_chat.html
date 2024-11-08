@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% comment %} {% extends 'chat.html' %}
 
 {% block content %}
 <div class="chat-container">
@@ -38,4 +38,28 @@
         window.initializeChat();
     });
 </script>
+{% endblock %}
+ {% endcomment %}
+
+<!-- private_chat.html -->
+<!-- private_chat.html -->
+{% extends 'chat.html' %}
+
+{% block content %}
+<div id="boxMessages" data-room="{{ room.id }}" data-user="{{ user.username }}" data-avatar="{{ user_avatar }}">
+    <!-- Mensajes del chat privado -->
+    {% for message in room.messages.all %}
+        <div class="message">
+            <strong>{{ message.user.username }}:</strong> {{ message.content }}
+        </div>
+    {% endfor %}
+</div>
+<div class="chat-input">
+    <input type="text" id="inputMessage" placeholder="Escribe un mensaje...">
+    <button id="btnMessage">Enviar</button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'chat/js/private_chat.js' %}"></script>
 {% endblock %}

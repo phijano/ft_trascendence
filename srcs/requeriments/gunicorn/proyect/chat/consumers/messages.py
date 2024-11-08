@@ -40,43 +40,23 @@ class MessageMixin:
             }))
 
     def private_chat_notification(self, event):
-        # Maneja la notificación de solicitud de chat privado
-        message = event['message']
-        sender_id = event['sender_id']
-        username = event['username']
-
-        # Envía la notificación al usuario objetivo
         self.send(text_data=json.dumps({
             'type': 'private_chat_notification',
-            'message': message,
-            'sender_id': sender_id,
-            'username': username,
+            'message': event['message'],
+            'sender_id': event['sender_id'],
+            'username': event['username'],
         }))
 
     def private_chat_accepted(self, event):
-        message = event['message']
-        sender_id = event['sender_id']
-        receiver_id = event['receiver_id']
-        current_user_id = self.scope['user'].id
+        self.send(text_data=json.dumps({
+            'type': 'private_chat_accepted',
+            'message': event['message'],
+            'room_id': event['room_id'],
+            'room_name': event['room_name']
+        }))
 
-        # Enviar el mensaje solo al remitente
-        if current_user_id == sender_id:
-            self.send(text_data=json.dumps({
-                'type': 'private_chat_accepted',
-                'message': message,
-                'receiver_id': receiver_id,
-            }))
-            
     def private_chat_rejected(self, event):
-        message = event['message']
-        sender_id = event['sender_id']
-        receiver_id = event['receiver_id']
-        current_user_id = self.scope['user'].id
-
-        # Enviar el mensaje solo al remitente
-        if current_user_id == sender_id:
-            self.send(text_data=json.dumps({
-                'type': 'private_chat_rejected',
-                'message': message,
-                'receiver_id': receiver_id,
-            }))
+        self.send(text_data=json.dumps({
+            'type': 'private_chat_rejected',
+            'message': event['message']
+        }))

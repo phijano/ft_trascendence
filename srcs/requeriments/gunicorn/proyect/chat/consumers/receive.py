@@ -116,7 +116,51 @@ class ReceiveMixin:
             print(f'Error al crear la invitación de chat: {e}')
             
     # >>>>>>>>>>>>>>> ACEPTAR O RECHAZAR SOLICITUD DE CHAT PRIVADO <<<<<<<<<<<<<<*/
-    def handle_private_chat_response(self, data, action):
+    def handle_accept_private_chat(self, data):
+        sender_id = data['sender_id']
+        sender = User.objects.get(id=sender_id)
+        receiver = self.user
+
+        try:
+            # Buscar la invitación pendiente
+            invitation = ChatInvitation.objects.get(
+                sender=sender,
+                receiver=receiver,
+                status='pending'
+            )
+            
+            # Actualizar la invitación
+            invitation.status = 'accepted'
+            invitation.save()
+
+            # Actualizar la sala
+            room = invitation.room
+            if room:
+                room.status = 'accepted'
+                room.save()
+
+                # Datos de notificación comunes
+                notification_data = {
+                    'type': 'private_chat_accepted',
+                    'message': 'Chat privado aceptado',
+                    'room_id': room.id,
+                    'room_name': room.name,
+                }
+
+                # Notificar a ambos usuarios
+                for user_id in [sender.id, receiver.id]:
+                    async_to_sync(self.channel_layer.group_send)(
+                        f'user_{user_id}',
+                        notification_data
+                    )
+
+        except ChatInvitation.DoesNotExist:
+            print(f'No se encontró invitación pendiente entre {sender} y {receiver}')
+        except Exception as e:
+            print(f'Error al aceptar chat privado: {e}')
+
+    # Función para manejar el rechazo de la solicitud de chat privado
+    def handle_reject_private_chat(self, data):
         sender_id = data['sender_id']
         sender = User.objects.get(id=sender_id)
         receiver = self.user
@@ -128,37 +172,28 @@ class ReceiveMixin:
                 receiver=receiver,
                 status='pending'
             )
-            invitation.status = 'accepted' if action == 'accept' else 'decline'
+            invitation.status = 'decline'
             invitation.save()
 
             # Actualizar el estado de la sala
             if invitation.room:
-                invitation.room.status = 'active' if action == 'accept' else 'decline'
+                invitation.room.status = 'decline'
                 invitation.room.save()
 
-            # Notifica al remitente sobre la respuesta a su invitación
+            # Notificar al remitente que la invitación fue rechazada
             async_to_sync(self.channel_layer.group_send)(
-                self.room_group_name,
+                f'user_{sender_id}',
                 {
-                    'type': 'private_chat_accepted' if action == 'accept' else 'private_chat_rejected',
-                    'message': f'{receiver.username} ha {"aceptado" if action == "accept" else "rechazado"} tu solicitud de chat privado.',
+                    'type': 'private_chat_rejected',
+                    'message': f'{receiver.username} ha rechazado tu solicitud de chat privado.',
                     'receiver_id': receiver.id,
                     'sender_id': sender_id,
-                    'room_id': invitation.room.id if invitation.room else None,
                 }
             )
         except ChatInvitation.DoesNotExist:
             print(f'No se encontró la invitación pendiente entre {sender} y {receiver}')
         except Exception as e:
-            print(f'Error al {"aceptar" if action == "accept" else "rechazar"} la invitación de chat: {e}')
-
-    # Función para manejar la aceptación de la solicitud de chat privado
-    def handle_accept_private_chat(self, data):
-        self.handle_private_chat_response(data, 'accept')
-
-    # Función para manejar el rechazo de la solicitud de chat privado
-    def handle_reject_private_chat(self, data):
-        self.handle_private_chat_response(data, 'reject')
+            print(f'Error al rechazar la invitación de chat: {e}')
 
     # ╔═════════════════════════════════════════════════════════════════════════════╗
     # ║                           MANEJAR MENSAJES DE CHAT                          ║

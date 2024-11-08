@@ -64,17 +64,19 @@ window.initializeChat = function() {
     
     // Template para mostrar la notificación de chat privado aceptado
     function handlePrivateChatAccepted(data) {
+        console.log('Chat privado aceptado:', data);
+        
         const template = document.querySelector('#privateChatAcceptedTemplate').content.cloneNode(true);
         template.querySelector('[data-content="message"]').textContent = data.message;
         
         boxMessages.appendChild(template);
         scrollToBottom();
 
-        // Redirigir a la sala privada después de un breve retraso
+        // Redirigir a la sala privada
         if (data.room_id) {
             setTimeout(() => {
                 window.location.href = `/chat/private/${data.room_id}/`;
-            }, 1500);
+            }, 1500); // Dar tiempo para ver el mensaje de aceptación
         }
     }
 
@@ -305,7 +307,7 @@ window.initializeChat = function() {
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
     // ║                        FUNCIONES DE OBJETO GLOBAL                           ║
-    // ╚═════════════════════════════════════════════════════════════════════════════╝
+    // ╚════════════════════════════════════════════════════════════════════════��════╝
 
     // solicitud de chat privado
     window.openPrivateChat = openPrivateChat;
