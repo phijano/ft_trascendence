@@ -47,7 +47,7 @@ window.initializeChat = function() {
     // ║                           FUNCIONES DE CHAT PRIVADO                         ║
     // ╚═════════════════════════════════════════════════════════════════════════════╝
 
-    // Funcion para enviar una solicitud de chat privado
+    // Enviar una solicitud de chat privado
     function openPrivateChat(userId) {
         if (userId === connectedUserMap.get(user)) {
             console.log(`userId: ${userId} (tipo: ${typeof userId})`);
@@ -62,7 +62,7 @@ window.initializeChat = function() {
         loadMessageHTML('Solicitud de chat privado enviada.');
     }
     
-    // Función para manejar la aceptación de la solicitud
+    // Template para mostrar la notificación de chat privado aceptado
     function handlePrivateChatAccepted(data) {
         const template = document.querySelector('#privateChatAcceptedTemplate').content.cloneNode(true);
         template.querySelector('[data-content="message"]').textContent = data.message;
@@ -78,7 +78,7 @@ window.initializeChat = function() {
         }
     }
 
-    // Añadir esta nueva función
+    // Template para mostrar la notificación de solicitud de chat privado rechazada
     function handlePrivateChatRejected(data) {
         const template = document.querySelector('#privateChatDeclinedTemplate').content.cloneNode(true);
         template.querySelector('[data-content="message"]').textContent = data.message;
@@ -87,7 +87,7 @@ window.initializeChat = function() {
         scrollToBottom();
     }
 
-    // Función para mostrar la notificación de solicitud de chat privado
+    // Template para mostrar la notificación de solicitud de chat privado
     function displayPrivateChatNotification(data) {
         const template = document.querySelector('#privateChatRequestTemplate').content.cloneNode(true);
         template.querySelector('[data-content="username"]').textContent = data.username;
@@ -102,7 +102,7 @@ window.initializeChat = function() {
         scrollToBottom();
     }
 
-    // Función para aceptar la solicitud de chat privado
+    // JSON para aceptar o rechazar la solicitud de chat privado por WebSocket
     function acceptPrivateChat(senderId) {
         chatSocket.send(JSON.stringify({
             'type': 'accept_private_chat',
@@ -200,12 +200,13 @@ window.initializeChat = function() {
     // ║                       FUNCIONES DE USUARIOS CONECTADOS                      ║
     // ╚═════════════════════════════════════════════════════════════════════════════╝
     
+    // Actualiza la lista de usuarios conectados
     function updateConnectedUsers(users) {
         updateConnectedUserMap(users);
         updateConnectedUsersList(users);
     }
     
-    // Actualiza la lista de usuarios conectados
+    // Actualiza el mapa de usuarios conectados
     function updateConnectedUserMap(users) {
         connectedUserMap.clear();
         users.forEach(userObj => {
@@ -217,6 +218,7 @@ window.initializeChat = function() {
         updateOnlineCounter(users);
     }
 
+    // Actualiza la lista de usuarios conectados que se muestra en DOM (MODAL)
     function updateConnectedUsersList(users) {
         const connectedUsersList = document.getElementById('connectedUsersList');
         if (!connectedUsersList) {
@@ -247,6 +249,7 @@ window.initializeChat = function() {
         });
     }
 
+    // Actualiza el contador de usuarios en el DOM
     function updateOnlineCounter(users) {
         // Filtra al usuario actual de la lista
         const currentUserName = user; // 'user' es la variable global que definiste antes
@@ -276,7 +279,6 @@ window.initializeChat = function() {
     // ║                           FUNCIONES DE BLOQUEO                              ║
     // ╚═════════════════════════════════════════════════════════════════════════════╝
 
-    // Manejo de bloqueo de usuarios
     function blockUser(userId) {
         chatSocket.send(JSON.stringify({
             'type': 'block_user',
@@ -315,12 +317,13 @@ window.initializeChat = function() {
     // ║                           EVENTOS DE LA INTERFAZ                            ║
     // ╚═════════════════════════════════════════════════════════════════════════════╝
 
+    // Eventos de click y keypress para enviar mensajes
     document.querySelector('#btnMessage').addEventListener('click', sendMessage);
     document.querySelector('#inputMessage').addEventListener('keypress', function(e) {
         if (e.keyCode === 13) {sendMessage()}});
 
 
-    // Agregar el evento beforeunload para desconectar al usuario antes de cerrar la pestaña
+    // Evento beforeunload para desconectar al usuario antes de cerrar la pestaña
     window.addEventListener('beforeunload', function() {
         if (chatSocket.readyState === WebSocket.OPEN) {
             chatSocket.send(JSON.stringify({
@@ -330,7 +333,7 @@ window.initializeChat = function() {
         }
     });
 
-    // Agregar el evento visibilitychange para detectar cuando el usuario cambia de pestaña
+    // Evento visibilitychange para detectar cuando el usuario cambia de pestaña
     document.addEventListener('visibilitychange', function() {
         if (document.visibilityState === 'hidden') {
             if (chatSocket.readyState === WebSocket.OPEN) {

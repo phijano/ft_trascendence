@@ -9,30 +9,27 @@ import time
 
 class ReceiveMixin:
     def receive(self, text_data):
-        data = json.loads(text_data)
-        message_type = data.get('type', '')
-
         try:
             data = json.loads(text_data)
+            message_type = data.get('type', '')
 
-            if message_type == 'block_user':
-                self.block_user(data['user_id'])
-            elif message_type == 'unblock_user':
-                self.unblock_user(data['user_id'])
-            elif message_type == 'disconnect_user':
-                self.handle_disconnect_user()
-            elif message_type == 'reconnect_user':
-                self.handle_reconnect_user()
-            elif message_type == 'private_chat_request':
-                self.handle_private_chat_request(data)
-            elif message_type == 'accept_private_chat':
-                self.handle_accept_private_chat(data)
-            elif message_type == 'reject_private_chat':
-                self.handle_reject_private_chat(data)
-            elif message_type == 'message':
-                self.handle_message(data)
-            else:
-                self.handle_message(data)
+            # Diccionario que mapea tipos de mensajes a funciones
+            message_handlers = {
+                'block_user': lambda data: self.block_user(data['user_id']),
+                'unblock_user': lambda data: self.unblock_user(data['user_id']),
+                'disconnect_user': lambda data: self.handle_disconnect_user(),
+                'reconnect_user': lambda data: self.handle_reconnect_user(),
+                'private_chat_request': lambda data: self.handle_private_chat_request(data),
+                'accept_private_chat': lambda data: self.handle_accept_private_chat(data),
+                'reject_private_chat': lambda data: self.handle_reject_private_chat(data),
+                'message': lambda data: self.handle_message(data)
+            }
+
+            # Obtener el manejador correspondiente al tipo de mensaje
+            handler = message_handlers.get(message_type, lambda data: self.handle_message(data))
+
+            # Llamar al manejador con los datos
+            handler(data)
 
         except json.JSONDecodeError as e:
             print('Error al decodificar el mensaje: ', e)
@@ -40,6 +37,10 @@ class ReceiveMixin:
             print('Error al obtener el mensaje: ', e)
         except Exception as e:
             print('Error: ', e)
+            
+    # ╔═════════════════════════════════════════════════════════════════════════════╗
+    # ║                    CONEXIÓN Y DESCONECCIÓN DE USUARIOS                      ║
+    # ╚═════════════════════════════════════════════════════════════════════════════╝        
             
     def handle_disconnect_user(self):
         print(f'Disconnect user: {self.username}')
@@ -57,8 +58,11 @@ class ReceiveMixin:
                 connected_users_by_room[self.id] = set()
             connected_users_by_room[self.id].add(self.user)
             self.broadcast_user_list()
-
-    # ? función para manejar la solicitud de chat privado
+            
+    # ╔═════════════════════════════════════════════════════════════════════════════╗
+    # ║                    SOLICITUD DE CHAT PRIVADO Y NOTIFICACIONES               ║
+    # ╚═════════════════════════════════════════════════════════════════════════════╝
+    # >>>>>>>>>>>>>>> MANEJAR SOLICITUD DE CHAT PRIVADO <<<<<<<<<<<<<<*/
     def handle_private_chat_request(self, data):
         target_user_id = data.get('target_user_id')
         if not target_user_id:
@@ -101,44 +105,9 @@ class ReceiveMixin:
             
         except Exception as e:
             print(f'Error al crear la invitación de chat: {e}')
-
-    def handle_accept_private_chat(self, data):
-        sender_id = data['sender_id']
-        sender = User.objects.get(id=sender_id)
-        receiver = self.user
-
-        try:
-            # Actualizar el estado de la invitación
-            invitation = ChatInvitation.objects.get(
-                sender=sender,
-                receiver=receiver,
-                status='pending'
-            )
-            invitation.status = 'accepted'
-            invitation.save()
-
-            # Actualizar el estado de la sala
-            if invitation.room:
-                invitation.room.status = 'active'
-                invitation.room.save()
-
-            # Notifica al remitente que su invitación fue aceptada
-            async_to_sync(self.channel_layer.group_send)(
-                self.room_group_name,
-                {
-                    'type': 'private_chat_accepted',
-                    'message': f'{receiver.username} ha aceptado tu solicitud de chat privado.',
-                    'receiver_id': receiver.id,
-                    'sender_id': sender_id,
-                    'room_id': invitation.room.id if invitation.room else None,
-                }
-            )
-        except ChatInvitation.DoesNotExist:
-            print(f'No se encontró la invitación pendiente entre {sender} y {receiver}')
-        except Exception as e:
-            print(f'Error al aceptar la invitación de chat: {e}')
             
-    def handle_reject_private_chat(self, data):
+    # >>>>>>>>>>>>>>> ACEPTAR O RECHAZAR SOLICITUD DE CHAT PRIVADO <<<<<<<<<<<<<<*/
+    def handle_private_chat_response(self, data, action):
         sender_id = data['sender_id']
         sender = User.objects.get(id=sender_id)
         receiver = self.user
@@ -150,20 +119,20 @@ class ReceiveMixin:
                 receiver=receiver,
                 status='pending'
             )
-            invitation.status = 'decline'
+            invitation.status = 'accepted' if action == 'accept' else 'decline'
             invitation.save()
 
             # Actualizar el estado de la sala
             if invitation.room:
-                invitation.room.status = 'decline'
+                invitation.room.status = 'active' if action == 'accept' else 'decline'
                 invitation.room.save()
 
-            # Notifica al remitente que su invitación fue aceptada
+            # Notifica al remitente sobre la respuesta a su invitación
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
                 {
-                    'type': 'private_chat_rejected',
-                    'message': f'{receiver.username} ha rechazado tu solicitud de chat privado.',
+                    'type': 'private_chat_accepted' if action == 'accept' else 'private_chat_rejected',
+                    'message': f'{receiver.username} ha {"aceptado" if action == "accept" else "rechazado"} tu solicitud de chat privado.',
                     'receiver_id': receiver.id,
                     'sender_id': sender_id,
                     'room_id': invitation.room.id if invitation.room else None,
@@ -172,8 +141,19 @@ class ReceiveMixin:
         except ChatInvitation.DoesNotExist:
             print(f'No se encontró la invitación pendiente entre {sender} y {receiver}')
         except Exception as e:
-            print(f'Error al aceptar la invitación de chat: {e}')
+            print(f'Error al {"aceptar" if action == "accept" else "rechazar"} la invitación de chat: {e}')
 
+    # Función para manejar la aceptación de la solicitud de chat privado
+    def handle_accept_private_chat(self, data):
+        self.handle_private_chat_response(data, 'accept')
+
+    # Función para manejar el rechazo de la solicitud de chat privado
+    def handle_reject_private_chat(self, data):
+        self.handle_private_chat_response(data, 'reject')
+
+    # ╔═════════════════════════════════════════════════════════════════════════════╗
+    # ║                           MANEJAR MENSAJES DE CHAT                          ║
+    # ╚═════════════════════════════════════════════════════════════════════════════╝
     def handle_message(self, data):
         message = data['message']
 
