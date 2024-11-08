@@ -74,6 +74,15 @@ class ReceiveMixin:
         sender = self.user
 
         try:
+            # Comprobar si ya existe una invitación entre los dos usuarios
+            existing_invitation = ChatInvitation.objects.filter(
+                sender=sender,
+                receiver=target_user
+            ).first()
+            if existing_invitation:
+                print(f'Ya existe una invitación entre {sender.username} y {target_user.username} con estado {existing_invitation.status}')
+                return
+            
             # Crear una nueva sala privada
             room = Room.objects.create(
                 name=f'private_{sender.id}_{target_user.id}_{int(time.time())}',
