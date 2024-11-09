@@ -2,10 +2,15 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Room(models.Model):
+    STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('declined', 'Declined'),
+    )
     name = models.CharField(max_length=100, unique=True, verbose_name='name')
     users = models.ManyToManyField(User, related_name='rooms_joined', verbose_name='users')
     is_private = models.BooleanField(default=False, verbose_name='is private')
-    status = models.CharField(max_length=20, default='pending')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

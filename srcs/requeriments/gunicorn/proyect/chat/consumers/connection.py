@@ -4,7 +4,8 @@ from chat.consumers.users import connected_users_by_room
 class ConnectionMixin:
     def connect(self):
         # Obtener la sala y el grupo de canales
-        self.id = self.scope['url_route']['kwargs']['room_name']
+        route_kwargs = self.scope['url_route']['kwargs']
+        self.id = route_kwargs.get('room_id', route_kwargs.get('room_name'))
         self.room_group_name = 'chat_%s' % self.id
         
         # Obtener el usuario actual

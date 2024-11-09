@@ -4,8 +4,14 @@ window.initializeChat = function() {
     const user = boxMessages.getAttribute('data-user');
     const avatar = boxMessages.getAttribute('data-avatar');
 
-    // Obtener la URL del WebSocket
-    const wsUrl = `ws://${window.location.host}/ws/chat/${room}/`;
+    // Determinar si estamos en una sala privada
+    const isPrivate = window.location.pathname.includes('/private/');
+    
+    // Modificar la construcción de la URL del WebSocket
+    const wsUrl = isPrivate ? 
+        `ws://${window.location.host}/ws/chat/private/${room}/` :
+        `ws://${window.location.host}/ws/chat/${room}/`;
+    
     var chatSocket = new WebSocket(wsUrl);
 
     // Mapa para usuarios conectados
@@ -71,12 +77,52 @@ window.initializeChat = function() {
         
         boxMessages.appendChild(template);
         scrollToBottom();
-
-        // Redirigir a la sala privada
+    
         if (data.room_id) {
-            setTimeout(() => {
-                window.location.href = `/chat/private/${data.room_id}/`;
-            }, 1500); // Dar tiempo para ver el mensaje de aceptación
+            // Usar URL absoluta y asegurar que comience con /appChat/
+            const redirectUrl = `/appChat/private/${data.room_id}/`;
+            console.log('Redirigiendo a:', redirectUrl);
+            
+            // Implementar reconexión y redirección más robusta
+            const maxRetries = 3;
+            let retryCount = 0;
+    
+            function attemptRedirect() {
+                fetch(redirectUrl)
+                    .then(response => {
+                        if (response.ok) {
+                            // Asegurar que la URL comienza con /appChat/
+                            const finalUrl = redirectUrl.startsWith('/appChat/') ? 
+                                redirectUrl : `/appChat${redirectUrl}`;
+                            
+                            // Cerrar el WebSocket actual antes de redirigir
+                            if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+                                chatSocket.close();
+                            }
+                            
+                            // Usar replace para evitar problemas con el historial
+                            window.location.replace(finalUrl);
+                        } else {
+                            throw new Error(`Error ${response.status}`);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error en redirección:', error);
+                        retryCount++;
+                        
+                        if (retryCount < maxRetries) {
+                            console.log(`Reintento ${retryCount} de ${maxRetries}`);
+                            setTimeout(attemptRedirect, 1000);
+                        } else {
+                            console.error('Máximo de reintentos alcanzado');
+                            // Intentar redirección directa como último recurso
+                            window.location.replace(redirectUrl);
+                        }
+                    });
+            }
+    
+            // Iniciar el proceso de redirección
+            attemptRedirect();
         }
     }
 
@@ -307,7 +353,7 @@ window.initializeChat = function() {
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
     // ║                        FUNCIONES DE OBJETO GLOBAL                           ║
-    // ╚════════════════════════════════════════════════════════════════════════��════╝
+    // ╚��════════════════════════════════════════════════════════════════════════════╝
 
     // solicitud de chat privado
     window.openPrivateChat = openPrivateChat;

@@ -38,7 +38,7 @@ class ReceiveMixin:
         except Exception as e:
             print('Error: ', e)
             
-    # ╔═════════════════════════════════════════════════════════════════════════════╗
+    # ╔════════════════════════════════════════════════════════════════════════��════╗
     # ║                    CONEXIÓN Y DESCONECCIÓN DE USUARIOS                      ║
     # ╚═════════════════════════════════════════════════════════════════════════════╝        
             
@@ -137,6 +137,10 @@ class ReceiveMixin:
             room = invitation.room
             if room:
                 room.status = 'accepted'
+                room.save()
+
+                # Asegúrate de que los usuarios están asociados a la sala
+                room.users.add(sender, receiver)
                 room.save()
 
                 # Datos de notificación comunes

@@ -57,11 +57,16 @@ const URL = {
 	},
 
 	"/chat": {
-		template: "/appChat/",
-		title: "chat",
-		description: "This is live chat",
-	},
+    template: "/appChat/",
+    title: "chat",
+    description: "This is live chat",
+},
 
+	"/appChat/private/:id": { 
+		template: "/appChat/private/:id/",
+		title: "Private Chat",
+		description: "This is private chat",
+	},
 
 	"/friends": {
 		template: "/userManagement/friends",
