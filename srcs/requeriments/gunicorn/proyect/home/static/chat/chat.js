@@ -72,26 +72,37 @@ window.initializeChat = function() {
     function handlePrivateChatAccepted(data) {
         console.log('Chat privado aceptado:', data);
         
-        // Mostrar mensaje de aceptación
-        const template = document.querySelector('#privateChatAcceptedTemplate').content.cloneNode(true);
-        template.querySelector('[data-content="message"]').textContent = data.message;
+        // Limpiar mensajes anteriores
+        boxMessages.innerHTML = '';
         
-        boxMessages.appendChild(template);
-        scrollToBottom();
-    
-        // Redirección simple si hay room_id
-        if (data.room_id) {
-            const redirectUrl = `/appChat/private/${data.room_id}/`;
-            console.log('Redirigiendo a:', redirectUrl);
-            
-            // Cerrar WebSocket antes de redirigir
-            if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
-                chatSocket.close();
-            }
-            
-            // Redirección directa
-            window.location.href = redirectUrl;
+        // Actualizar atributos del contenedor
+        boxMessages.setAttribute('data-room', data.room_name);
+        
+        // Actualizar título del chat
+        const chatTitle = document.querySelector('h1');
+        if (chatTitle) {
+            chatTitle.textContent = `Chat privado con ${data.other_user}`;
         }
+        
+        // Ocultar botones que no se necesitan en chat privado
+        const usersBtn = document.querySelector('#usersBtn');
+        if (usersBtn) {
+            usersBtn.style.display = 'none';
+        }
+    
+        // Reconectar WebSocket para la sala privada
+        if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+            chatSocket.close();
+        }
+    
+        // Crear nueva conexión WebSocket para la sala privada
+        const wsUrl = `ws://${window.location.host}/ws/chat/private/${data.room_id}/`;
+        chatSocket = new WebSocket(wsUrl);
+        
+        // Reinicializar eventos del WebSocket
+        chatSocket.onopen = (e) => console.log('Conexión privada abierta');
+        chatSocket.onclose = (e) => console.error('Conexión privada cerrada');
+        chatSocket.onmessage = (e) => handleSocketMessage(JSON.parse(e.data));
     }
 
     // Template para mostrar la notificación de solicitud de chat privado rechazada
