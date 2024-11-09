@@ -42,4 +42,4 @@ class ChatInvitation(models.Model):
 
     class Meta:
         # Evita que existan múltiples invitaciones entre los mismos usuarios
-        unique_together = ('sender', 'receiver')
+        pass

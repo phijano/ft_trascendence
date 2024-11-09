@@ -74,15 +74,6 @@ class ReceiveMixin:
         sender = self.user
 
         try:
-            # Comprobar si ya existe una invitación entre los dos usuarios
-            existing_invitation = ChatInvitation.objects.filter(
-                sender=sender,
-                receiver=target_user
-            ).first()
-            if existing_invitation:
-                print(f'Ya existe una invitación entre {sender.username} y {target_user.username} con estado {existing_invitation.status}')
-                return
-            
             # Crear una nueva sala privada
             room = Room.objects.create(
                 name=f'private_{sender.id}_{target_user.id}_{int(time.time())}',
@@ -99,7 +90,7 @@ class ReceiveMixin:
                 status='pending'
             )
             
-            # Envía notificación al usuario objetivo a través de WebSocket
+            # Envía notificación al usuario objetivo
             async_to_sync(self.channel_layer.group_send)(
                 f'user_{target_user.id}',
                 {
@@ -111,7 +102,6 @@ class ReceiveMixin:
                 }
             )
             
-            
         except Exception as e:
             print(f'Error al crear la invitación de chat: {e}')
             
@@ -122,13 +112,17 @@ class ReceiveMixin:
         receiver = self.user
 
         try:
-            # Buscar la invitación pendiente
-            invitation = ChatInvitation.objects.get(
+            # Obtener la invitación más reciente entre el remitente y el receptor
+            invitation = ChatInvitation.objects.filter(
                 sender=sender,
                 receiver=receiver,
                 status='pending'
-            )
+            ).order_by('-created_at').first()
             
+            if not invitation:
+                print(f'No se encontró invitación pendiente entre {sender} y {receiver}')
+                return
+
             # Actualizar la invitación
             invitation.status = 'accepted'
             invitation.save()
@@ -139,16 +133,17 @@ class ReceiveMixin:
                 room.status = 'accepted'
                 room.save()
 
-                # Asegúrate de que los usuarios están asociados a la sala
+                # Asegurar que los usuarios están asociados a la sala
                 room.users.add(sender, receiver)
                 room.save()
 
-                # Datos de notificación comunes
+                # Datos de notificación
                 notification_data = {
                     'type': 'private_chat_accepted',
                     'message': 'Chat privado aceptado',
                     'room_id': room.id,
                     'room_name': room.name,
+                    'other_user': sender.username,
                 }
 
                 # Notificar a ambos usuarios
@@ -157,9 +152,13 @@ class ReceiveMixin:
                         f'user_{user_id}',
                         notification_data
                     )
-
-        except ChatInvitation.DoesNotExist:
-            print(f'No se encontró invitación pendiente entre {sender} y {receiver}')
+                    
+                # Marcar como expiradas otras invitaciones pendientes entre estos usuarios
+                ChatInvitation.objects.filter(
+                    sender=sender,
+                    receiver=receiver,
+                    status='pending'
+                ).exclude(id=invitation.id).update(status='expired')
         except Exception as e:
             print(f'Error al aceptar chat privado: {e}')
 
