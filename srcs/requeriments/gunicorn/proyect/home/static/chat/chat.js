@@ -72,57 +72,25 @@ window.initializeChat = function() {
     function handlePrivateChatAccepted(data) {
         console.log('Chat privado aceptado:', data);
         
+        // Mostrar mensaje de aceptación
         const template = document.querySelector('#privateChatAcceptedTemplate').content.cloneNode(true);
         template.querySelector('[data-content="message"]').textContent = data.message;
         
         boxMessages.appendChild(template);
         scrollToBottom();
     
+        // Redirección simple si hay room_id
         if (data.room_id) {
-            // Usar URL absoluta y asegurar que comience con /appChat/
             const redirectUrl = `/appChat/private/${data.room_id}/`;
             console.log('Redirigiendo a:', redirectUrl);
             
-            // Implementar reconexión y redirección más robusta
-            const maxRetries = 3;
-            let retryCount = 0;
-    
-            function attemptRedirect() {
-                fetch(redirectUrl)
-                    .then(response => {
-                        if (response.ok) {
-                            // Asegurar que la URL comienza con /appChat/
-                            const finalUrl = redirectUrl.startsWith('/appChat/') ? 
-                                redirectUrl : `/appChat${redirectUrl}`;
-                            
-                            // Cerrar el WebSocket actual antes de redirigir
-                            if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
-                                chatSocket.close();
-                            }
-                            
-                            // Usar replace para evitar problemas con el historial
-                            window.location.replace(finalUrl);
-                        } else {
-                            throw new Error(`Error ${response.status}`);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error en redirección:', error);
-                        retryCount++;
-                        
-                        if (retryCount < maxRetries) {
-                            console.log(`Reintento ${retryCount} de ${maxRetries}`);
-                            setTimeout(attemptRedirect, 1000);
-                        } else {
-                            console.error('Máximo de reintentos alcanzado');
-                            // Intentar redirección directa como último recurso
-                            window.location.replace(redirectUrl);
-                        }
-                    });
+            // Cerrar WebSocket antes de redirigir
+            if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+                chatSocket.close();
             }
-    
-            // Iniciar el proceso de redirección
-            attemptRedirect();
+            
+            // Redirección directa
+            window.location.href = redirectUrl;
         }
     }
 

@@ -24,14 +24,14 @@ export const locationHandler = async() => {
         document.getElementById("content").innerHTML = html;
 
         // Cargar el script chat.js solo para la ruta /chat
-    if (location === "/chat") {
-        const script = document.createElement('script');
-        script.src = "/static/chat/chat.js";
-        script.onload = () => {
-            window.initializeChat(); // Ahora la función está disponible globalmente
-        };
-        document.body.appendChild(script);
-    }
+        if (location === "/chat") {
+            const script = document.createElement('script');
+            script.src = "/static/chat/chat.js";
+            script.onload = () => {
+                window.initializeChat(); // Ahora la función está disponible globalmente
+            };
+            document.body.appendChild(script);
+        }
     } catch (e) {
         /* console.log(e); */
     }
