@@ -52,9 +52,9 @@ window.initializeChat = function() {
         }
     }
 
-    // ╔═════════════════════════════════════════════════════════════════════════════╗
+    // ╔═══════════════════════════════════════════════════════════════════════╗
     // ║                           FUNCIONES DE CHAT PRIVADO                         ║
-    // ╚═══════════════════════════════════════════���═════════════════════════════════╝
+    // ╚═════════════════════════════════════════════════════════════════════════════╝
 
     // Enviar una solicitud de chat privado
     function openPrivateChat(userId) {
@@ -301,17 +301,23 @@ window.initializeChat = function() {
             const template = document.querySelector('#userItemTemplate').content.cloneNode(true);
             template.querySelector('[data-content="username"]').textContent = userObj.username;
             
+            const profileBtn = template.querySelector('[data-action="profile"]');
             const blockBtn = template.querySelector('[data-action="block"]');
             const unblockBtn = template.querySelector('[data-action="unblock"]');
             const privateBtn = template.querySelector('[data-action="private"]');
+            const playBtn = template.querySelector('[data-action="play"]');
             
+            // Configurar los botones
+            profileBtn.onclick = () => viewProfile(userObj.username);
             blockBtn.onclick = () => blockUser(userObj.id);
             unblockBtn.onclick = () => unblockUser(userObj.id);
+            playBtn.onclick = () => inviteToGame(userObj.id);
             
             if (userObj.username === user) {
-                privateBtn.style.display = 'none'; // Ocultar el botón de chat privado para el usuario actual
-                blockBtn.style.display = 'none'; // Ocultar el botón de bloqueo para el usuario actual
-                unblockBtn.style.display = 'none'; // Ocultar el botón de desbloqueo para el usuario actual
+                privateBtn.style.display = 'none';
+                playBtn.style.display = 'none';
+                blockBtn.style.display = 'none';
+                unblockBtn.style.display = 'none';
             } else {
                 privateBtn.onclick = () => openPrivateChat(userObj.id);
             }
@@ -319,6 +325,25 @@ window.initializeChat = function() {
             connectedUsersList.appendChild(template);
         });
     }
+
+    // Añadir función para invitar a jugar
+    function inviteToGame(userId) {
+        chatSocket.send(JSON.stringify({
+            'type': 'game_invitation',
+            'target_user_id': userId
+        }));
+    }
+
+    // Añadir a las funciones globales
+    window.inviteToGame = inviteToGame;
+
+    // Añadir función para ver el perfil
+    function viewProfile(username) {
+        window.location.href = `/userManagement/profile/${username}`;
+    }
+
+    // Añadir a las funciones globales
+    window.viewProfile = viewProfile;
 
     // Actualiza el contador de usuarios en el DOM
     function updateOnlineCounter(users) {
@@ -346,9 +371,9 @@ window.initializeChat = function() {
         }, 500);
     }
 
-    // ╔════════════════════════════════════════════��════════════════════════════════╗
+    // ╔═════════════════════════════════════════════════════════════════════════════╗
     // ║                           FUNCIONES DE BLOQUEO                              ║
-    // ╚═════════════════════════════════════════════════════════════════════════════╝
+    // ╚════════════════════════════════════════════════════════════════════════════��╝
 
     function blockUser(userId) {
         chatSocket.send(JSON.stringify({

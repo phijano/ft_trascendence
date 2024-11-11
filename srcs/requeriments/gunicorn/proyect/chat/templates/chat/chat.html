@@ -11,7 +11,7 @@
   <!-- Botón para abrir el modal de usuarios -->
   <div id="topButtons" class="chat-actions">
     <button id="usersBtn" class="chat-btn" data-bs-toggle="modal" data-bs-target="#usersModal">USERS</button>
-    <button id="viewProfileBtn" class="chat-btn">View Profile</button>
+    <!-- Eliminamos el botón View Profile de aquí -->
   </div>
   
   <!-- Contenedor del chat -->
@@ -36,9 +36,8 @@
     </div>
 
     <br>
-    <!-- Botones inferiores -->
+    <!-- Botones inferiores - Quitamos Invite to Game -->
     <div id="bottomButtons" class="chat-actions">
-        <button id="inviteGameBtn" class="chat-btn">Invite to Game</button>
         <button id="tournamentNoticeBtn" class="chat-btn">Tournament Notice</button>
     </div>
 </div>
@@ -52,7 +51,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body" id="connectedUsersList">
-        <!-- Lista de usuarios conectados se generará aquí -->
+        <!-- La lista de usuarios se generará dinámicamente aquí -->
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -60,6 +59,22 @@
     </div>
   </div>
 </div>
+
+<!-- Template modificado para incluir el botón Play -->
+{% verbatim %}
+<template id="userItemTemplate">
+  <div class="user-item d-flex justify-content-between align-items-center mb-2">
+    <span data-content="username"></span>
+    <div class="user-actions">
+      <button class="btn btn-sm btn-info" data-action="profile">Profile</button>
+      <button class="btn btn-sm btn-primary" data-action="private">Private</button>
+      <button class="btn btn-sm btn-success" data-action="play">Play</button>
+      <button class="btn btn-sm btn-warning" data-action="block">Block</button>
+      <button class="btn btn-sm btn-danger" data-action="unblock">Unblock</button>
+    </div>
+  </div>
+</template>
+{% endverbatim %}
 
 <!-- Incluir templates -->
 {% include 'chat/partials/message_templates.html' %}
