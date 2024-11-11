@@ -13,7 +13,7 @@ class ReceiveMixin:
             data = json.loads(text_data)
             message_type = data.get('type', '')
 
-            # Diccionario que mapea tipos de mensajes a funciones
+            # Modificar el diccionario de handlers
             message_handlers = {
                 'block_user': lambda data: self.block_user(data['user_id']),
                 'unblock_user': lambda data: self.unblock_user(data['user_id']),
@@ -22,14 +22,15 @@ class ReceiveMixin:
                 'private_chat_request': lambda data: self.handle_private_chat_request(data),
                 'accept_private_chat': lambda data: self.handle_accept_private_chat(data),
                 'reject_private_chat': lambda data: self.handle_reject_private_chat(data),
-                'message': lambda data: self.handle_message(data)
+                'chat_message': lambda data: self.handle_message(data),  # Cambiar 'message' por 'chat_message'
+                'join_private_room': lambda data: self.handle_join_private_room(data)  # Añadir nuevo handler
             }
 
-            # Obtener el manejador correspondiente al tipo de mensaje
-            handler = message_handlers.get(message_type, lambda data: self.handle_message(data))
-
-            # Llamar al manejador con los datos
-            handler(data)
+            handler = message_handlers.get(message_type)
+            if handler:
+                handler(data)
+            else:
+                print(f"Tipo de mensaje no manejado: {message_type}")
 
         except json.JSONDecodeError as e:
             print('Error al decodificar el mensaje: ', e)
@@ -40,7 +41,7 @@ class ReceiveMixin:
             
     # ╔════════════════════════════════════════════════════════════════════════��════╗
     # ║                    CONEXIÓN Y DESCONECCIÓN DE USUARIOS                      ║
-    # ╚═════════════════════════════════════════════════════════════════════════════╝        
+    # ╚════════════════��════════════════════════════════════════════════════════════╝        
             
     def handle_disconnect_user(self):
         print(f'Disconnect user: {self.username}')
@@ -143,7 +144,8 @@ class ReceiveMixin:
                     'message': 'Chat privado aceptado',
                     'room_id': room.id,
                     'room_name': room.name,
-                    'other_user': sender.username,
+                    'username': sender.username,  # Username del remitente
+                    'target_username': receiver.username  # Username del receptor
                 }
 
                 # Notificar a ambos usuarios
@@ -202,36 +204,65 @@ class ReceiveMixin:
     # ║                           MANEJAR MENSAJES DE CHAT                          ║
     # ╚═════════════════════════════════════════════════════════════════════════════╝
     def handle_message(self, data):
-        message = data['message']
+        try:
+            message = data['message']
+            if not self.user.is_authenticated:
+                return
 
-        if self.user.is_authenticated:
-            sender_id = self.scope['user'].id
+            sender_id = self.user.id
             sender_profile = Profile.objects.get(user_id=sender_id)
             sender_avatar = sender_profile.avatar.url if sender_profile.avatar else None
-        else:
-            sender_id = None
-            sender_avatar = None
 
-        # Verificar si el usuario está bloqueado
-        if self.is_user_blocked(sender_id):
-            self.send_blocked_notification()
-            return
+            # Verificar si el usuario está bloqueado
+            if self.is_user_blocked(sender_id):
+                self.send_blocked_notification()
+                return
 
-        if sender_id:
-            self.save_message(sender_id, message)
-            self.send_chat_message(message, sender_id, sender_avatar)
-        else:
-            print('Usuario no autenticado')
+            # Guardar el mensaje
+            try:
+                room = Room.objects.get(name=self.id)
+                Message.objects.create(user_id=sender_id, content=message, room=room)
+            except Room.DoesNotExist:
+                print(f"Sala no encontrada: {self.id}")
+                return
 
-    def save_message(self, sender_id, message):
-        room = Room.objects.get(name=self.id)
-        Message.objects.create(user_id=sender_id, content=message, room=room)
+            # Enviar el mensaje al grupo
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'chat_message',
+                    'message': message,
+                    'username': self.user.username,
+                    'sender_id': sender_id,
+                    'avatar': sender_avatar,
+                }
+            )
+        except KeyError as e:
+            print(f"Error al obtener datos del mensaje: {e}")
+        except Exception as e:
+            print(f"Error al manejar mensaje: {e}")
 
-    def send_chat_message(self, message, sender_id, avatar):
-        async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
-            'type': 'chat_message',
-            'message': message,
-            'username': self.user.username,
-            'sender_id': sender_id,
-            'avatar': avatar,
-        })
+    def handle_join_private_room(self, data):
+        try:
+            room_id = data.get('room_id')
+            room = Room.objects.get(id=room_id, is_private=True)
+            
+            # Verificar que el usuario actual pertenece a la sala
+            if self.user in room.users.all():
+                self.id = room.name  # Actualizar el ID de la sala
+                self.room_group_name = f"chat_{room.name}"
+                
+                # Unirse al grupo de la sala privada
+                async_to_sync(self.channel_layer.group_add)(
+                    self.room_group_name,
+                    self.channel_name
+                )
+                
+                print(f"Usuario {self.user.username} unido a sala privada {room.name}")
+            else:
+                print(f"Usuario {self.user.username} no tiene permiso para unirse a la sala {room.name}")
+                
+        except Room.DoesNotExist:
+            print(f"Sala privada {room_id} no encontrada")
+        except Exception as e:
+            print(f"Error al unirse a sala privada: {e}")

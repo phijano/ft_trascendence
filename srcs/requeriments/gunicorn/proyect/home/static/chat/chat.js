@@ -44,6 +44,9 @@ window.initializeChat = function() {
             case 'private_chat_rejected':
                 handlePrivateChatRejected(data);
                 break;
+            case 'room_list':
+                updateRoomsPanel(data.rooms);
+                break;
             default:
                 console.warn('Tipo de mensaje desconocido:', data.type);
         }
@@ -51,7 +54,7 @@ window.initializeChat = function() {
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
     // ║                           FUNCIONES DE CHAT PRIVADO                         ║
-    // ╚═════════════════════════════════════════════════════════════════════════════╝
+    // ╚═══════════════════════════════════════════���═════════════════════════════════╝
 
     // Enviar una solicitud de chat privado
     function openPrivateChat(userId) {
@@ -67,49 +70,19 @@ window.initializeChat = function() {
         }));
         loadMessageHTML('Solicitud de chat privado enviada.');
     }
-    
-    // Template para mostrar la notificación de chat privado aceptado
-    function handlePrivateChatAccepted(data) {
-        console.log('Chat privado aceptado:', data);
-        
-        // Limpiar mensajes anteriores
-        boxMessages.innerHTML = '';
-        
-        // Actualizar atributos del contenedor
-        boxMessages.setAttribute('data-room', data.room_name);
-        
-        // Actualizar título del chat
-        const chatTitle = document.querySelector('h1');
-        if (chatTitle) {
-            chatTitle.textContent = `Chat privado con ${data.other_user}`;
-        }
-        
-        // Ocultar botones que no se necesitan en chat privado
-        const usersBtn = document.querySelector('#usersBtn');
-        if (usersBtn) {
-            usersBtn.style.display = 'none';
-        }
-    
-        // Reconectar WebSocket para la sala privada
-        if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
-            chatSocket.close();
-        }
-    
-        // Crear nueva conexión WebSocket para la sala privada
-        const wsUrl = `ws://${window.location.host}/ws/chat/private/${data.room_id}/`;
-        chatSocket = new WebSocket(wsUrl);
-        
-        // Reinicializar eventos del WebSocket
-        chatSocket.onopen = (e) => console.log('Conexión privada abierta');
-        chatSocket.onclose = (e) => console.error('Conexión privada cerrada');
-        chatSocket.onmessage = (e) => handleSocketMessage(JSON.parse(e.data));
+
+    function declinePrivateChat(senderId) {
+        const message = {
+            'type': 'reject_private_chat',
+            'sender_id': senderId
+        };
+        chatSocket.send(JSON.stringify(message));
     }
 
     // Template para mostrar la notificación de solicitud de chat privado rechazada
     function handlePrivateChatRejected(data) {
         const template = document.querySelector('#privateChatDeclinedTemplate').content.cloneNode(true);
         template.querySelector('[data-content="message"]').textContent = data.message;
-        
         boxMessages.appendChild(template);
         scrollToBottom();
     }
@@ -134,18 +107,92 @@ window.initializeChat = function() {
         chatSocket.send(JSON.stringify({
             'type': 'accept_private_chat',
             'sender_id': senderId,
+            'username': user, //nombre de usuario actual
         }));
-        // Aquí puedes redirigir a la sala de chat privado
-        // Por ejemplo: window.location.href = `/private_chat/${senderId}/`;
     }
 
-    function declinePrivateChat(senderId) {
-        const message = {
-            'type': 'reject_private_chat',
-            'sender_id': senderId
+    // Template para mostrar la notificación de chat privado aceptado
+    function handlePrivateChatAccepted(data) {
+        // Clona el template de notificación
+        const template = document.querySelector('#privateChatAcceptedTemplate').content.cloneNode(true);
+        // Establece el mensaje
+        template.querySelector('[data-content="message"]').textContent = data.message;
+        // Lo añade al chat
+        boxMessages.appendChild(template);
+        
+        // Crear botón "Ir al Chat"
+        const goToChatBtn = document.createElement('button');
+        goToChatBtn.textContent = 'Ir al Chat';
+        goToChatBtn.classList.add('go-to-chat-btn');
+        
+        // Modificar el evento onclick para usar privateChat en lugar de redirección
+        goToChatBtn.onclick = () => {
+            privateChat(data);
         };
-        chatSocket.send(JSON.stringify(message));
+        
+        boxMessages.appendChild(goToChatBtn);
+        scrollToBottom();
     }
+
+    function privateChat(data) {
+        console.log('Iniciando chat privado:', data); // Debug
+    
+        // Limpiar mensajes anteriores
+        boxMessages.innerHTML = '';
+        
+        // Actualizar atributos del contenedor
+        boxMessages.setAttribute('data-room', data.room_name);
+        boxMessages.setAttribute('data-private', 'true');
+        
+        // Actualizar título del chat
+        const chatTitle = document.querySelector('h1');
+        if (chatTitle) {
+            const currentUser = boxMessages.getAttribute('data-user');
+            console.log('Usuario actual:', currentUser); // Debug
+            console.log('Data username:', data.username); // Debug
+            console.log('Data target username:', data.target_username); // Debug
+            
+            const otherUsername = currentUser === data.username ? 
+                data.target_username : data.username;
+            
+            console.log('Nombre seleccionado:', otherUsername); // Debug
+            chatTitle.textContent = `Chat privado con ${otherUsername}`;
+        }
+        
+        // Ocultar botones que no se necesitan en chat privado
+        const usersBtn = document.querySelector('#usersBtn');
+        if (usersBtn) {
+            usersBtn.style.display = 'none';
+        }
+    
+        // Actualizar la URL sin recargar la página
+        const newUrl = `/chat/private/${data.room_id}/`;
+        window.history.pushState({ roomId: data.room_id }, '', newUrl);
+    
+        // Reconectar WebSocket para la sala privada
+        if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+            chatSocket.close();
+        }
+    
+        // Crear nueva conexión WebSocket para la sala privada
+        const wsUrl = `ws://${window.location.host}/ws/chat/private/${data.room_id}/`;
+        chatSocket = new WebSocket(wsUrl);
+        
+        // Reinicializar eventos del WebSocket
+        chatSocket.onopen = (e) => {
+            console.log('Conexión privada abierta');
+            chatSocket.send(JSON.stringify({
+                'type': 'join_private_room',
+                'room_id': data.room_id,
+                'username': boxMessages.getAttribute('data-user')
+            }));
+        };
+        
+        chatSocket.onclose = (e) => console.error('Conexión privada cerrada');
+        chatSocket.onmessage = (e) => handleSocketMessage(JSON.parse(e.data));
+    }
+
+    
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
     // ║                           FUNCIONES DE MENSAJES                             ║
@@ -224,9 +271,6 @@ window.initializeChat = function() {
     }
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
-    // ║                       FUNCIONES DE USUARIOS CONECTADOS                      ║
-    // ╚═════════════════════════════════════════════════════════════════════════════╝
-    
     // Actualiza la lista de usuarios conectados
     function updateConnectedUsers(users) {
         updateConnectedUserMap(users);
@@ -302,7 +346,7 @@ window.initializeChat = function() {
         }, 500);
     }
 
-    // ╔═════════════════════════════════════════════════════════════════════════════╗
+    // ╔════════════════════════════════════════════��════════════════════════════════╗
     // ║                           FUNCIONES DE BLOQUEO                              ║
     // ╚═════════════════════════════════════════════════════════════════════════════╝
 
@@ -332,7 +376,7 @@ window.initializeChat = function() {
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
     // ║                        FUNCIONES DE OBJETO GLOBAL                           ║
-    // ╚��════════════════════════════════════════════════════════════════════════════╝
+    // ╚═════════════════════════════════════════════════════════════════════════════╝
 
     // solicitud de chat privado
     window.openPrivateChat = openPrivateChat;

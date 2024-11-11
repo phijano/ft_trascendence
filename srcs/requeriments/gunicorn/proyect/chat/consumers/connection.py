@@ -1,12 +1,19 @@
 from asgiref.sync import async_to_sync
 from chat.consumers.users import connected_users_by_room
+from chat.models import Room
 
 class ConnectionMixin:
     def connect(self):
         # Obtener la sala y el grupo de canales
         route_kwargs = self.scope['url_route']['kwargs']
         self.id = route_kwargs.get('room_id', route_kwargs.get('room_name'))
-        self.room_group_name = 'chat_%s' % self.id
+        self.is_private = 'private' in self.scope['url_route']['kwargs']
+        
+        if self.is_private:
+            self.room = Room.objects.get(id=self.id)
+            self.room_group_name = f'private_chat_{self.id}'
+        else:
+            self.room_group_name = f'chat_{self.id}'
         
         # Obtener el usuario actual
         self.user = self.scope['user']

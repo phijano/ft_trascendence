@@ -52,7 +52,9 @@ class MessageMixin:
             'type': 'private_chat_accepted',
             'message': event['message'],
             'room_id': event['room_id'],
-            'room_name': event['room_name']
+            'room_name': event['room_name'],
+            'username': event['username'],
+            'target_username': event['target_username'],
         }))
 
     def private_chat_rejected(self, event):
