@@ -15,6 +15,26 @@
   color: var(--light-color);
 }
 
+.orbitron-font-small {
+    font-family: "Orbitron", sans-serif;
+    font-size: 0.8rem;
+    color: var(--accent-color);
+}
+
+.orbitron-font-medium {
+    font-family: "Orbitron", sans-serif;
+    font-size: 1rem;
+    color: var(--light-color);
+}
+
+.orbitron-font-medium.white {
+    color: var(--light-color);
+}
+
+.orbitron-font-small.red {
+    color: var(--primary-color);
+}
+
 .orbitron-font-large {
     font-size: 1.5rem;
 }
