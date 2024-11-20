@@ -22,8 +22,9 @@ class ReceiveMixin:
                 'private_chat_request': lambda data: self.handle_private_chat_request(data),
                 'accept_private_chat': lambda data: self.handle_accept_private_chat(data),
                 'reject_private_chat': lambda data: self.handle_reject_private_chat(data),
-                'chat_message': lambda data: self.handle_message(data),  # Cambiar 'message' por 'chat_message'
-                'join_private_room': lambda data: self.handle_join_private_room(data)  # Añadir nuevo handler
+                'chat_message': lambda data: self.handle_message(data), 
+                'join_private_room': lambda data: self.handle_join_private_room(data),
+                'tournament_notice': lambda data: self.handle_tournament_notice(data),
             }
 
             handler = message_handlers.get(message_type)
@@ -38,6 +39,27 @@ class ReceiveMixin:
             print('Error al obtener el mensaje: ', e)
         except Exception as e:
             print('Error: ', e)
+            
+    # ╔═════════════════════════════════════════════════════════════════════════════╗
+    # ║                           NOTIFICACIONES DE TORNEO                          ║
+    # ╚═════════════════════════════════════════════════════════════════════════════╝
+    
+    def handle_tournament_notice(self, data):
+        try:
+            message = data['message']
+            user_id = self.user.id
+            async_to_sync(self.channel_layer.group_send)(
+                f'user_{user_id}',
+                {
+                    'type': 'tournament_notice',
+                    'message': message,
+                }
+            )
+        except KeyError as e:
+            print(f"Error al obtener datos del mensaje: {e}")
+        except Exception as e:
+            print(f"Error al manejar mensaje de torneo: {e}")
+
             
     # ╔════════════════════════════════════════════════════════════════════════��════╗
     # ║                    CONEXIÓN Y DESCONECCIÓN DE USUARIOS                      ║
@@ -266,3 +288,5 @@ class ReceiveMixin:
             print(f"Sala privada {room_id} no encontrada")
         except Exception as e:
             print(f"Error al unirse a sala privada: {e}")
+            
+  

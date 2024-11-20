@@ -24,4 +24,5 @@ class BloquerUserMixin:
         if Block.objects.filter(blocker_id=current_user_id, blocked_id=sender_id).exists() or \
            Block.objects.filter(blocker_id=sender_id, blocked_id=current_user_id).exists():
             print(f'Mensaje bloqueado entre {self.user.username} y {username}')
-            return
+            return True
+        return False

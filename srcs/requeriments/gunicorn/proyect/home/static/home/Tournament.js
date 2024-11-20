@@ -97,6 +97,12 @@ export default class Tournament {
 		shuffle(this.players);
 		const round = new Round(this.players)
 		this.rounds.push(round);
+
+		// Notificar a los jugadores del primer match
+        if (this.matchPlayers) {
+            this.notifyPlayers('El torneo ha comenzado. ' + 
+    			`${this.matchPlayers[0]} vs ${this.matchPlayers[1]}`);
+        }
 	}
 
 	advance () {
@@ -106,7 +112,21 @@ export default class Tournament {
 			this.nextRound();
 		else
 			this.rounds[this.currentRound].advance();
+
+		// Notificar a los siguientes jugadores
+        if (this.matchPlayers) {
+            this.notifyPlayers(`Próximo partido en ${this.roundName}: ` +
+        		`${this.matchPlayers[0]} vs ${this.matchPlayers[1]}`);
+        }
 		return true;
+	}
+
+	notifyPlayers(message) {
+		// Usar el socket de chat existente
+		chatSocket.send(JSON.stringify({
+			'type': 'tournament_notice',
+			'message': message
+		}));
 	}
 
 	nextRound() {

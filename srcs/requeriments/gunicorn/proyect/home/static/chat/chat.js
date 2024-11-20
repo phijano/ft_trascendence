@@ -18,7 +18,7 @@ window.initializeChat = function() {
     let connectedUserMap = new Map(); // Para rastrear usuarios conectados
     let blockedUsers = new Set(); // Para rastrear usuarios bloqueados
 
-    // Eventos del WebSocket
+    // Eventos del WebSocket del chat
     chatSocket.onopen = (e) => console.log('Conexión abierta');
     chatSocket.onclose = (e) => console.error('Conexión cerrada');
     chatSocket.onmessage = (e) => handleSocketMessage(JSON.parse(e.data));
@@ -34,6 +34,9 @@ window.initializeChat = function() {
                 break;
             case 'chat_message':
                 handleChatMessage(data);
+                break;
+            case 'tournament_notice':
+                handleTournamentMessage(data);
                 break;
             case 'private_chat_notification':
                 displayPrivateChatNotification(data);
@@ -52,8 +55,23 @@ window.initializeChat = function() {
         }
     }
 
-    // ╔═══════════════════════════════════════════════════════════════════════╗
-    // ║                           FUNCIONES DE CHAT PRIVADO                         ║
+    function handleTournamentMessage(data) {
+        // Mostrar notificación en el chat
+        loadMessageHTML(`[Torneo] ${data.message}`);
+        // Opcional: Notificación más elegante en lugar de alert
+        showNotification(data.message);
+    }
+
+    function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = 'tournament-notification';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 5000);
+    }
+
+    // ╔═════════════════════════════════════════════════════════════════════════════╗
+    // ║                           FUNCIONES DE SALAS DE CHAT                        ║
     // ╚═════════════════════════════════════════════════════════════════════════════╝
 
     // Enviar una solicitud de chat privado
@@ -271,7 +289,9 @@ window.initializeChat = function() {
     }
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
-    // Actualiza la lista de usuarios conectados
+    // ║                 ACTUALIZACIÓN DE USUARIOS CONECTADOS                        ║
+    // ╚═════════════════════════════════════════════════════════════════════════════╝
+    
     function updateConnectedUsers(users) {
         updateConnectedUserMap(users);
         updateConnectedUsersList(users);
@@ -373,7 +393,7 @@ window.initializeChat = function() {
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
     // ║                           FUNCIONES DE BLOQUEO                              ║
-    // ╚════════════════════════════════════════════════════════════════════════════��╝
+    // ╚═════════════════════════════════════════════════════════════════════════════╝
 
     function blockUser(userId) {
         chatSocket.send(JSON.stringify({

@@ -29,8 +29,9 @@ class MessageMixin:
         current_user_id = self.scope['user'].id
 
         # Verificar bloqueos entre el remitente y el receptor
-        self.check_blocked(sender_id, username, current_user_id)
-        
+        if self.check_blocked(sender_id, username, current_user_id):
+            return  # Detener el procesamiento si hay un bloqueo
+            
         if sender_id != current_user_id:
             self.send(text_data=json.dumps({
                 'type': 'chat_message',
