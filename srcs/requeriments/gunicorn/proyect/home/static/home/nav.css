@@ -63,3 +63,45 @@
     width: 95%;
     border-bottom: 2px solid var(--secondary-color); /* Borde inferior */
 }
+
+.button-borders {
+    background-color: #333; /* Color de fondo oscuro */
+    font-family: "Orbitron", sans-serif;
+    color: white; /* Color del texto */
+    border: solid #555; /* Borde oscuro */
+    padding: 10px; /* Espaciado interno */
+}
+
+.button-left {
+    border-radius: 10px 0 0 10px; /* Bordes redondeados en los extremos izquierdos */
+}
+.button-middle {
+    border-left: none; /* Sin borde izquierdo */
+    border-right: none; /* Sin borde derecho */
+}
+.button-right {
+    border-radius: 0 10px 10px 0; /* Bordes redondeados en los extremos derechos */
+}
+.button-container {
+    display: flex;
+    border-collapse: collapse;
+}
+.button-borders:active {
+    background-color: #343a40; /* Color de fondo cuando se presiona */
+    color: cyan;
+}
+
+.button-remote {
+        font-family: 'Orbitron', sans-serif;
+        color: var(--accent-color);
+        font-size: small;
+        padding: 10px;
+        margin: 5px;
+        border: none;
+        cursor: pointer;
+        background-color: transparent;
+}
+
+.button-remote:active {
+    color: var(--primary-color)
+}

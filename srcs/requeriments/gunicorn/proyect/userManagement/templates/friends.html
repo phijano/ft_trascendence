@@ -1,16 +1,26 @@
-{% if user.is_authenticated %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	{% load static %}
+	<link rel="stylesheet" href="{% static 'home/pong/pong.css' %}">
+	<link rel="stylesheet" href="{% static 'home/nav.css' %}">
+</head>
+<body>
+	{% if user.is_authenticated %}
 	{% csrf_token %}
 
-	<h1 class="text-info mb-4">FRIENDS</h1>
+	<h1 class="title-cyan-big mb-4">MY FRIENDS</h1>
 
 	<div class="mw-100 container mb-3">
 		<div class="row py-2">
 			<div class="col"></div>
 			<div class="col"></div>
-			<div class="col-4">
-				<button class="btn btn-dark" onclick="router('/friends')" disabled>Friends</button></a>
-				<button class="btn btn-dark" onclick="router('/friends/pending')">Pending</button></a>
-				<button class="btn btn-dark" onclick="router('/friends/invited')">Invited</button></a>
+			<div class="col-4 button-container">
+				<button class="button-borders button-left" style= "background-color: #343a40; color: cyan;" onclick="router('/friends')" disabled>Friends</button></a>
+				<button class="button-borders button-middle"  onclick="router('/friends/pending')">Pending</button></a>
+				<button class="button-borders button-right" onclick="router('/friends/invited')">Invited</button></a>
 			</div>
 			<div class="col-6">
 				<form id="fSearchFriend">
@@ -19,7 +29,7 @@
 							<input id="iSearch" name="searchQuery" class="form-control" type="search" placeholder="Search">
 						</div>
 						<div class="col-2">
-							<button class="btn btn-outline-info" type="submit">Search</button>
+							<button class="registerPlayer-button" type="submit">Search</button>
 						</div>
 					</div>
 				</form>
@@ -71,7 +81,7 @@
 			{% endfor %}
 		</div>
 	{% else %}
-		<p>You dont have any friend</p>
+		<p class="orbitron-font-small">You dont have any friend yet</p>
 	{% endif %}
 
 
@@ -97,5 +107,8 @@
 
 
 {% else %}
-	log in to have access to your account
+	<p class="orbitron-font-small">log in to have access to your account</p>
 {% endif %}
+</body>
+</html>
+

@@ -1,6 +1,17 @@
-{% if user.is_authenticated %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	{% load static %}
+	<link rel="stylesheet" href="{% static 'home/pong/pong.css' %}">
+	<link rel="stylesheet" href="{% static 'home/nav.css' %}">
+</head>
+<body>
+
+	{% if user.is_authenticated %}
 	{% csrf_token %}	
-	<h1 class="text-info mb-4"> PROFILE </h1>
+	<h1 class="title-cyan-big mb-4">MY PROFILE </h1>
 
 	<div class="container fixed-width text-center">
 		<div class="row">
@@ -134,5 +145,8 @@
 	</div>
 
 {% else %}
-	log in to have access to your account
-{% endif %}
+	<p class="orbitron-font-small">log in to have access to your account</p>
+{% endif %}	
+</body>
+</html>
+
