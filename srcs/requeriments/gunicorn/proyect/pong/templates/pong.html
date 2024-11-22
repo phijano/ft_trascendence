@@ -56,12 +56,14 @@
 			<div id="sOpponentContainer">
 				<div class="option selected" data-value="0" onclick="pongSelectOption(this)">Player VS Player</div>
 				<div class="option" data-value="1" onclick="pongSelectOption(this)">Multiplayer</div>
-				<div class="option" data-value="2" onclick="pongSelectOption(this)">Player Vs AI</div>
+				<div class="option" data-value="2" onclick="pongSelectOption(this)">3D</div>
+				<div class="option" data-value="3" onclick="pongSelectOption(this)">Player Vs AI</div>
 			</div>
 			<select id="sOpponent" onchange="pongSetOpponent()" style="display: none;">
 				<option value="0" selected> Player Vs Player </option>
 				<option value="1"> Multiplayer </option>
-				<option value="2"> Player Vs AI </option>
+				<option value="2"> 3D </option>
+				<option value="3"> Player Vs AI </option>
 			</select>
 			<div id="sDifficultyContainer">
 				<div class="option" data-value="0" onclick="pongSelectDifficulty(this)">Easy</div>
@@ -96,6 +98,16 @@
             <button id="start-button-multi" type="button" class="start-button" onclick="pongStartMultiReady()">Start</button>
         </div>
     </div>
+	<div id="3DSettings" hidden>
+	    <div id="scoreboard">
+			<span id="player1-score">Player 1: 0</span>
+			<span id="timer">Time Left</span>
+			<span id="player2-score">Player 2: 0</span>
+		</div>
+		<div id="d3DpongCanvas"></div>
+		<button class="btn btn-primary mt-4" id="btnStart" onclick="pongStartGame_3D()">Start Game</button>
+
+	</div>
 	<div class="bg-dark container" id="dTournamentSettings" hidden>
 			<h4 id="createTournament" class ="title-cyan-big">CREATE TOURNAMENT</h4>
 			<div id="sNumPlayersContainer">
