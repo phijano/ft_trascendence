@@ -6,6 +6,7 @@ let ballSpeed = { x: 5, y: 5 };
 let timeLeft = 10;
 let gameInterval;
 let playing = false;
+let initialized = false;
 
 function generateRandom(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -19,6 +20,13 @@ function generatePositiveNegative() {
 }
 
 function init() {
+
+    if (initialized)
+        {
+            console.log('3D Pong game already started');
+            return;
+        } // Evitar múltiples inicializaciones
+    initialized = true;
     console.log('3D Pong game started');
 
     // Asigna una velocidad y dirección aleatoria de la pelota
@@ -27,7 +35,7 @@ function init() {
 
     // Crear escena
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xffffff);
+    scene.background = new THREE.Color(0x000000);
 
     // Configurar cámara
     //camera = new THREE.OrthographicCamera(-400, 400, 350, -350, 1, 1000);
@@ -48,13 +56,13 @@ function init() {
 
     // Crear terreno de juego
     const fieldGeometry = new THREE.PlaneGeometry(800, 700);
-    const fieldMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const fieldMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
     const field = new THREE.Mesh(fieldGeometry, fieldMaterial);
     scene.add(field);
 
     // Crear paletas
     const paddleGeometry = new THREE.BoxGeometry(20, 100, 1000);
-    const paddleMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+    const paddleMaterial = new THREE.MeshPhongMaterial({ color: 0x00ffff });
     paddle1 = new THREE.Mesh(paddleGeometry, paddleMaterial);
     paddle1.position.set(-370, 0, 0);
     scene.add(paddle1);
@@ -65,7 +73,7 @@ function init() {
 
     // Crear pelota
     const ballGeometry = new THREE.SphereGeometry(10, 32, 32);
-    const ballMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+    const ballMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
     ball = new THREE.Mesh(ballGeometry, ballMaterial);
     scene.add(ball);
 

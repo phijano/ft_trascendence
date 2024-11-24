@@ -348,4 +348,5 @@
     height: 700px;
     margin: 20px auto;
     border: 3px solid var(--accent-color);
+    box-sizing: content-box;
 }
