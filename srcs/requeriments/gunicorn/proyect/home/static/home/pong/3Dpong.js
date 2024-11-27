@@ -188,7 +188,7 @@ function endGame() {
     }
     
     // Cargar la fuente de manera asincrónica
-    const loader = new THREE.FontLoader();
+/*     const loader = new THREE.FontLoader();
     loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
         const textGeometry = new THREE.TextGeometry(result, {
             font: font,
@@ -204,10 +204,42 @@ function endGame() {
         //textMesh.position.set(-200, 0, 0);
         textMesh.name = 'resultText';
         scene.add(textMesh);
+
     });
+ */
+    const scoreContainer = document.getElementById("d3Dscoreboard");
+    const winnerMessage = document.getElementById("d3DwinnerMessage");
+    const winnerText = document.getElementById("d3DwinnerText");
+
+    scoreContainer.style.display = "none";
+
+    if (result === 'Player 1 wins') {
+        winnerText.textContent = 'WINNER Player1';
+    }
+    else if (result === 'Player 2 wins') {
+        winnerText.textContent = 'WINNER Player2';
+    }
+    else {
+        winnerText.textContent = 'TIE';
+    }
+    winnerMessage.style.display = "block";
+
+
+    const startButton = document.getElementById('start-button-3D');
+    startButton.style.display = "block";
 }
 
 function startGame() {
+
+	const startButton = document.getElementById('start-button-3D');
+	startButton.style.display = 'none';
+
+    const winnerMessage = document.getElementById("d3DwinnerMessage");
+    winnerMessage.style.display = "none";
+
+    const scoreContainer = document.getElementById("d3Dscoreboard");
+    scoreContainer.style.display = "block";
+
     // Restablecer puntuaciones
     player1Score = 0;
     player2Score = 0;

@@ -98,15 +98,19 @@
             <button id="start-button-multi" type="button" class="start-button" onclick="pongStartMultiReady()">Start</button>
         </div>
     </div>
-	<div id="3DSettings" hidden>
-	    <div id="scoreboard">
-			<span id="player1-score">Player 1: 0</span>
-			<span id="timer">Time Left</span>
-			<span id="player2-score">Player 2: 0</span>
+	<div id="d3Dsettings" hidden>
+		<div class="display-column-content">
+			<div id="d3Dscoreboard" class="scoreboard mt-4">
+				<span id="player1-score" class="players-font">Player 1: 0</span>
+				<span id="timer" class="players-font">Time Left</span>
+				<span id="player2-score" class="players-font">Player 2: 0</span>
+			</div>
+			<div id="d3DwinnerMessage" class="players-font mt-4" style="display: none;">
+				<span id="d3DwinnerText"></span>
+			</div>
+			<div id="d3DpongCanvas"></div>
+			<button id="start-button-3D" type="button" class="start-button"  onclick="pongStartGame_3D()">Start</button>
 		</div>
-		<div id="d3DpongCanvas"></div>
-		<button class="btn btn-primary mt-4" id="btnStart" onclick="pongStartGame_3D()">Start Game</button>
-
 	</div>
 	<div class="bg-dark container" id="dTournamentSettings" hidden>
 			<h4 id="createTournament" class ="title-cyan-big">CREATE TOURNAMENT</h4>

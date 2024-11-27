@@ -145,7 +145,7 @@ function hideMultiplayer() {
 }
 
 function hide3D() {
-	document.getElementById("3DSettings").hidden = true;
+	document.getElementById("d3Dsettings").hidden = true;
 }
 
 function hideCustomizationOptions() {
@@ -689,7 +689,7 @@ function show_3D(){
 	document.getElementById("chooseIndicator").hidden = true;
 	canvasResize();
 	document.getElementById("dMultiplayerSettings").hidden = true;
-	document.getElementById("3DSettings").hidden = false;
+	document.getElementById("d3Dsettings").hidden = false;
 	window.pongInit_3D();
 }
 
@@ -706,7 +706,7 @@ function show_multi(){
 	document.getElementById("dStartGame").hidden = true;
 	document.getElementById("dWinner").hidden = true;
 	document.getElementById("chooseIndicator").hidden = true;
-	document.getElementById("3DSettings").hidden = true;
+	document.getElementById("d3Dsettings").hidden = true;
 	canvasResize();
 	document.getElementById("dMultiplayerSettings").hidden = false;
 

@@ -350,3 +350,7 @@
     border: 3px solid var(--accent-color);
     box-sizing: content-box;
 }
+
+#d3Dsettings {
+    position: relative;
+}
