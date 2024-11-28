@@ -47,13 +47,16 @@ window.initializeChat = function() {
             case 'room_list':
                 updateRoomsPanel(data.rooms);
                 break;
+            case 'game_invitation':
+                displayGameInvitation(data);
+                break;
             default:
                 console.warn('Tipo de mensaje desconocido:', data.type);
         }
     }
 
-    // ╔═══════════════════════════════════════════════════════════════════════╗
-    // ║                           FUNCIONES DE CHAT PRIVADO                         ║
+    // ╔═════════════════════════════════════════════════════════════════════════════╗
+    // ║                        FUNCIONES DE CHAT PRIVADO                            ║
     // ╚═════════════════════════════════════════════════════════════════════════════╝
 
     // Enviar una solicitud de chat privado
@@ -195,7 +198,7 @@ window.initializeChat = function() {
     
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
-    // ║                           FUNCIONES DE MENSAJES                             ║
+    // ║                        FUNCIONES DE MENSAJES DE CHAT                        ║
     // ╚═════════════════════════════════════════════════════════════════════════════╝
 
     // Manejar el mensaje del chat
@@ -271,7 +274,9 @@ window.initializeChat = function() {
     }
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
-    // Actualiza la lista de usuarios conectados
+    // ║                        FUNCIONES PARA USUARIOS CONECTADOS                   ║
+    // ╚═════════════════════════════════════════════════════════════════════════════╝
+
     function updateConnectedUsers(users) {
         updateConnectedUserMap(users);
         updateConnectedUsersList(users);
@@ -372,8 +377,8 @@ window.initializeChat = function() {
     }
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
-    // ║                           FUNCIONES DE BLOQUEO                              ║
-    // ╚════════════════════════════════════════════════════════════════════════════��╝
+    // ║                        FUNCIONES DE BLOQUEO Y DESBLOQUEO                    ║
+    // ╚═════════════════════════════════════════════════════════════════════════════╝
 
     function blockUser(userId) {
         chatSocket.send(JSON.stringify({
@@ -447,6 +452,34 @@ window.initializeChat = function() {
             }
         }
     });
+
+    function displayGameInvitation(data) {
+        const template = document.querySelector('#gameInvitationTemplate').content.cloneNode(true);
+        template.querySelector('[data-content="message"]').textContent = data.message;
+        
+        const acceptBtn = template.querySelector('[data-action="accept"]');
+        const declineBtn = template.querySelector('[data-action="decline"]');
+        
+        acceptBtn.onclick = () => acceptGameInvitation(data.match_id);
+        declineBtn.onclick = () => declineGameInvitation(data.match_id);
+        
+        boxMessages.appendChild(template);
+        scrollToBottom();
+    }
+
+    function acceptGameInvitation(matchId) {
+        chatSocket.send(JSON.stringify({
+            'type': 'accept_game_invitation',
+            'match_id': matchId
+        }));
+    }
+
+    function declineGameInvitation(matchId) {
+        chatSocket.send(JSON.stringify({
+            'type': 'decline_game_invitation',
+            'match_id': matchId
+        }));
+    }
 };
 
 // Ejecutar la función cuando el DOM esté completamente cargado

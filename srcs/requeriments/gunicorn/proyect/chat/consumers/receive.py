@@ -23,7 +23,8 @@ class ReceiveMixin:
                 'accept_private_chat': lambda data: self.handle_accept_private_chat(data),
                 'reject_private_chat': lambda data: self.handle_reject_private_chat(data),
                 'chat_message': lambda data: self.handle_message(data),  # Cambiar 'message' por 'chat_message'
-                'join_private_room': lambda data: self.handle_join_private_room(data)  # Añadir nuevo handler
+                'join_private_room': lambda data: self.handle_join_private_room(data),  # Añadir nuevo handler
+                'game_invitation': lambda data: self.handle_game_invitation(data)  # Añadir nuevo handler
             }
 
             handler = message_handlers.get(message_type)
@@ -38,10 +39,38 @@ class ReceiveMixin:
             print('Error al obtener el mensaje: ', e)
         except Exception as e:
             print('Error: ', e)
+
+    # ╔════════════════════════════════════════════════════════════════════════════╗
+    # ║                    FUNCIONES DE MANEJO DE INVITACIONES DE JUEGO            ║
+    # ╚════════════════════════════════════════════════════════════════════════════╝ 
+
+    def handle_game_invitation(self, data):
+        target_user_id = data.get('target_user_id')
+        if not target_user_id:
+            print("Error: 'target_user_id' no está presente en los datos recibidos.")
+            return
+
+        target_user = User.objects.get(id=target_user_id)
+        sender = self.user
+
+        try:
+            async_to_sync(self.channel_layer.group_send)(
+                f'user_{target_user.id}',
+                {
+                    'type': 'game_invitation',
+                    'message': f'{sender.username} te ha invitado a jugar.',
+                    'match_id': f'match_{sender.id}_{target_user.id}_{int(time.time())}',
+                    'sender_id': sender.id,
+                    'username': sender.username,
+                    'target_user_id': target_user_id,
+                }
+            )
+        except Exception as e:
+            print(f'Error al enviar la invitación de juego: {e}')
             
-    # ╔════════════════════════════════════════════════════════════════════════��════╗
-    # ║                    CONEXIÓN Y DESCONECCIÓN DE USUARIOS                      ║
-    # ╚════════════════��════════════════════════════════════════════════════════════╝        
+    # ╔════════════════════════════════════════════════════════════════════════════╗
+    # ║                    CONEXIÓN Y DESCONECCIÓN DE USUARIOS                     ║
+    # ╚════════════════════════════════════════════════════════════════════════════╝        
             
     def handle_disconnect_user(self):
         print(f'Disconnect user: {self.username}')
@@ -266,3 +295,27 @@ class ReceiveMixin:
             print(f"Sala privada {room_id} no encontrada")
         except Exception as e:
             print(f"Error al unirse a sala privada: {e}")
+
+    def handle_game_invitation(self, data):
+        target_user_id = data.get('target_user_id')
+        if not target_user_id:
+            print("Error: 'target_user_id' no está presente en los datos recibidos.")
+            return
+
+        target_user = User.objects.get(id=target_user_id)
+        sender = self.user
+
+        try:
+            async_to_sync(self.channel_layer.group_send)(
+                f'user_{target_user.id}',
+                {
+                    'type': 'game_invitation',
+                    'message': f'{sender.username} te ha invitado a jugar.',
+                    'match_id': f'match_{sender.id}_{target_user.id}_{int(time.time())}',
+                    'sender_id': sender.id,
+                    'username': sender.username,
+                    'target_user_id': target_user_id,
+                }
+            )
+        except Exception as e:
+            print(f'Error al enviar la invitación de juego: {e}')
