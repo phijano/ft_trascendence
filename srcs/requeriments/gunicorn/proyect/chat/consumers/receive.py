@@ -24,7 +24,8 @@ class ReceiveMixin:
                 'reject_private_chat': lambda data: self.handle_reject_private_chat(data),
                 'chat_message': lambda data: self.handle_message(data),  # Cambiar 'message' por 'chat_message'
                 'join_private_room': lambda data: self.handle_join_private_room(data),  # Añadir nuevo handler
-                'game_invitation': lambda data: self.handle_game_invitation(data)  # Añadir nuevo handler
+                'game_invitation': lambda data: self.handle_game_invitation(data),  # Añadir nuevo handler
+                'decline_game_invitation': lambda data: self.handle_decline_game_invitation(data),
             }
 
             handler = message_handlers.get(message_type)
@@ -67,6 +68,24 @@ class ReceiveMixin:
             )
         except Exception as e:
             print(f'Error al enviar la invitación de juego: {e}')
+            
+    def handle_decline_game_invitation(self, data):
+        match_id = data.get('match_id')
+        sender_id = data.get('sender_id')
+        receiver = self.user
+
+        try:
+            async_to_sync(self.channel_layer.group_send)(
+                f'user_{sender_id}',
+                {
+                    'type': 'game_invitation_declined',
+                    'message': f'{receiver.username} ha rechazado tu invitación a jugar.',
+                    'match_id': match_id,
+                    'sender_id': sender_id,
+                }
+            )
+        except Exception as e:
+            print(f'Error al enviar la respuesta de rechazo de la invitación de juego: {e}')
             
     # ╔════════════════════════════════════════════════════════════════════════════╗
     # ║                    CONEXIÓN Y DESCONECCIÓN DE USUARIOS                     ║

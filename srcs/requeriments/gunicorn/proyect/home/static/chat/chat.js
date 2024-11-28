@@ -50,9 +50,53 @@ window.initializeChat = function() {
             case 'game_invitation':
                 displayGameInvitation(data);
                 break;
+            case 'game_invitation_declined':
+                handleGameInvitationDeclined(data);
+                break;
             default:
                 console.warn('Tipo de mensaje desconocido:', data.type);
         }
+    }
+
+    // ╔═════════════════════════════════════════════════════════════════════════════╗
+    // ║                        FUNCIONES DE SALAS DE JUEGO                          ║
+    // ╚═════════════════════════════════════════════════════════════════════════════╝
+
+    function displayGameInvitation(data) {
+        const template = document.querySelector('#gameInvitationTemplate').content.cloneNode(true);
+        template.querySelector('[data-content="message"]').textContent = data.message;
+        
+        const acceptBtn = template.querySelector('[data-action="accept"]');
+        const declineBtn = template.querySelector('[data-action="decline"]');
+        
+        acceptBtn.onclick = () => acceptGameInvitation(data.match_id);
+        declineBtn.onclick = () => declineGameInvitation(data.match_id, data.sender_id);
+        
+        boxMessages.appendChild(template);
+        scrollToBottom();
+    }
+
+    function acceptGameInvitation(matchId) {
+        chatSocket.send(JSON.stringify({
+            'type': 'accept_game_invitation',
+            'match_id': matchId
+        }));
+    }
+
+    function declineGameInvitation(matchId, senderId) {
+        chatSocket.send(JSON.stringify({
+            'type': 'decline_game_invitation',
+            'match_id': matchId,
+            'sender_id': senderId
+        }));
+    }
+
+    function handleGameInvitationDeclined(data) {
+        const template = document.querySelector('#gameResponseTemplate').content.cloneNode(true);
+        template.querySelector('[data-content="message"]').textContent = data.message;
+        template.querySelector('.game-response').classList.add('alert-danger');
+        boxMessages.appendChild(template);
+        scrollToBottom();
     }
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
@@ -376,7 +420,7 @@ window.initializeChat = function() {
         }, 500);
     }
 
-    // ╔═════════════════════════════════════════════════════════════════════════════╗
+    // ╔═══════════════��═════════════════════════════════════════════════════════════╗
     // ║                        FUNCIONES DE BLOQUEO Y DESBLOQUEO                    ║
     // ╚═════════════════════════════════════════════════════════════════════════════╝
 
@@ -406,7 +450,7 @@ window.initializeChat = function() {
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
     // ║                        FUNCIONES DE OBJETO GLOBAL                           ║
-    // ╚═════════════════════════════════════════════════════════════════════════════╝
+    // ╚═════════════════════════════════��═══════════════════════════════════════════╝
 
     // solicitud de chat privado
     window.openPrivateChat = openPrivateChat;
@@ -414,7 +458,7 @@ window.initializeChat = function() {
     window.blockUser = blockUser;
     window.unblockUser = unblockUser;
 
-    // ╔═════════════════════════════════════════════════════════════════════════════╗
+    // ╔══════════════��════════════════════════════════════════════════════════��═════╗
     // ║                           EVENTOS DE LA INTERFAZ                            ║
     // ╚═════════════════════════════════════════════════════════════════════════════╝
 
@@ -452,34 +496,6 @@ window.initializeChat = function() {
             }
         }
     });
-
-    function displayGameInvitation(data) {
-        const template = document.querySelector('#gameInvitationTemplate').content.cloneNode(true);
-        template.querySelector('[data-content="message"]').textContent = data.message;
-        
-        const acceptBtn = template.querySelector('[data-action="accept"]');
-        const declineBtn = template.querySelector('[data-action="decline"]');
-        
-        acceptBtn.onclick = () => acceptGameInvitation(data.match_id);
-        declineBtn.onclick = () => declineGameInvitation(data.match_id);
-        
-        boxMessages.appendChild(template);
-        scrollToBottom();
-    }
-
-    function acceptGameInvitation(matchId) {
-        chatSocket.send(JSON.stringify({
-            'type': 'accept_game_invitation',
-            'match_id': matchId
-        }));
-    }
-
-    function declineGameInvitation(matchId) {
-        chatSocket.send(JSON.stringify({
-            'type': 'decline_game_invitation',
-            'match_id': matchId
-        }));
-    }
 };
 
 // Ejecutar la función cuando el DOM esté completamente cargado
