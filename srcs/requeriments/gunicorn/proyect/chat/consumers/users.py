@@ -58,3 +58,10 @@ class UserMixin:
             'match_id': event['match_id'],
             'sender_id': event['sender_id'],
         }))
+
+    def game_invitation_accepted(self, event):
+        self.send(text_data=json.dumps({
+            'type': 'game_invitation_accepted',
+            'message': event['message'],
+            'match_id': event['match_id'],
+        }))

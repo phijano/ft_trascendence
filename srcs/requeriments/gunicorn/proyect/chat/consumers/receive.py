@@ -26,6 +26,7 @@ class ReceiveMixin:
                 'join_private_room': lambda data: self.handle_join_private_room(data),  # Añadir nuevo handler
                 'game_invitation': lambda data: self.handle_game_invitation(data),  # Añadir nuevo handler
                 'decline_game_invitation': lambda data: self.handle_decline_game_invitation(data),
+                'accept_game_invitation': lambda data: self.handle_accept_game_invitation(data),
             }
 
             handler = message_handlers.get(message_type)
@@ -43,7 +44,7 @@ class ReceiveMixin:
 
     # ╔════════════════════════════════════════════════════════════════════════════╗
     # ║                    FUNCIONES DE MANEJO DE INVITACIONES DE JUEGO            ║
-    # ╚════════════════════════════════════════════════════════════════════════════╝ 
+    # ╚══════════════════════════════════════════════════════════════════════════��═╝ 
 
     def handle_game_invitation(self, data):
         target_user_id = data.get('target_user_id')
@@ -87,6 +88,38 @@ class ReceiveMixin:
         except Exception as e:
             print(f'Error al enviar la respuesta de rechazo de la invitación de juego: {e}')
             
+    def handle_accept_game_invitation(self, data):
+        match_id = data.get('match_id')
+        target_user_id = data.get('target_user_id')
+        receiver = self.user
+
+        try:
+            # Send notification to both users
+            notification_data = {
+                'type': 'game_invitation_accepted',
+                'match_id': match_id,
+            }
+
+            # Customize message for receiver
+            async_to_sync(self.channel_layer.group_send)(
+                f'user_{receiver.id}',
+                {
+                    **notification_data,
+                    'message': 'Game invitation accepted! Click "Start Game" to begin.',
+                }
+            )
+
+            # Customize message for sender
+            async_to_sync(self.channel_layer.group_send)(
+                f'user_{target_user_id}',
+                {
+                    **notification_data,
+                    'message': f'{receiver.username} accepted your game invitation! Click "Start Game" to begin.',
+                }
+            )
+        except Exception as e:
+            print(f'Error accepting game invitation: {e}')
+            
     # ╔════════════════════════════════════════════════════════════════════════════╗
     # ║                    CONEXIÓN Y DESCONECCIÓN DE USUARIOS                     ║
     # ╚════════════════════════════════════════════════════════════════════════════╝        
@@ -110,7 +143,7 @@ class ReceiveMixin:
             
     # ╔═════════════════════════════════════════════════════════════════════════════╗
     # ║                    SOLICITUD DE CHAT PRIVADO Y NOTIFICACIONES               ║
-    # ╚═════════════════════════════════════════════════════════════════════════════╝
+    # ╚════════════════════════════════════════════════════════════════════════���════╝
     # >>>>>>>>>>>>>>> MANEJAR SOLICITUD DE CHAT PRIVADO <<<<<<<<<<<<<<*/
     def handle_private_chat_request(self, data):
         target_user_id = data.get('target_user_id')
@@ -172,7 +205,7 @@ class ReceiveMixin:
                 print(f'No se encontró invitación pendiente entre {sender} y {receiver}')
                 return
 
-            # Actualizar la invitación
+            # Actualizar la invitaci��n
             invitation.status = 'accepted'
             invitation.save()
 
@@ -250,7 +283,7 @@ class ReceiveMixin:
 
     # ╔═════════════════════════════════════════════════════════════════════════════╗
     # ║                           MANEJAR MENSAJES DE CHAT                          ║
-    # ╚═════════════════════════════════════════════════════════════════════════════╝
+    # ╚════════════════════════════��════════════════════════════════════════════════╝
     def handle_message(self, data):
         try:
             message = data['message']

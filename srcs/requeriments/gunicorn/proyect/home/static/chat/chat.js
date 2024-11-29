@@ -53,14 +53,17 @@ window.initializeChat = function() {
             case 'game_invitation_declined':
                 handleGameInvitationDeclined(data);
                 break;
+            case 'game_invitation_accepted':
+                handleGameInvitationAccepted(data);
+                break;
             default:
-                console.warn('Tipo de mensaje desconocido:', data.type);
+                console.warn('Tipo de mensaje desconocido:', '[' + data.type + ']');
         }
     }
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
     // ║                        FUNCIONES DE SALAS DE JUEGO                          ║
-    // ╚═════════════════════════════════════════════════════════════════════════════╝
+    // ╚════════════════════════════════════════════════════════════════════��════════╝
 
     function displayGameInvitation(data) {
         const template = document.querySelector('#gameInvitationTemplate').content.cloneNode(true);
@@ -69,17 +72,18 @@ window.initializeChat = function() {
         const acceptBtn = template.querySelector('[data-action="accept"]');
         const declineBtn = template.querySelector('[data-action="decline"]');
         
-        acceptBtn.onclick = () => acceptGameInvitation(data.match_id);
+        acceptBtn.onclick = () => acceptGameInvitation(data.match_id, data.sender_id);
         declineBtn.onclick = () => declineGameInvitation(data.match_id, data.sender_id);
         
         boxMessages.appendChild(template);
         scrollToBottom();
     }
 
-    function acceptGameInvitation(matchId) {
+    function acceptGameInvitation(matchId, senderId) {
         chatSocket.send(JSON.stringify({
             'type': 'accept_game_invitation',
-            'match_id': matchId
+            'match_id': matchId,
+            'target_user_id': senderId
         }));
     }
 
@@ -97,6 +101,26 @@ window.initializeChat = function() {
         template.querySelector('.game-response').classList.add('alert-danger');
         boxMessages.appendChild(template);
         scrollToBottom();
+    }
+
+    function handleGameInvitationAccepted(data) {
+        // Clona el template de notificación
+        const template = document.querySelector('#gameStartTemplate').content.cloneNode(true);
+        
+        // Establece el mensaje
+        template.querySelector('[data-content="message"]').textContent = data.message;
+        
+        // Configura el botón de inicio de juego
+        const startGameBtn = template.querySelector('[data-action="start-game"]');
+        startGameBtn.onclick = () => startGame(data.match_id);
+        
+        // Lo añade al chat
+        boxMessages.appendChild(template);
+        scrollToBottom();
+    }
+
+    function startGame(matchId) {
+        window.location.href = `/game/start/${matchId}/`;
     }
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
@@ -241,9 +265,9 @@ window.initializeChat = function() {
 
     
 
-    // ╔═════════════════════════════════════════════════════════════════════════════╗
+    // ╔��════════════════════════════════════════════════════════��════════════════���══╗
     // ║                        FUNCIONES DE MENSAJES DE CHAT                        ║
-    // ╚═════════════════════════════════════════════════════════════════════════════╝
+    // ╚════════════════════════════════════════════════════════����════════════════════╝
 
     // Manejar el mensaje del chat
     function handleChatMessage(data) {
@@ -319,7 +343,7 @@ window.initializeChat = function() {
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
     // ║                        FUNCIONES PARA USUARIOS CONECTADOS                   ║
-    // ╚═════════════════════════════════════════════════════════════════════════════╝
+    // ╚═══════════════════════════════════════════════════���═════════════════════════╝
 
     function updateConnectedUsers(users) {
         updateConnectedUserMap(users);
@@ -420,9 +444,9 @@ window.initializeChat = function() {
         }, 500);
     }
 
-    // ╔═══════════════��═════════════════════════════════════════════════════════════╗
+    // ╔═════════════════════════════════════════════════════════════════════════════╗
     // ║                        FUNCIONES DE BLOQUEO Y DESBLOQUEO                    ║
-    // ╚═════════════════════════════════════════════════════════════════════════════╝
+    // ╚═════��═══════════════════════════════════════════════════════════════════════╝
 
     function blockUser(userId) {
         chatSocket.send(JSON.stringify({
@@ -450,7 +474,7 @@ window.initializeChat = function() {
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
     // ║                        FUNCIONES DE OBJETO GLOBAL                           ║
-    // ╚═════════════════════════════════��═══════════════════════════════════════════╝
+    // ╚═════════════════════════════════════════════════════════════════════════════╝
 
     // solicitud de chat privado
     window.openPrivateChat = openPrivateChat;
@@ -458,9 +482,9 @@ window.initializeChat = function() {
     window.blockUser = blockUser;
     window.unblockUser = unblockUser;
 
-    // ╔══════════════��════════════════════════════════════════════════════════��═════╗
+    // ╔═════════════════════════════════════════════════════════════════════════════╗
     // ║                           EVENTOS DE LA INTERFAZ                            ║
-    // ╚═════════════════════════════════════════════════════════════════════════════╝
+    // ╚═════════════════════════════════════��══════════════════════════════════���════╝
 
     // Eventos de click y keypress para enviar mensajes
     document.querySelector('#btnMessage').addEventListener('click', sendMessage);
