@@ -9,10 +9,16 @@ from .forms import MatchCreationForm
 # Create your views here.
 
 def pong(request):
+    match_id = request.GET.get('match_id')
+    is_sender = request.GET.get('is_sender')
+    context = {
+        'match_id': match_id,
+        'is_sender': is_sender,
+    }
     if request.user.is_authenticated:
         userProfile = Profile.objects.get(user_id=request.user)
-        return render(request, "pong.html",{'profile':userProfile})
-    return render(request, "pong.html")
+        context['profile'] = userProfile
+    return render(request, "pong.html", context)
 
 class SaveMatch(View):
 

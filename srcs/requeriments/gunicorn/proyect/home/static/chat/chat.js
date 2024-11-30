@@ -63,7 +63,7 @@ window.initializeChat = function() {
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
     // ║                        FUNCIONES DE SALAS DE JUEGO                          ║
-    // ╚════════════════════════════════════════════════════════════════════��════════╝
+    // ╚═════════════════════════════════════════════════════════════════════════════╝
 
     function displayGameInvitation(data) {
         const template = document.querySelector('#gameInvitationTemplate').content.cloneNode(true);
@@ -71,6 +71,7 @@ window.initializeChat = function() {
         
         const acceptBtn = template.querySelector('[data-action="accept"]');
         const declineBtn = template.querySelector('[data-action="decline"]');
+
         
         acceptBtn.onclick = () => acceptGameInvitation(data.match_id, data.sender_id);
         declineBtn.onclick = () => declineGameInvitation(data.match_id, data.sender_id);
@@ -104,6 +105,7 @@ window.initializeChat = function() {
     }
 
     function handleGameInvitationAccepted(data) {
+        console.log('Juego aceptado:', data);
         // Clona el template de notificación
         const template = document.querySelector('#gameStartTemplate').content.cloneNode(true);
         
@@ -112,15 +114,61 @@ window.initializeChat = function() {
         
         // Configura el botón de inicio de juego
         const startGameBtn = template.querySelector('[data-action="start-game"]');
-        startGameBtn.onclick = () => startGame(data.match_id);
+        startGameBtn.onclick = () => startGame(data);
         
         // Lo añade al chat
         boxMessages.appendChild(template);
         scrollToBottom();
     }
 
-    function startGame(matchId) {
-        window.location.href = `/game/start/${matchId}/`;
+    function startGame(data) {
+        const user = document.querySelector('#boxMessages').getAttribute('data-user');
+        const userId = connectedUserMap.get(user);
+        const senderId = data.sender_id;
+        const isSender = userId === senderId;
+
+        console.log("userId:", userId);
+        //const isSender = user === senderId;
+
+        console.log("senderId:", senderId);
+        console.log("isSender:", isSender);
+        if (isSender) {
+            // Configuración del juego para el creador
+            const config = {
+                playAI: false,
+                msAIcalcRefresh: 1000,
+                playerHeight: 50,
+                startSpeed: 7.5,
+                speedUpMultiple: 1.02,
+                playerSpeed: 5,
+                pointsToWin: 3,
+                ballSide: 10,
+                allowPowerUp: false,
+                boardWidth: 700,
+                boardHeight: 500
+            };
+
+            // Enviar mensaje al servidor para crear la partida
+            window.sendMessageServer({
+                player: '1',  // Este valor debe ser dinámico según el usuario
+                app: 'pong',
+                action: 'create',
+                config: config,
+                date: Date.now()
+            });
+        }
+
+        // Guardar el matchId y el rol del jugador en sessionStorage para usarlo en la página del juego
+        sessionStorage.setItem('gameData', JSON.stringify({
+            matchId: data.matchId,
+            isSender: isSender
+        }));
+
+        // Mostrar datos de la partida creada
+        console.log('Partida creada:', sessionStorage.getItem('gameData'));
+
+        // Redirigir a la página del juego
+        window.location.href = '/pong';
     }
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
@@ -265,9 +313,9 @@ window.initializeChat = function() {
 
     
 
-    // ╔��════════════════════════════════════════════════════════��════════════════���══╗
+    // ╔═════════════════════════════════════════════════════════════════════════════╗
     // ║                        FUNCIONES DE MENSAJES DE CHAT                        ║
-    // ╚════════════════════════════════════════════════════════����════════════════════╝
+    // ╚═════════════════════════════════════════════════════════════════════════════╝
 
     // Manejar el mensaje del chat
     function handleChatMessage(data) {
@@ -343,7 +391,7 @@ window.initializeChat = function() {
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
     // ║                        FUNCIONES PARA USUARIOS CONECTADOS                   ║
-    // ╚═══════════════════════════════════════════════════���═════════════════════════╝
+    // ╚═════════════════════════════════════════════════════════════════════════════╝
 
     function updateConnectedUsers(users) {
         updateConnectedUserMap(users);
@@ -446,7 +494,7 @@ window.initializeChat = function() {
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
     // ║                        FUNCIONES DE BLOQUEO Y DESBLOQUEO                    ║
-    // ╚═════��═══════════════════════════════════════════════════════════════════════╝
+    // ╚═════════════════════════════════════════════════════════════════════════════╝
 
     function blockUser(userId) {
         chatSocket.send(JSON.stringify({
@@ -484,7 +532,7 @@ window.initializeChat = function() {
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
     // ║                           EVENTOS DE LA INTERFAZ                            ║
-    // ╚═════════════════════════════════════��══════════════════════════════════���════╝
+    // ╚═════════════════════════════════════════════════════════════════════════════╝
 
     // Eventos de click y keypress para enviar mensajes
     document.querySelector('#btnMessage').addEventListener('click', sendMessage);

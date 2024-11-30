@@ -64,4 +64,5 @@ class UserMixin:
             'type': 'game_invitation_accepted',
             'message': event['message'],
             'match_id': event['match_id'],
+            'sender_id': event['sender_id'],
         }))

@@ -5,6 +5,7 @@ from asgiref.sync import async_to_sync
 from django.contrib.auth.models import User
 from chat.consumers.users import connected_users_by_room
 import time
+from pong.models import Match
 
 
 class ReceiveMixin:
@@ -98,7 +99,10 @@ class ReceiveMixin:
             notification_data = {
                 'type': 'game_invitation_accepted',
                 'match_id': match_id,
+                'match_db_id': match_id,  # Include the match ID from the database
+                'sender_id': receiver.id  # Include the sender ID
             }
+            print('reciever_id:', receiver.id)
 
             # Customize message for receiver
             async_to_sync(self.channel_layer.group_send)(
@@ -283,7 +287,7 @@ class ReceiveMixin:
 
     # ╔═════════════════════════════════════════════════════════════════════════════╗
     # ║                           MANEJAR MENSAJES DE CHAT                          ║
-    # ╚════════════════════════════��════════════════════════════════════════════════╝
+    # ╚════════════════════════════��════════════════════════════════��═══════════════╝
     def handle_message(self, data):
         try:
             message = data['message']
