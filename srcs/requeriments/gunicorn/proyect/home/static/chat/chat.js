@@ -105,7 +105,6 @@ window.initializeChat = function() {
     }
 
     function handleGameInvitationAccepted(data) {
-        console.log('Juego aceptado:', data);
         // Clona el template de notificación
         const template = document.querySelector('#gameStartTemplate').content.cloneNode(true);
         
@@ -128,10 +127,9 @@ window.initializeChat = function() {
         const isSender = userId === senderId;
 
         console.log("userId:", userId);
-        //const isSender = user === senderId;
-
         console.log("senderId:", senderId);
         console.log("isSender:", isSender);
+
         if (isSender) {
             // Configuración del juego para el creador
             const config = {
