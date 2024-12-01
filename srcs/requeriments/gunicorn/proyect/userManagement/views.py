@@ -161,6 +161,7 @@ def profile(request, username=None):
         "percent_points_win": percent_points_win,
         "percent_points_lose": percent_points_lose,
         "profile": userProfile,
+        "viewing_user": userid,
     })
 
 
