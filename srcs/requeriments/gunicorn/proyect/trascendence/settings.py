@@ -42,14 +42,15 @@ CSRF_TRUSTED_ORIGINS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     #delele daphne in prod
-    'daphne',
     'django.contrib.staticfiles',
+    'channels',
     'home',
     'userManagement',
     'pong',
@@ -64,6 +65,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # Middleware para asegurar que los usuarios autenticados estén en la sala pública
+    'chat.middleware.PublicRoomMiddleware',
 ]
 
 ROOT_URLCONF = 'trascendence.urls'
@@ -71,7 +74,11 @@ ROOT_URLCONF = 'trascendence.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'), # Ruta para templates raiz
+            os.path.join(BASE_DIR, 'userManagement/templates'), # Ruta para templates de userManagement
+            os.path.join(BASE_DIR, 'chat/templates'), # Ruta para templates de chat
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -91,10 +98,11 @@ ASGI_APPLICATION = 'trascendence.asgi.application'
 
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
     },
 }
 
+APPEND_SLASH = True
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

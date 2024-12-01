@@ -56,6 +56,18 @@ const URL = {
 		description: "This is profile page",
 	},
 
+	"/chat": {
+    template: "/appChat/",
+    title: "chat",
+    description: "This is live chat",
+},
+
+	"/appChat/private/:id": { 
+		template: "/appChat/private/:id/",
+		title: "Private Chat",
+		description: "This is private chat",
+	},
+
 	"/friends": {
 		template: "/userManagement/friends",
 		title: "Friends",

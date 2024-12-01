@@ -1,0 +1,37 @@
+<!-- Template para notificar que la solicitud a una sala privada -->
+<template id="privateChatRequestTemplate">
+    <div class="message-container">
+        <div class="private-chat-request alert alert-info">
+            <strong data-content="username"></strong> te ha enviado una solicitud de chat privado.
+            <button class="btn btn-sm btn-success ms-2" data-action="accept">Aceptar</button>
+            <button class="btn btn-sm btn-danger ms-1" data-action="decline">Rechazar</button>
+        </div>
+        <div class="user-info" style="margin-top: -10px; margin-left: 50px">
+            <small class="text-muted">Solicitud de Chat</small>
+        </div>
+    </div>
+</template>
+
+<!-- Tem plate para notificar que la solicitud de chat privado fue aceptada -->
+<template id="privateChatAcceptedTemplate">
+    <div class="message-container">
+        <div class="private-chat-accepted alert alert-success">
+            <strong data-content="message"></strong>
+        </div>
+        <div class="user-info" style="margin-top: -10px; margin-left: 50px">
+            <small class="text-muted">Sistema</small>
+        </div>
+    </div>
+</template>
+
+<!-- Template para notificar que la solicitud de chat privado fue rechazada -->
+<template id="privateChatDeclinedTemplate">
+    <div class="message-container">
+        <div class="private-chat-declined alert alert-danger">
+            <strong data-content="message"></strong>
+        </div>
+        <div class="user-info" style="margin-top: -10px; margin-left: 50px">
+            <small class="text-muted">Sistema</small>
+        </div>
+    </div>
+</template>

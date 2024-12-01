@@ -1,0 +1,238 @@
+/* ? -------------------------------------
+*    Estilo para el contenedor del chat 
+   ? -------------------------------------*/
+#chat-container {
+    text-align: left; /* Alinea el texto a la izquierda */
+    display: block; /* Muestra el contenedor como un bloque */
+    width: 100%; /* Ancho completo del contenedor */
+    max-width: 350px; /* Ancho máximo de 600px */
+    /* height: 725px; /* Altura de 700px <---------cambiar luego esto para tamono normal */
+    height: 400px;
+    background-color: #4a3f8a; /* Color de fondo con transparencia */
+    border-radius: 10px; /* Bordes redondeados */
+    overflow: hidden; /* Oculta el contenido que se desborda */
+    box-shadow: 0px 4px 10px #4a3f8a; /* Sombra alrededor del contenedor */
+    margin: auto; /* Centra el contenedor horizontalmente */
+    position: relative; /* Posiciona el contenedor de forma relativa */
+}
+
+/* Estilo para el área de mensajes */
+#boxMessages {
+    height: calc(100% - 120px);
+    /* height: 600px; <---------cambiar esto al tamaño normal qque se vera*/
+    overflow-y: auto;
+    padding: 10px;
+    background-color: #4a3f8a;
+    border-radius: 10px;
+}
+
+/* Estilo para el formulario */
+#chat {
+    display: flex; /* Asegura que el formulario use flexbox */
+    align-items: center; /* Alinea los elementos verticalmente */
+    padding: 10px;
+    background-color: #4a3f8a;
+}
+
+/* Estilo para el input de mensaje */
+#inputMessage {
+    flex-grow: 1; /* Ocupa el espacio restante */
+    margin-right: 10px; /* Espacio entre el input y el botón */
+    padding: 10px; /* Asegúrate de que el padding sea igual al botón */
+    border-radius: 20px; /* Bordes redondeados */
+}
+
+/* Estilo para el botón de enviar */
+#btnMessage {
+    padding: 10px 15px; /* Espaciado interno */
+    border-radius: 20px; /* Bordes redondeados */
+    flex-shrink: 0; /* Evita que el botón se reduzca */
+}
+
+/* ? Estilo para el avatar */
+/* ? -------------------------------------
+*    Estilo para el contenedor del chat 
+   ? -------------------------------------*/
+.avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 100%;
+    margin-right: 10px;
+}
+
+/* ? -------------------------------------
+*    Estilo para el contador de usuarios en línea
+   ? -------------------------------------*/
+
+#onlineCounter {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #4a3f8a;
+    color: #dbd829 !important;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    margin: 0;
+    z-index: 1;
+}
+
+.online-counter {
+    color: #dbd829 !important;
+    font-weight: bold;
+}
+
+.message-container #onlineCounter {
+    position: absolute; /* Posiciona el contador de forma absoluta */
+    top: 10px; /* Espacio superior */
+    right: 10px; /* Espacio derecho */
+    background-color: #4a3f8a; /* Color de fondo */
+    color: white; /* Color del texto */
+    padding: 5px 10px; /* Espaciado interno */
+    border-radius: 20px; /* Bordes redondeados */
+    font-size: 0.8em; /* Tamaño de la fuente */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); /* Sombra */
+}
+
+.message-container h3#onlineCounter {
+    font-size: 0.8em; /* Tamaño de la fuente */
+    color: #dbd829; /* Color del texto */
+}
+
+.message-container #onlineCounter {
+    color: #dbd829 !important; /* Usa !important si es necesario */
+}
+
+.message-container h3#onlineCounter {
+    color: #dbd829;
+}
+
+@keyframes userCountChange {
+    0% { transform: scale(1); color: #dbd829; }
+    50% { transform: scale(1.2); color: #ff0000; } /* Cambia el color temporalmente */
+    100% { transform: scale(1); color: #dbd829; }
+}
+
+.user-count-updated {
+    animation: userCountChange 0.5s;
+}
+
+/* ? -------------------------------------
+*    Estilos para los mensajes
+   ? -------------------------------------*/
+.message {
+    padding: 10px;
+    border-radius: 20px;
+    max-width: 70%; /* Limita el ancho máximo de la caja */
+    font-family: Arial, sans-serif;
+    word-wrap: break-word; /* Asegura que las palabras largas se dividan si es necesario */
+    word-break: break-word; /* Evita que las palabras largas se desborden */
+    white-space: pre-wrap; /* Mantiene los saltos de línea y ajusta el texto */
+    overflow-wrap: break-word; /* Asegura que las palabras demasiado largas se dividan correctamente */
+}
+
+#message {
+    flex-grow: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 20px;
+    margin-right: 10px;
+}
+
+/* Contenedor de mensajes */
+.message-container {
+    display: flex;
+    align-items: flex-start;
+    margin: 10px 0;
+}
+
+.message-container.sent {
+    justify-content: flex-end; /* Alinea los mensajes enviados a la derecha */
+}
+
+/* Mensajes enviados */
+.message.sent {
+    background-color: #dcf8c6;
+    margin-left: auto; /* Empuja el mensaje a la derecha */
+    align-self: flex-end;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    max-width: 70%;
+    padding: 10px;
+    border-radius: 20px;
+    word-wrap: break-word;
+}
+
+/* Mensajes recibidos */
+.message-container.received {
+    justify-content: flex-start; /* Alinea el contenedor del mensaje a la izquierda */
+}
+
+/* Mensajes recibidos */
+.message.received {
+    background-color: #ffffff;
+    margin-right: auto; /* Empuja el mensaje a la izquierda */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    max-width: 70%;
+    padding: 10px;
+    border-radius: 20px;
+    word-wrap: break-word;
+}
+
+/* ? -------------------------------------
+*    Ajustes para el nombre del usuario debajo del mensaje recibido 
+   ? -------------------------------------*/
+.user-info {
+    text-align: left; /* Alineación a la izquierda */
+    margin-bottom: 5px; /* Espacio debajo */
+}
+
+/* Estilo para el nombre del usuario NO CARGA*/
+#user-info {
+    font-size: 0.8em; /* Tamaño de la fuente */
+    color: #dbd829; /* Color del texto */
+}
+
+.user-info.sent {
+    text-align: right; /* Alineación a la derecha */
+}
+
+/* ? -------------------------------------
+*    Diseño para los botones de acciones
+   ? -------------------------------------*/
+
+/* Estilos para los botones superiores e inferiores */
+#topButtons, #bottomButtons {
+    display: flex;
+    justify-content: center; /* Alinea los botones horizontalmente al centro */
+    gap: 15px; /* Espacio entre los botones */
+    margin-bottom: 15px; /* Espacio entre el contenedor y los botones */
+
+}
+
+/* Estilo general para los botones */
+.chat-btn {
+    background-color: #4e4caf; /* Color de fondo */
+    color: white; /* Color del texto */
+    padding: 10px 15px; /* Espaciado interno */
+    border: none; /* Sin borde */
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Cursor de puntero */
+    font-size: 16px; /* Tamaño de la fuente */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra */
+    transition: background-color 0.3s, transform 0.2s; /* Transiciones suaves */
+    box-shadow: 0px 4px 10px #4a3f8a; /* Sombra alrededor de los botones */
+}
+
+/* Efecto al pasar el ratón sobre los botones */
+.chat-btn:hover {
+    background-color: #45a049; /* Color de fondo al pasar el ratón */
+    transform: translateY(-2px); /* Sombra superior */
+}
+
+/* Efecto al presionar el botón */
+.chat-btn:active {
+    transform: translateY(1px); /* Movimiento hacia abajo */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra más débil */
+}
+

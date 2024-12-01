@@ -1,0 +1,98 @@
+<div class="chat-wrapper">
+  <!-- Título del chat -->
+  <h1 class="text-center">
+    {% if is_private %}
+      Chat privado con {{ other_user.username }}
+    {% else %}
+      {{ room.name }} chat
+    {% endif %}
+  </h1>
+
+  <!-- Botón para abrir el modal de usuarios -->
+  <div id="topButtons" class="chat-actions">
+    <button id="usersBtn" class="chat-btn" data-bs-toggle="modal" data-bs-target="#usersModal">USERS</button>
+    <!-- Eliminamos el botón View Profile de aquí -->
+  </div>
+  
+  <!-- Contenedor del chat -->
+  <div id="chat-container" class="container">
+      <!-- Contador de usuarios en línea -->
+      {% include 'chat/partials/user_count_template.html' %}
+
+        
+    <!-- Contenedor de los mensajes -->
+      <div id="boxMessages" class="mb-8" 
+          data-room="{{ room.name }}" 
+          data-user="{{ user.username }}" 
+          data-avatar="{{ user_avatar }}">
+          <!-- Los mensajes se insertarán aquí -->
+      </div>
+
+      <!-- Formulario para enviar mensajes -->
+      <div id="chat">
+          <input class="form-control" type="text" id="inputMessage" placeholder="Escribe tu mensaje..." />
+          <button class="btn btn-success mb-1 submit" id="btnMessage">Enviar</button>
+      </div>
+    </div>
+
+    <br>
+    <!-- Botones inferiores - Quitamos Invite to Game -->
+    <div id="bottomButtons" class="chat-actions">
+        <button id="tournamentNoticeBtn" class="chat-btn">Tournament Notice</button>
+    </div>
+</div>
+
+<!-- Modal para mostrar usuarios conectados -->
+<div class="modal fade" id="usersModal" tabindex="-1" aria-labelledby="usersModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="usersModalLabel">Usuarios Conectados</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="connectedUsersList">
+        <!-- La lista de usuarios se generará dinámicamente aquí -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Template modificado para incluir el botón Play -->
+{% verbatim %}
+<template id="userItemTemplate">
+  <div class="user-item d-flex justify-content-between align-items-center mb-2">
+    <span data-content="username"></span>
+    <div class="user-actions">
+      <button class="btn btn-sm btn-info" data-action="profile">Profile</button>
+      <button class="btn btn-sm btn-primary" data-action="private">Private</button>
+      <button class="btn btn-sm btn-success" data-action="play">Play</button>
+      <button class="btn btn-sm btn-warning" data-action="block">Block</button>
+      <button class="btn btn-sm btn-danger" data-action="unblock">Unblock</button>
+    </div>
+  </div>
+</template>
+{% endverbatim %}
+
+{% verbatim %}
+<template id="gameStartTemplate">
+    <div class="message-container">
+        <div class="game-start-notification alert alert-success">
+            <p data-content="message"></p>
+            <button class="btn btn-primary" data-action="start-game">Start Game</button>
+        </div>
+        <div class="user-info" style="margin-top: -10px; margin-left: 50px">
+            <small class="text-muted">System</small>
+        </div>
+    </div>
+</template>
+{% endverbatim %}
+
+<!-- Incluir templates -->
+{% include 'chat/partials/message_templates.html' %}
+{% include 'chat/partials/private_chat_invitations.html' %}
+{% include 'chat/partials/user_list_template.html' %}
+{% include 'chat/partials/game_invitation_template.html'%}
+

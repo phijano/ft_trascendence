@@ -9,6 +9,7 @@ export function PlayerMenu(){
 	<a class="px-3 text-white text-decoration-none" href="/pong">PONG</a>
 	<a class="px-3 text-white text-decoration-none" href="/friends">FRIENDS</a>
 	<a class="px-3 text-white text-decoration-none" href="/history">HISTORY</a>
+	<a class="px-3 text-white text-decoration-none" href="/chat">CHAT</a>
 	`;
 	return menu;
 }

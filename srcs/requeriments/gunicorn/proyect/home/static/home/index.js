@@ -11,10 +11,11 @@ document.addEventListener("click", (ev) => {
 	ev.preventDefault();
 	dropGame();
 	stop();
-	console.log("router: " + ev.target.href);
+	/* console.log("router: " + ev.target.href); */
 	router(ev.target.href);
 });
 
+<<<<<<< HEAD
 /*
 window.addEventListener("keypress",function(ev){
 	if (event.keyCode == 13) {
@@ -22,4 +23,6 @@ window.addEventListener("keypress",function(ev){
 	}
 }, false);
 */
+=======
+>>>>>>> play
 document.addEventListener("DOMContentLoaded", App);
