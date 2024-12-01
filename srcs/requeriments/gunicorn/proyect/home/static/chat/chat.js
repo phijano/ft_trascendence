@@ -120,7 +120,7 @@ window.initializeChat = function() {
         scrollToBottom();
     }
 
-    function startGame(data) {
+    async function startGame(data) {
         const user = document.querySelector('#boxMessages').getAttribute('data-user');
         const userId = connectedUserMap.get(user);
         const senderId = data.sender_id;
@@ -129,45 +129,26 @@ window.initializeChat = function() {
         console.log("userId:", userId);
         console.log("senderId:", senderId);
         console.log("isSender:", isSender);
-
+        
+        console.log("0") 
+        await router("/pong");
+        await sleep(100);
+        pongStartRemote();
+        
         if (isSender) {
-            // Configuración del juego para el creador
-            const config = {
-                playAI: false,
-                msAIcalcRefresh: 1000,
-                playerHeight: 50,
-                startSpeed: 7.5,
-                speedUpMultiple: 1.02,
-                playerSpeed: 5,
-                pointsToWin: 3,
-                ballSide: 10,
-                allowPowerUp: false,
-                boardWidth: 700,
-                boardHeight: 500
-            };
-
-            // Enviar mensaje al servidor para crear la partida
-            window.sendMessageServer({
-                player: '1',  // Este valor debe ser dinámico según el usuario
-                app: 'pong',
-                action: 'create',
-                config: config,
-                date: Date.now()
-            });
+            pongJoinGame();
+        }
+        else {
+            pongCreateGame();
         }
 
-        // Guardar el matchId y el rol del jugador en sessionStorage para usarlo en la página del juego
-        sessionStorage.setItem('gameData', JSON.stringify({
-            matchId: data.matchId,
-            isSender: isSender
-        }));
-
-        // Mostrar datos de la partida creada
-        console.log('Partida creada:', sessionStorage.getItem('gameData'));
-
-        // Redirigir a la página del juego
-        window.location.href = '/pong';
     }
+
+    //borrar y hacerlo decente
+    const sleep = function(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
     // ║                        FUNCIONES DE CHAT PRIVADO                            ║
