@@ -15,14 +15,4 @@ document.addEventListener("click", (ev) => {
 	router(ev.target.href);
 });
 
-<<<<<<< HEAD
-/*
-window.addEventListener("keypress",function(ev){
-	if (event.keyCode == 13) {
-		event.preventDefault();
-	}
-}, false);
-*/
-=======
->>>>>>> play
 document.addEventListener("DOMContentLoaded", App);
