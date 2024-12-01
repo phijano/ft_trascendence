@@ -458,7 +458,17 @@ window.initializeChat = function() {
 
     // Añadir función para ver el perfil
     function viewProfile(username) {
-        window.location.href = `/userManagement/profile/${username}`;
+        //window.location.href = `/userManagement/profile/${username}`;
+        closeModal();
+        
+        router("/profile?userid=" + connectedUserMap.get(username));
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('usersModal');
+        modal.style.display = 'none';
+        const backdrop = document.getElementsByClassName('modal-backdrop fade show');
+        backdrop[0].remove();
     }
 
     // Añadir a las funciones globales

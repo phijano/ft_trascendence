@@ -8,7 +8,6 @@ urlpatterns = [
         path("signup", SignUp.as_view()),
         path("signup/template", SignUpTemplate.as_view()),
         path('activate/<uidb64>/<token>/', ActivateUser.as_view(), name='activate'), 
-        path("profile/<str:username>/", profile, name='profile'),
         path("profile", profile, name='profile'),
         path("changeNick", ChangeNick.as_view()),
         path("changeAvatar", ChangeAvatar.as_view()),
