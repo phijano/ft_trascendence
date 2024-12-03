@@ -243,5 +243,69 @@
 	<div class="p-3" hidden id="dAdvance">
 		<button type="button" onclick="pongAdvance()"> Next Match </button>
 	</div>
+
+	<script>
+		// Detectar los parámetros y simular los clics en los botones "Create Game" o "Join Game"
+		window.onload = function() {
+			const urlParams = new URLSearchParams(window.location.search);
+			const isSender = urlParams.get('is_sender') === 'true';
+
+			if (isSender) {
+				// Simular clic en el botón "Create Game"
+				document.querySelector('#bCreateRemote').click();
+			} else {
+				// Simular clic en el botón "Join Game"
+				document.querySelector('#bJoinRemote').click();
+			}
+		};
+	</script>
+
+	<script>
+    // Detectar los parámetros y simular los clics en los botones "Create Game" o "Join Game"
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const isSender = urlParams.get('is_sender') === 'true';
+        const matchId = urlParams.get('match_id');
+
+        // Simular clic en el botón "Remote Game" primero
+        document.querySelector('#bRemoteGame').click();
+
+        // Esperar un momento para que se muestren los botones
+        setTimeout(() => {
+            if (isSender) {
+                // Simular la creación del juego
+                const config = {
+                    playAI: false,
+                    msAIcalcRefresh: 1000,
+                    playerHeight: 50,
+                    startSpeed: 7.5,
+                    speedUpMultiple: 1.02,
+                    playerSpeed: 5,
+                    pointsToWin: 3,
+                    ballSide: 10,
+                    allowPowerUp: false,
+                    boardWidth: 700,
+                    boardHeight: 500
+                };
+
+                // Enviar mensaje al servidor para crear la partida
+                sendMessageServer({
+                    player: document.getElementById('hProfileId').value,
+                    app: 'pong',
+                    action: 'create',
+                    config: config,
+                    date: Date.now()
+                });
+
+                // Simular clic en "Create Game"
+                document.querySelector('#bCreateRemote').click();
+            } else {
+                // Simular clic en "Join Game"
+                document.querySelector('#bJoinRemote').click();
+            }
+        }, 100);
+    };
+</script>
+
 </body>
 </html>

@@ -104,8 +104,12 @@ class ActivateUser(View):
 
 def profile(request, username=None):
     # Si se proporciona un nombre de usuario, carga el perfil de ese usuario.
-    if username:
-        userProfile = get_object_or_404(Profile, user_id__username=username)
+    try:
+        userid = request.GET.get("userid")
+    except:
+        userid = None
+    if userid:
+        userProfile = get_object_or_404(Profile, user_id=userid)
     # Si no se proporciona, usa el perfil del usuario autenticado.
     elif request.user.is_authenticated:
         userProfile = Profile.objects.filter(user_id=request.user.id).first()
@@ -157,6 +161,7 @@ def profile(request, username=None):
         "percent_points_win": percent_points_win,
         "percent_points_lose": percent_points_lose,
         "profile": userProfile,
+        "viewing_user": userid,
     })
 
 

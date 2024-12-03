@@ -1,10 +1,10 @@
 import routes from "./routes.js"
 
-export function router(href) {
+export async function router(href) {
     if (href != window.location.href) {
         window.history.pushState({}, "", href);
     }
-    locationHandler();
+    await locationHandler();
 };
 
 export const locationHandler = async() => {
@@ -40,7 +40,7 @@ export const locationHandler = async() => {
         .querySelector('meta[name="description"]')
         .setAttribute("content", route.description);
 */
-
+    console.log("pagina cargada: ");
 };
 
 function buttonRouter(ref)

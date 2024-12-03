@@ -15,9 +15,11 @@
 				{% endif %}
 			</div>
 			<div class="col-2 text-start align-self-center">
-				<button id="bEditAvatar" class="btn btn-warning btn-sm" onclick="editAvatar()">Edit</button>
-				<button id="bSaveAvatar" hidden class="btn btn-success btn-sm" onclick="changeAvatar()">Save</button>
-				<button id="bCancelAvatar" hidden class="btn btn-danger btn-sm" onclick="cancelAvatar()">Cancel</button>
+				{% if viewing_user == None %}
+					<button id="bEditAvatar" class="btn btn-warning btn-sm" onclick="editAvatar()">Edit</button>
+					<button id="bSaveAvatar" hidden class="btn btn-success btn-sm" onclick="changeAvatar()">Save</button>
+					<button id="bCancelAvatar" hidden class="btn btn-danger btn-sm" onclick="cancelAvatar()">Cancel</button>
+				{% endif %}
 			</div>
 
 			<div class="col-5 text-start align-self-center">
@@ -30,9 +32,11 @@
 				<h5 class="align-self-center" id="dNick">{{profile.nick}}</h5>
 			</div>
 			<div class="col-2 text-start">
-				<button id="bEdit" class="btn btn-warning btn-sm" onclick="editNick()">Edit</button>
-				<button id="bSave" hidden class="btn btn-success btn-sm" onclick="changeNick()">Save</button>
-				<button id="bCancelNick" hidden class="btn btn-danger btn-sm" onclick="cancelNick()">Cancel</button>
+				{% if viewing_user == None %}
+					<button id="bEdit" class="btn btn-warning btn-sm" onclick="editNick()">Edit</button>
+					<button id="bSave" hidden class="btn btn-success btn-sm" onclick="changeNick()">Save</button>
+					<button id="bCancelNick" hidden class="btn btn-danger btn-sm" onclick="cancelNick()">Cancel</button>
+				{% endif %}
 			</div>
 			<div class="col-5 text-start">
 				<input hidden id="iNick" placeholder="Enter nick" maxlength=15 value=""></input>

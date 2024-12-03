@@ -76,8 +76,23 @@
 </template>
 {% endverbatim %}
 
+{% verbatim %}
+<template id="gameStartTemplate">
+    <div class="message-container">
+        <div class="game-start-notification alert alert-success">
+            <p data-content="message"></p>
+            <button class="btn btn-primary" data-action="start-game">Start Game</button>
+        </div>
+        <div class="user-info" style="margin-top: -10px; margin-left: 50px">
+            <small class="text-muted">System</small>
+        </div>
+    </div>
+</template>
+{% endverbatim %}
+
 <!-- Incluir templates -->
 {% include 'chat/partials/message_templates.html' %}
 {% include 'chat/partials/private_chat_invitations.html' %}
 {% include 'chat/partials/user_list_template.html' %}
+{% include 'chat/partials/game_invitation_template.html'%}
 

@@ -53,19 +53,20 @@ function sendMessageServer(data) {
 
 document.addEventListener('submit',async ev => {
 	console.log("submit");
-	console.log(ev.target);
-	ev.preventDefault();
+	console.log(ev.target);	
 	if (ev.target.id == "fLogin") {	
+		ev.preventDefault();
 		console.log("login form");
 		await logIn(new FormData(ev.target));
 	}
 	else if (ev.target.id == "fSignUp") {
+		ev.preventDefault();
 		console.log("submit form");
 		await signUp(new FormData(ev.target));
-	}
-	
+	}	
 	else if (ev.target.id == "fSearchFriend") {
-		console.log("search friend form");
+		ev.preventDefault();
+		//console.log("search friend form");
 		await searchFriend(new FormData(ev.target));
 	}
 });
@@ -240,8 +241,8 @@ function checkAvatar() {
 		dError.innerHTML = "wrong file, only images";
 		dError.hidden = false;
 	}
-	else if (image.size > 5_000_000) {
-		dError.innerHTML = "maximun upload size is 5MB";
+	else if (image.size > 2_000_000) {
+		dError.innerHTML = "maximun upload size is 2MB";
 		dError.hidden = false;		
 	}
 	else {

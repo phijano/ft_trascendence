@@ -1,0 +1,25 @@
+<template id="gameInvitationTemplate">
+    <div class="message-container">
+        <div class="game-invitation-notification alert alert-info">
+            <p data-content="message"></p>
+            <div class="invitation-actions">
+                <button class="btn btn-sm btn-success" data-action="accept" data-match-id="">Accept</button>
+                <button class="btn btn-sm btn-danger" data-action="decline" data-match-id="">Decline</button>
+            </div>
+        </div>
+        <div class="user-info" style="margin-top: -10px; margin-left: 50px">
+            <small class="text-muted">Game Invitation</small>
+        </div>
+    </div>
+</template>
+
+<template id="gameResponseTemplate">
+    <div class="message-container">
+        <div class="game-response alert" data-content="alert-type">
+            <p data-content="message"></p>
+        </div>
+        <div class="user-info" style="margin-top: -10px; margin-left: 50px">
+            <small class="text-muted">Sistema</small>
+        </div>
+    </div>
+</template>

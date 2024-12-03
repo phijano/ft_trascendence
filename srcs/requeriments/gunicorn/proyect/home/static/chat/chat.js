@@ -4,30 +4,30 @@ window.initializeChat = function() {
     const user = boxMessages.getAttribute('data-user');
     const avatar = boxMessages.getAttribute('data-avatar');
 
-    // Determinar si estamos en una sala privada
+    // Determine if we're in a private room
     const isPrivate = window.location.pathname.includes('/private/');
     
-    // Modificar la construcción de la URL del WebSocket
+    // Modify WebSocket URL construction
     const wsUrl = isPrivate ? 
         `ws://${window.location.host}/ws/chat/private/${room}/` :
         `ws://${window.location.host}/ws/chat/${room}/`;
     
     var chatSocket = new WebSocket(wsUrl);
 
-    // Mapa para usuarios conectados
-    let connectedUserMap = new Map(); // Para rastrear usuarios conectados
-    let blockedUsers = new Set(); // Para rastrear usuarios bloqueados
+    // Map for connected users
+    let connectedUserMap = new Map(); // To track connected users
+    let blockedUsers = new Set(); // To track blocked users
 
-    // Eventos del WebSocket
-    chatSocket.onopen = (e) => console.log('Conexión abierta');
-    chatSocket.onclose = (e) => console.error('Conexión cerrada');
+    // WebSocket Events
+    chatSocket.onopen = (e) => console.log('Connection opened');
+    chatSocket.onclose = (e) => console.error('Connection closed');
     chatSocket.onmessage = (e) => handleSocketMessage(JSON.parse(e.data));
 
-    // Manejar mensajes del WebSocket
+    // Handle WebSocket messages
     function handleSocketMessage(data) {
         switch (data.type) {
             case 'error':
-                alert(data.message); // Notificar al usuario que fue bloqueado
+                alert(data.message); // Notify the user that they were blocked
                 break;
             case 'user_list':
                 updateConnectedUsers(data.users);
@@ -47,28 +47,126 @@ window.initializeChat = function() {
             case 'room_list':
                 updateRoomsPanel(data.rooms);
                 break;
+            case 'game_invitation':
+                displayGameInvitation(data);
+                break;
+            case 'game_invitation_declined':
+                handleGameInvitationDeclined(data);
+                break;
+            case 'game_invitation_accepted':
+                handleGameInvitationAccepted(data);
+                break;
             default:
-                console.warn('Tipo de mensaje desconocido:', data.type);
+                console.warn('Unknown message type:', '[' + data.type + ']');
         }
     }
 
-    // ╔═══════════════════════════════════════════════════════════════════════╗
-    // ║                           FUNCIONES DE CHAT PRIVADO                         ║
+    // ╔═════════════════════════════════════════════════════════════════════════════╗
+    // ║                           GAME ROOM FUNCTIONS                               ║
     // ╚═════════════════════════════════════════════════════════════════════════════╝
 
-    // Enviar una solicitud de chat privado
+    function displayGameInvitation(data) {
+        const template = document.querySelector('#gameInvitationTemplate').content.cloneNode(true);
+        template.querySelector('[data-content="message"]').textContent = data.message;
+        
+        const acceptBtn = template.querySelector('[data-action="accept"]');
+        const declineBtn = template.querySelector('[data-action="decline"]');
+
+        
+        acceptBtn.onclick = () => acceptGameInvitation(data.match_id, data.sender_id);
+        declineBtn.onclick = () => declineGameInvitation(data.match_id, data.sender_id);
+        
+        boxMessages.appendChild(template);
+        scrollToBottom();
+    }
+
+    function acceptGameInvitation(matchId, senderId) {
+        chatSocket.send(JSON.stringify({
+            'type': 'accept_game_invitation',
+            'match_id': matchId,
+            'target_user_id': senderId
+        }));
+    }
+
+    function declineGameInvitation(matchId, senderId) {
+        chatSocket.send(JSON.stringify({
+            'type': 'decline_game_invitation',
+            'match_id': matchId,
+            'sender_id': senderId
+        }));
+    }
+
+    function handleGameInvitationDeclined(data) {
+        const template = document.querySelector('#gameResponseTemplate').content.cloneNode(true);
+        template.querySelector('[data-content="message"]').textContent = data.message;
+        template.querySelector('.game-response').classList.add('alert-danger');
+        boxMessages.appendChild(template);
+        scrollToBottom();
+    }
+
+    function handleGameInvitationAccepted(data) {
+        // Clone the notification template
+        const template = document.querySelector('#gameStartTemplate').content.cloneNode(true);
+        
+        // Set the message
+        template.querySelector('[data-content="message"]').textContent = data.message;
+        
+        // Configure the start game button
+        const startGameBtn = template.querySelector('[data-action="start-game"]');
+        startGameBtn.onclick = () => startGame(data);
+        
+        // Add it to the chat
+        boxMessages.appendChild(template);
+        scrollToBottom();
+    }
+
+    async function startGame(data) {
+        const user = document.querySelector('#boxMessages').getAttribute('data-user');
+        const userId = connectedUserMap.get(user);
+        const senderId = data.sender_id;
+        const isSender = userId === senderId;
+
+        console.log("userId:", userId);
+        console.log("senderId:", senderId);
+        console.log("isSender:", isSender);
+        
+        console.log("0") 
+        await router("/pong");
+        await sleep(100);
+        pongStartRemote();
+        
+        if (isSender) {
+            pongJoinGame();
+        }
+        else {
+            pongCreateGame();
+        }
+
+    }
+
+    //borrar y hacerlo decente
+    const sleep = function(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+
+    // ╔═════════════════════════════════════════════════════════════════════════════╗
+    // ║                        PRIVATE CHAT FUNCTIONS                               ║
+    // ╚═════════════════════════════════════════════════════════════════════════════╝
+
+    // Send a private chat request
     function openPrivateChat(userId) {
         if (userId === connectedUserMap.get(user)) {
-            console.log(`userId: ${userId} (tipo: ${typeof userId})`);
-            console.log(`ID del usuario actual: ${connectedUserMap.get(user)} (tipo: ${typeof connectedUserMap.get(user)})`);
-            console.log('No puedes enviarte una solicitud de chat privado a ti mismo.');
+            console.log(`userId: ${userId} (type: ${typeof userId})`);
+            console.log(`Current user ID: ${connectedUserMap.get(user)} (type: ${typeof connectedUserMap.get(user)})`);
+            console.log('You cannot send a private chat request to yourself.');
             return;
         }
         chatSocket.send(JSON.stringify({
             'type': 'private_chat_request',
             'target_user_id': userId,
         }));
-        loadMessageHTML('Solicitud de chat privado enviada.');
+        loadMessageHTML('Private chat request sent.');
     }
 
     function declinePrivateChat(senderId) {
@@ -79,7 +177,7 @@ window.initializeChat = function() {
         chatSocket.send(JSON.stringify(message));
     }
 
-    // Template para mostrar la notificación de solicitud de chat privado rechazada
+    // Template for displaying rejected private chat notification
     function handlePrivateChatRejected(data) {
         const template = document.querySelector('#privateChatDeclinedTemplate').content.cloneNode(true);
         template.querySelector('[data-content="message"]').textContent = data.message;
@@ -87,7 +185,7 @@ window.initializeChat = function() {
         scrollToBottom();
     }
 
-    // Template para mostrar la notificación de solicitud de chat privado
+    // Template for displaying private chat request notification
     function displayPrivateChatNotification(data) {
         const template = document.querySelector('#privateChatRequestTemplate').content.cloneNode(true);
         template.querySelector('[data-content="username"]').textContent = data.username;
@@ -102,30 +200,30 @@ window.initializeChat = function() {
         scrollToBottom();
     }
 
-    // JSON para aceptar o rechazar la solicitud de chat privado por WebSocket
+    // JSON to accept or reject the private chat request via WebSocket
     function acceptPrivateChat(senderId) {
         chatSocket.send(JSON.stringify({
             'type': 'accept_private_chat',
             'sender_id': senderId,
-            'username': user, //nombre de usuario actual
+            'username': user, //current username
         }));
     }
 
-    // Template para mostrar la notificación de chat privado aceptado
+    // Template for displaying accepted private chat notification
     function handlePrivateChatAccepted(data) {
-        // Clona el template de notificación
+        // Clone the notification template
         const template = document.querySelector('#privateChatAcceptedTemplate').content.cloneNode(true);
-        // Establece el mensaje
+        // Set the message
         template.querySelector('[data-content="message"]').textContent = data.message;
-        // Lo añade al chat
+        // Add it to the chat
         boxMessages.appendChild(template);
         
-        // Crear botón "Ir al Chat"
+        // Create "Go to Chat" button
         const goToChatBtn = document.createElement('button');
-        goToChatBtn.textContent = 'Ir al Chat';
+        goToChatBtn.textContent = 'Go to Chat';
         goToChatBtn.classList.add('go-to-chat-btn');
         
-        // Modificar el evento onclick para usar privateChat en lugar de redirección
+        // Modify the onclick event to use privateChat instead of redirection
         goToChatBtn.onclick = () => {
             privateChat(data);
         };
@@ -135,52 +233,52 @@ window.initializeChat = function() {
     }
 
     function privateChat(data) {
-        console.log('Iniciando chat privado:', data); // Debug
+        console.log('Starting private chat:', data);
     
-        // Limpiar mensajes anteriores
+        // Clear previous messages
         boxMessages.innerHTML = '';
         
-        // Actualizar atributos del contenedor
+        // Update container attributes
         boxMessages.setAttribute('data-room', data.room_name);
         boxMessages.setAttribute('data-private', 'true');
         
-        // Actualizar título del chat
+        // Update chat title
         const chatTitle = document.querySelector('h1');
         if (chatTitle) {
             const currentUser = boxMessages.getAttribute('data-user');
-            console.log('Usuario actual:', currentUser); // Debug
-            console.log('Data username:', data.username); // Debug
-            console.log('Data target username:', data.target_username); // Debug
+            console.log('Current user:', currentUser);
+            console.log('Data username:', data.username);
+            console.log('Data target username:', data.target_username);
             
             const otherUsername = currentUser === data.username ? 
                 data.target_username : data.username;
             
-            console.log('Nombre seleccionado:', otherUsername); // Debug
-            chatTitle.textContent = `Chat privado con ${otherUsername}`;
+            console.log('Selected name:', otherUsername);
+            chatTitle.textContent = `Private chat with ${otherUsername}`;
         }
         
-        // Ocultar botones que no se necesitan en chat privado
+        // Hide buttons not needed in private chat
         const usersBtn = document.querySelector('#usersBtn');
         if (usersBtn) {
             usersBtn.style.display = 'none';
         }
     
-        // Actualizar la URL sin recargar la página
+        // Update the URL without reloading the page
         const newUrl = `/chat/private/${data.room_id}/`;
         window.history.pushState({ roomId: data.room_id }, '', newUrl);
     
-        // Reconectar WebSocket para la sala privada
+        // Reconnect WebSocket for the private room
         if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
             chatSocket.close();
         }
     
-        // Crear nueva conexión WebSocket para la sala privada
+        // Create new WebSocket connection for the private room
         const wsUrl = `ws://${window.location.host}/ws/chat/private/${data.room_id}/`;
         chatSocket = new WebSocket(wsUrl);
         
-        // Reinicializar eventos del WebSocket
+        // Reinitialize WebSocket events
         chatSocket.onopen = (e) => {
-            console.log('Conexión privada abierta');
+            console.log('Private connection opened');
             chatSocket.send(JSON.stringify({
                 'type': 'join_private_room',
                 'room_id': data.room_id,
@@ -188,23 +286,23 @@ window.initializeChat = function() {
             }));
         };
         
-        chatSocket.onclose = (e) => console.error('Conexión privada cerrada');
+        chatSocket.onclose = (e) => console.error('Private connection closed');
         chatSocket.onmessage = (e) => handleSocketMessage(JSON.parse(e.data));
     }
 
     
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
-    // ║                           FUNCIONES DE MENSAJES                             ║
+    // ║                        CHAT MESSAGE FUNCTIONS                               ║
     // ╚═════════════════════════════════════════════════════════════════════════════╝
 
-    // Manejar el mensaje del chat
+    // Handle chat message
     function handleChatMessage(data) {
         const { message, username, avatar } = data;
 
         if (blockedUsers.has(username)) {
-            console.log(`Mensaje de ${username} bloqueado y no guardado.`);
-            return; // No mostrar ni guardar mensajes de usuarios bloqueados
+            console.log(`Message from ${username} blocked and not saved.`);
+            return; // Do not display or save messages from blocked users
         }
 
         if (message && username) {
@@ -212,42 +310,42 @@ window.initializeChat = function() {
         }
     }
 
-    // Muestra un mensaje en el chat
+    // Display a message in the chat
     function displayChatMessage(message, username, avatar) {
         const template = document.querySelector('#receivedMessageTemplate').content.cloneNode(true);
         template.querySelector('[data-content="message"]').textContent = message;
         
-        // Solo mostrar username y avatar si están presentes
+        // Only show username and avatar if present
         const usernameElement = template.querySelector('[data-content="username"]');
         const avatarElement = template.querySelector('[data-content="avatar"]');
         
         if (username) {
             usernameElement.textContent = username;
         } else {
-            usernameElement.style.display = 'none';  // Ocultar el elemento username
+            usernameElement.style.display = 'none';  // Hide the username element
         }
         
         if (avatar) {
             avatarElement.src = avatar;
         } else {
-            avatarElement.style.display = 'none';  // Ocultar el elemento avatar
+            avatarElement.style.display = 'none';  // Hide the avatar element
         }
         
         boxMessages.appendChild(template);
         scrollToBottom();
     }
     
-    // Función para hacer scroll hacia abajo
+    // Function to scroll to the bottom
     function scrollToBottom() {
         boxMessages.scrollTop = boxMessages.scrollHeight;
     }
 
-    // Función para enviar un mensaje
+    // Function to send a message
     function sendMessage() {
         const messageInput = document.querySelector('#inputMessage');
         const messageValue = messageInput.value.trim();
         
-        // Si el mensaje no está vacío
+        // If the message is not empty
         if (messageValue !== '') {
             loadMessageHTML(messageValue);
             chatSocket.send(JSON.stringify({
@@ -256,12 +354,12 @@ window.initializeChat = function() {
                 'username': user,
             }));
             scrollToBottom();
-            messageInput.value = ''; // Limpiar el input
+            messageInput.value = ''; // Clear the input
         }
     }
 
     
-    // Función para cargar un mensaje en el chat
+    // Function to load a message in the chat
     function loadMessageHTML(m) {
         const template = document.querySelector('#sentMessageTemplate').content.cloneNode(true);
         template.querySelector('[data-content="message"]').textContent = m;
@@ -271,25 +369,27 @@ window.initializeChat = function() {
     }
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
-    // Actualiza la lista de usuarios conectados
+    // ║                        CONNECTED USERS FUNCTIONS                            ║
+    // ╚═════════════════════════════════════════════════════════════════════════════╝
+
     function updateConnectedUsers(users) {
         updateConnectedUserMap(users);
         updateConnectedUsersList(users);
     }
     
-    // Actualiza el mapa de usuarios conectados
+    // Update the map of connected users
     function updateConnectedUserMap(users) {
         connectedUserMap.clear();
         users.forEach(userObj => {
-            console.log(`Usuario: ${userObj.username}, ID: ${userObj.id}`);
+            console.log(`User: ${userObj.username}, ID: ${userObj.id}`);
             connectedUserMap.set(userObj.username, userObj.id);
         });
     
-        // Llamar a updateOnlineCounter para actualizar el contador
+        // Call updateOnlineCounter to update the counter
         updateOnlineCounter(users);
     }
 
-    // Actualiza la lista de usuarios conectados que se muestra en DOM (MODAL)
+    // Update the list of connected users displayed in the DOM (MODAL)
     function updateConnectedUsersList(users) {
         const connectedUsersList = document.getElementById('connectedUsersList');
         if (!connectedUsersList) {
@@ -307,7 +407,7 @@ window.initializeChat = function() {
             const privateBtn = template.querySelector('[data-action="private"]');
             const playBtn = template.querySelector('[data-action="play"]');
             
-            // Configurar los botones
+            // Configure the buttons
             profileBtn.onclick = () => viewProfile(userObj.username);
             blockBtn.onclick = () => blockUser(userObj.id);
             unblockBtn.onclick = () => unblockUser(userObj.id);
@@ -326,7 +426,7 @@ window.initializeChat = function() {
         });
     }
 
-    // Añadir función para invitar a jugar
+    // Add function to invite to play
     function inviteToGame(userId) {
         chatSocket.send(JSON.stringify({
             'type': 'game_invitation',
@@ -334,46 +434,56 @@ window.initializeChat = function() {
         }));
     }
 
-    // Añadir a las funciones globales
+    // Add to global functions
     window.inviteToGame = inviteToGame;
 
-    // Añadir función para ver el perfil
+    // Add function to view profile
     function viewProfile(username) {
-        window.location.href = `/userManagement/profile/${username}`;
+        //window.location.href = `/userManagement/profile/${username}`;
+        closeModal();
+        
+        router("/profile?userid=" + connectedUserMap.get(username));
     }
 
-    // Añadir a las funciones globales
+    function closeModal() {
+        const modal = document.getElementById('usersModal');
+        modal.style.display = 'none';
+        const backdrop = document.getElementsByClassName('modal-backdrop fade show');
+        backdrop[0].remove();
+    }
+
+    // Add to global functions
     window.viewProfile = viewProfile;
 
-    // Actualiza el contador de usuarios en el DOM
+    // Updates the online users counter in the DOM
     function updateOnlineCounter(users) {
-        // Filtra al usuario actual de la lista
-        const currentUserName = user; // 'user' es la variable global que definiste antes
+        // Filter the current user from the list
+        const currentUserName = user; // 'user' is the global variable you defined earlier
         const otherUsers = users.filter(u => u.username !== currentUserName);
         const onlineUsersCount = otherUsers.length;
 
         const onlineCounter = document.getElementById('onlineCounter');
         if (!onlineCounter) {
-            console.warn('Elemento onlineCounter no encontrado');
+            console.warn('onlineCounter element not found');
             return;
         }
 
-        // Actualiza el texto del contador
+        // Update counter text
         onlineCounter.textContent = `${onlineUsersCount} Online`;
-        onlineCounter.style.color = '#dbd829'; // Asegura que el color se aplique
+        onlineCounter.style.color = '#dbd829'; // Ensure the color is applied
 
-        // Añade la clase para la animación
+        // Add class for animation
         onlineCounter.classList.add('user-count-updated');
 
-        // Remueve la clase después de que termine la animación
+        // Remove class after animation ends
         setTimeout(() => {
             onlineCounter.classList.remove('user-count-updated');
         }, 500);
     }
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
-    // ║                           FUNCIONES DE BLOQUEO                              ║
-    // ╚════════════════════════════════════════════════════════════════════════════��╝
+    // ║                        BLOCK AND UNBLOCK FUNCTIONS                          ║
+    // ╚═════════════════════════════════════════════════════════════════════════════╝
 
     function blockUser(userId) {
         chatSocket.send(JSON.stringify({
@@ -382,8 +492,8 @@ window.initializeChat = function() {
         }));
         const username = Array.from(connectedUserMap.keys()).find(u => connectedUserMap.get(u) === userId);
         if (username) {
-            blockedUsers.add(username); // Agregar a la lista de usuarios bloqueados
-            console.log(`${username} ha sido bloqueado.`);
+            blockedUsers.add(username); // Add to the list of blocked users
+            console.log(`${username} has been blocked.`);
         }
     }
 
@@ -394,32 +504,32 @@ window.initializeChat = function() {
         }));
         const username = Array.from(connectedUserMap.keys()).find(u => connectedUserMap.get(u) === userId);
         if (username) {
-            blockedUsers.delete(username); // Eliminar de la lista de usuarios bloqueados
-            console.log(`${username} ha sido desbloqueado.`);
+            blockedUsers.delete(username); // Remove from the list of blocked users
+            console.log(`${username} has been unblocked.`);
         }
     }
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
-    // ║                        FUNCIONES DE OBJETO GLOBAL                           ║
+    // ║                        GLOBAL OBJECT FUNCTIONS                              ║
     // ╚═════════════════════════════════════════════════════════════════════════════╝
 
-    // solicitud de chat privado
+    // private chat request
     window.openPrivateChat = openPrivateChat;
-    // bloqueo y desbloqueo 
+    // block and unblock
     window.blockUser = blockUser;
     window.unblockUser = unblockUser;
 
     // ╔═════════════════════════════════════════════════════════════════════════════╗
-    // ║                           EVENTOS DE LA INTERFAZ                            ║
+    // ║                           INTERFACE EVENTS                                  ║
     // ╚═════════════════════════════════════════════════════════════════════════════╝
 
-    // Eventos de click y keypress para enviar mensajes
+    // Click and keypress events to send messages
     document.querySelector('#btnMessage').addEventListener('click', sendMessage);
     document.querySelector('#inputMessage').addEventListener('keypress', function(e) {
         if (e.keyCode === 13) {sendMessage()}});
 
 
-    // Evento beforeunload para desconectar al usuario antes de cerrar la pestaña
+    // beforeunload event to disconnect the user before closing the tab
     window.addEventListener('beforeunload', function() {
         if (chatSocket.readyState === WebSocket.OPEN) {
             chatSocket.send(JSON.stringify({
@@ -429,7 +539,7 @@ window.initializeChat = function() {
         }
     });
 
-    // Evento visibilitychange para detectar cuando el usuario cambia de pestaña
+    // visibilitychange event to detect when the user switches tabs
     document.addEventListener('visibilitychange', function() {
         if (document.visibilityState === 'hidden') {
             if (chatSocket.readyState === WebSocket.OPEN) {
@@ -449,8 +559,8 @@ window.initializeChat = function() {
     });
 };
 
-// Ejecutar la función cuando el DOM esté completamente cargado
+// Execute function when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-    window.initializeChat(); // Inicializamos el chat
+    window.initializeChat(); // Initialize chat
 });
 
