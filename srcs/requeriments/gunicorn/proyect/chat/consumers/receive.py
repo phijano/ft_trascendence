@@ -26,6 +26,7 @@ class ReceiveMixin:
                 'chat_message': lambda data: self.handle_message(data),  # Cambiar 'message' por 'chat_message'
                 'join_private_room': lambda data: self.handle_join_private_room(data),  # Añadir nuevo handler
                 'game_invitation': lambda data: self.handle_game_invitation(data),  # Añadir nuevo handler
+                'waiting': lambda data: self.handle_waiting(data),
                 'decline_game_invitation': lambda data: self.handle_decline_game_invitation(data),
                 'accept_game_invitation': lambda data: self.handle_accept_game_invitation(data),
             }
@@ -70,7 +71,27 @@ class ReceiveMixin:
             )
         except Exception as e:
             print(f'Error al enviar la invitación de juego: {e}')
-            
+
+    def handle_waiting(self, data):
+        target_user_id = data.get('target_user_id')
+        if not target_user_id:
+            print("Error: 'target_user_id' no está presente en los datos recibidos.")
+            return
+
+        target_user = User.objects.get(id=target_user_id)
+        sender = self.user
+
+        try:
+            async_to_sync(self.channel_layer.group_send)(
+                f'user_{target_user.id}',
+                {
+                    'type': 'waiting',
+                    'message': f'Invitación enviada',
+                }
+            )
+        except Exception as e:
+            print(f'Error al enviar la invitación de juego: {e}')
+  
     def handle_decline_game_invitation(self, data):
         match_id = data.get('match_id')
         sender_id = data.get('sender_id')

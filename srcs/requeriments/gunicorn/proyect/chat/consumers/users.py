@@ -50,6 +50,11 @@ class UserMixin:
             'username': event['username'],
             'target_user_id': event['target_user_id'],
         }))
+    def waiting(self, event):
+        self.send(text_data=json.dumps({
+            'type': 'waiting',
+            'message': event['message'],
+        }))
 
     def game_invitation_declined(self, event):
         self.send(text_data=json.dumps({
