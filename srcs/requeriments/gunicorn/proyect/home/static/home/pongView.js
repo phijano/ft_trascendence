@@ -430,7 +430,7 @@ async function createGame() {
 	dropGame();
 	await sleep(1);
 	host = true;
-	sendMessageServer({player: profileId,  app: "pong", action: "create", config: gameConfig, date: Date.now()});
+	sendMessageServer({player: profileId,  app: "pong", action: "create", privateGame:"no", config: gameConfig, date: Date.now()});
 	document.getElementById("lLeftPlayer").innerHTML = nick;
 	document.getElementById("lRightPlayer").innerHTML = "?";
 	document.getElementById("dMatchPlayers").hidden = false;
@@ -447,7 +447,7 @@ async function joinGame() {
 	dropGame();
 	await sleep(1);
 	host = false;
-	sendMessageServer({player: profileId,  app: "pong", action: "join", date: Date.now()});
+	sendMessageServer({player: profileId,  app: "pong", action: "join", privateGame:"no", date: Date.now()});
 	document.getElementById("lLeftPlayer").innerHTML = "?";
 	document.getElementById("lRightPlayer").innerHTML = nick;
 	document.getElementById("dMatchPlayers").hidden = false;
@@ -456,6 +456,41 @@ async function joinGame() {
 	document.getElementById("dWinner").hidden = true;
 	document.getElementById("dGameMessage").hidden = true;
 }
+
+async function createPrivateGame() {
+	const nick = document.getElementById("hNick").value;
+	const profileId = document.getElementById("hProfileId").value;
+
+	dropGame();
+	await sleep(1);
+	host = true;
+	sendMessageServer({player: profileId,  app: "pong", action: "create", privateGame:"yes", config: gameConfig, date: Date.now()});
+	document.getElementById("lLeftPlayer").innerHTML = nick;
+	document.getElementById("lRightPlayer").innerHTML = "waiting..";
+	document.getElementById("dMatchPlayers").hidden = false;
+	initPong(gameConfig);
+	document.getElementById("board").style.visibility = "visible";
+	document.getElementById("dWinner").hidden = true;
+	document.getElementById("dGameMessage").hidden = true;
+}
+
+async function joinPrivateGame(hostId) {
+	const nick = document.getElementById("hNick").value;
+	const profileId = document.getElementById("hProfileId").value;
+
+	dropGame();
+	await sleep(1);
+	host = false;
+	sendMessageServer({player: profileId,  app: "pong", action: "join", privateGame:"yes", opponent:hostId, date: Date.now()});
+	document.getElementById("lLeftPlayer").innerHTML = "waiting";
+	document.getElementById("lRightPlayer").innerHTML = nick;
+	document.getElementById("dMatchPlayers").hidden = false;
+	initPong(gameConfig);
+	document.getElementById("board").style.visibility = "visible";
+	document.getElementById("dWinner").hidden = true;
+	document.getElementById("dGameMessage").hidden = true;
+}
+
 
 function serverPongMessage(message){ 
 	if (message.type == "game.update") {
@@ -563,7 +598,9 @@ window.pongEndTournament = endTournament;
 
 //remote game
 window.pongCreateGame = createGame;
+window.pongCreatePrivateGame = createPrivateGame;
 window.pongJoinGame = joinGame;
+window.pongJoinPrivateGame = joinPrivateGame;
 window.serverPongMessage = serverPongMessage;
 window.dropGame = dropGame;
 
