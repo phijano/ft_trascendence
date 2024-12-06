@@ -130,16 +130,17 @@ window.initializeChat = function() {
         console.log("senderId:", senderId);
         console.log("isSender:", isSender);
         
-        console.log("0") 
+        console.log(user); 
         await router("/pong");
-        await sleep(100);
+        await sleep(400);
         pongStartRemote();
         
         if (isSender) {
-            pongJoinGame();
+			//chang senderId with the correct id
+            pongJoinPrivateGame(2);
         }
         else {
-            pongCreateGame();
+            pongCreatePrivateGame();
         }
 
     }
