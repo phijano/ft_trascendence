@@ -17,10 +17,8 @@ class Command(BaseCommand):
             {'username': 'agus', 'password': 'kali'},
             {'username': 'rdelicad', 'password': 'kali'},
             {'username': 'pespinos', 'password': 'kali'},
+            {'username': 'victor', 'password': 'kali'},
             {'username': 'victofer', 'password': 'kali'},
-            {'username': 'pepe', 'password': 'kali'},
-            {'username': 'juan', 'password': 'kali'},
-            {'username': 'hulio', 'password': 'kali'},
         ]
 
         for user in users:
