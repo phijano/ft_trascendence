@@ -153,6 +153,9 @@ window.initializeChat = function () {
     const senderId = data.sender_id;
     const isSender = userId === senderId;
 
+    const creatorId = data.match_id.split("_")[1];
+    
+
     console.log("userId:", userId);
     console.log("senderId:", senderId);
     console.log("isSender:", isSender);
