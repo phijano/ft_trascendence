@@ -3,10 +3,11 @@ let paddle1, paddle2, ball;
 let player1Score = 0, player2Score = 0;
 let player1Speed = 0, player2Speed = 0;
 let ballSpeed = { x: 5, y: 5 };
-let timeLeft = 10;
+let timeLeft;
 let gameInterval;
 let playing = false;
 let initialized = false;
+
 
 function generateRandom(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -19,19 +20,14 @@ function generatePositiveNegative() {
         return 1;
 }
 
+
 function init() {
-
-    if (initialized)
-        {
-            console.log('3D Pong game already started');
-            return;
-        } // Evitar múltiples inicializaciones
-    initialized = true;
-    console.log('3D Pong game started');
-
     // Asigna una velocidad y dirección aleatoria de la pelota
-    ballSpeed.x = generatePositiveNegative() * generateRandom(4, 6);
-    ballSpeed.y = generatePositiveNegative() * generateRandom(4, 6);
+
+    let ball_speed = parseFloat(document.getElementById("ballSpeed").value);
+
+    ballSpeed.x = generatePositiveNegative() * ball_speed * 0.5;
+    ballSpeed.y = generatePositiveNegative() * ball_speed * 0.5;
 
     // Crear escena
     scene = new THREE.Scene();
@@ -43,8 +39,22 @@ function init() {
     camera.position.z = 500;
 
     // Crear renderizador
+    let boardSize = document.getElementById("boardSize").value;
     renderer = new THREE.WebGLRenderer();
-    renderer.setSize(800, 700);
+
+    switch (boardSize) {
+        case 'small':
+            renderer.setSize(600, 500);
+            break;
+        case 'normal':
+            renderer.setSize(700, 600);
+            break;
+        case 'big':
+            renderer.setSize(800, 700);
+            break;
+    }
+
+    //renderer.setSize(800, 700);
 
     const canvasContainer = document.getElementById('d3DpongCanvas');
     canvasContainer.innerHTML = '';
@@ -55,13 +65,23 @@ function init() {
     addLights();
 
     // Crear terreno de juego
-    const fieldGeometry = new THREE.PlaneGeometry(800, 700);
+    let fieldGeometry;
+    switch (boardSize) {
+        case 'small':
+            fieldGeometry = new THREE.PlaneGeometry(600, 500);
+        case 'normal':
+            fieldGeometry = new THREE.PlaneGeometry(700, 600);
+        case 'big':
+            fieldGeometry = new THREE.PlaneGeometry(800, 700);
+        }
+
     const fieldMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
     const field = new THREE.Mesh(fieldGeometry, fieldMaterial);
     scene.add(field);
 
     // Crear paletas
-    const paddleGeometry = new THREE.BoxGeometry(20, 100, 1000);
+    let paddle_size = parseFloat(document.getElementById("playerSize").value);
+    const paddleGeometry = new THREE.BoxGeometry(20, paddle_size * 2, 1000);
     const paddleMaterial = new THREE.MeshPhongMaterial({ color: 0x00ffff });
     paddle1 = new THREE.Mesh(paddleGeometry, paddleMaterial);
     paddle1.position.set(-370, 0, 0);
@@ -72,12 +92,26 @@ function init() {
     scene.add(paddle2);
 
     // Crear pelota
-    const ballGeometry = new THREE.SphereGeometry(10, 32, 32);
+    let ball_size = parseFloat(document.getElementById("ballSize").value);
+    const ballGeometry = new THREE.SphereGeometry(ball_size, 32, 32);
     const ballMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
     ball = new THREE.Mesh(ballGeometry, ballMaterial);
     scene.add(ball);
 
+    if (initialized)
+        {
+            console.log('3D Pong game already started man');
+            return;
+        } // Evitar múltiples inicializaciones
+    
+
+    console.log('3D Pong game started');
+    initialized = true;
+
     // Iniciar juego
+    timeLeft = parseFloat(document.getElementById("countdown").value);
+    console.log('Time: ' + timeLeft);
+
     gameInterval = setInterval(updateTimer, 1000);
 
     animate();
@@ -123,9 +157,11 @@ function animate() {
         paddle1.position.y = Math.max(-300, Math.min(300, paddle1.position.y));
         paddle2.position.y = Math.max(-300, Math.min(300, paddle2.position.y));
         
+        const speedUp = parseFloat(document.getElementById("ballSpeedUp").value);
+
         // Movimiento de la pelota
-        ball.position.x += ballSpeed.x;
-        ball.position.y += ballSpeed.y;
+        ball.position.x += ballSpeed.x * speedUp;
+        ball.position.y += ballSpeed.y * speedUp;
         
         // Rebote en las paredes superior e inferior
         if (ball.position.y >= 340 || ball.position.y <= -340) {
@@ -161,14 +197,16 @@ function animate() {
 function resetBall() {
     ball.position.set(0, 0, 0);
     //ballSpeed.x = -ballSpeed.x;
-    ballSpeed.x = generatePositiveNegative() * generateRandom(4, 6);
-    ballSpeed.y = generatePositiveNegative() * generateRandom(4, 6);
+    let ball_speed = parseFloat(document.getElementById("ballSpeed").value);
+
+    ballSpeed.x = generatePositiveNegative() * ball_speed * 0.5;
+    ballSpeed.y = generatePositiveNegative() * ball_speed * 0.5;
 }
 
 function updateTimer() {
     if (playing == true) {
         timeLeft--;
-        document.getElementById('timer').textContent = `Time Left: ${timeLeft}s`;
+        document.getElementById('timer').textContent = `Time: ${timeLeft}`;
         if (timeLeft <= 0) {
             clearInterval(gameInterval);
             playing = false;
@@ -247,8 +285,8 @@ function startGame() {
     document.getElementById('player2-score').textContent = 'Player 2: 0';
 
     // Restablecer temporizador
-    timeLeft = 10;
-    document.getElementById('timer').textContent = `Time Left: ${timeLeft}s`;
+    timeLeft = parseFloat(document.getElementById("countdown").value);
+    document.getElementById('timer').textContent = `Time: ${timeLeft}`;
 
     // Resetear posiciones de las paletas
     paddle1.position.set(-370, 0, 0);
@@ -283,18 +321,19 @@ function startGame() {
 
 // Control de teclas para jugadores
 window.addEventListener('keydown', (event) => {
+    let paddle_speed = parseFloat(document.getElementById("playerSpeed").value);
     switch (event.key) {
         case 'w':
-            player1Speed = 6;
+            player1Speed = paddle_speed;
             break;
         case 's':
-            player1Speed = -6;
+            player1Speed = -paddle_speed;
             break;
         case 'ArrowUp':
-            player2Speed = 6;
+            player2Speed = paddle_speed;
             break;
         case 'ArrowDown':
-            player2Speed = -6;
+            player2Speed = -paddle_speed;
             break;
     }
 });
