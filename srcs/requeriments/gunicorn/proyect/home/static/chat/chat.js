@@ -180,6 +180,7 @@ window.initializeChat = function () {
 
   // Send a private chat request
   function openPrivateChat(userId) {
+    closeModal();
     if (userId === connectedUserMap.get(user)) {
       console.log(`userId: ${userId} (type: ${typeof userId})`);
       console.log(
@@ -506,6 +507,7 @@ window.initializeChat = function () {
   }
 
   function closeModal() {
+    document.getElementById('usersModal').setAttribute('aria-hidden', 'true');
     const modal = document.getElementById("usersModal");
     modal.style.display = "none";
     const backdrop = document.getElementsByClassName(
