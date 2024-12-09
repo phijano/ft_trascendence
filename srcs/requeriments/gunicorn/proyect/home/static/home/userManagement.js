@@ -156,6 +156,7 @@ async function logOut() {
 		console.log(resp.ok);
 		if (resp.ok) {
 			unsetUser();
+			
 			router("/");
 		}
 	} catch(e) {
