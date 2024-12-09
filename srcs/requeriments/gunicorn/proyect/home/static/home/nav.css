@@ -1,0 +1,107 @@
+:root {
+    --primary-color: #be0303;
+    --secondary-color: #750707;
+    --accent-color: #59575f;
+    --light-color: #f4f4f4;
+    --dark-color: #252525;
+}
+
+.orbitron-font {
+  font-family: "Orbitron", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-size: 1.2rem;
+  font-style: normal;
+  color: var(--light-color);
+}
+
+.orbitron-font-small {
+    font-family: "Orbitron", sans-serif;
+    font-size: 0.8rem;
+    color: var(--accent-color);
+}
+
+.orbitron-font-medium {
+    font-family: "Orbitron", sans-serif;
+    font-size: 1rem;
+    color: var(--light-color);
+}
+
+.orbitron-font-medium.white {
+    color: var(--light-color);
+}
+
+.orbitron-font-small.red {
+    color: var(--primary-color);
+}
+
+.orbitron-font-large {
+    font-size: 1.5rem;
+}
+
+.rationale-font {
+    font-family: "Rationale", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+
+.orbitron-font:hover {
+    color: var(--primary-color); /* Cambia el color al pasar el cursor */
+}
+
+.custom-border-color {
+    position: relative; /* Necesario para el pseudo-elemento */
+}
+
+.custom-border-color::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 95%;
+    border-bottom: 2px solid var(--secondary-color); /* Borde inferior */
+}
+
+.button-borders {
+    background-color: #333; /* Color de fondo oscuro */
+    font-family: "Orbitron", sans-serif;
+    color: white; /* Color del texto */
+    border: solid #555; /* Borde oscuro */
+    padding: 10px; /* Espaciado interno */
+}
+
+.button-left {
+    border-radius: 10px 0 0 10px; /* Bordes redondeados en los extremos izquierdos */
+}
+.button-middle {
+    border-left: none; /* Sin borde izquierdo */
+    border-right: none; /* Sin borde derecho */
+}
+.button-right {
+    border-radius: 0 10px 10px 0; /* Bordes redondeados en los extremos derechos */
+}
+.button-container {
+    display: flex;
+    border-collapse: collapse;
+}
+.button-borders:active {
+    background-color: #343a40; /* Color de fondo cuando se presiona */
+    color: cyan;
+}
+
+.button-remote {
+        font-family: 'Orbitron', sans-serif;
+        color: var(--accent-color);
+        font-size: small;
+        padding: 10px;
+        margin: 5px;
+        border: none;
+        cursor: pointer;
+        background-color: transparent;
+}
+
+.button-remote:active {
+    color: var(--primary-color)
+}

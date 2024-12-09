@@ -1,38 +1,354 @@
-#board
-{
-	background-color: black;
-	border-top: 5px solid turquoise;
-	border-bottom: 5px solid turquoise;
+@import url('../nav.css');
+@import url('../home.css');
+
+.container-pong {
+    width: 95%; /* Ocupa el 95% del ancho de la pantalla */
+    margin: 0 auto; /* Centra el contenedor horizontalmente */
+    padding: 0; /* Elimina el padding */
+	position: relative;
+}
+
+#bRules {
+	position: absolute; /* Posiciona el botón respecto al contenedor */
+    top: 0; /* Posición inicial */
+    width: 250px; /* Ancho del sidepanel */
+    background-color: var(--accent-color);
+    color: var(--light-color);
+    padding: 5px 20px;
+	border-top: none;
+	border-left: 2px solid var(--secondary-color); /* Borde izquierdo */
+    border-right: 2px solid var(--secondary-color); /* Borde derecho */
+    border-bottom: 2px solid var(--secondary-color); /* Borde inferior */
+    border-radius: 0 0 10px 10px;
+    cursor: pointer;
+    text-align: center;
+	font-size: 1.2rem;
+    z-index: 30;
+    transition: top 0.5s ease, background-color 0.5s ease; /* Transición suave para la posición y el color de fondo */
+}
+
+#bRules:hover {
+    background-color: var(--secondary-color); /* Color del botón al pasar el mouse */
 }
 
 .sidepanel {
-	height: 250px; /* Specify a height */
-	width: 0; /* 0 width - change this with JavaScript */
-	position: fixed; /* Stay in place */
-	z-index: 1; /* Stay on top */
+    position: absolute;
 	top: 0;
-	left: 0;
-	background-color: #fff; /* Black*/
-	overflow-x: hidden; /* Disable horizontal scroll */
-	padding-top: 0px; /* Place content 60px from the top */
-	transition: width 0.5s, border 0.1s 0.5s; /* 0.5 second transition effect to slide in the sidepanel */
-	border-color: #0dcacc;
-	border-style: solid;
-	border-width: 0px;
-	color: white;
+    opacity: 0;
+    height: 0; /* 0 height - change this with JavaScript */
+    width: 100%; /* Full width */
+    max-width: 250px; /* Max width of 250px */
+    z-index: 30; /* Stay on top */
+    background-color: var(--accent-color); /* Background color */
+    overflow-y: hidden; /* Disable vertical scroll */
+    border-left: 2px solid var(--secondary-color);
+    border-right: 2px solid var(--secondary-color);
+    transition: height 0.5s ease, top 0.5s ease, opacity 0.5s ease;
 }
 
-.sidepanel .sideCloseButton {
+/* .sidepanel .sideCloseButton {
   position: absolute;
   top: 0;
   right: 25px;
   font-size: 36px;
   margin-left: 50px;
-}
+} */
 
 .sidepanel .sideContent {
-  padding: 48px 8px 8px 8px;
+  padding: 8px 8px 8px 8px;
 }
 
 
+.slider-container {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+}
 
+.slider {
+    width: 400px;  /* Ancho del rectángulo */
+    height: 20px;  /* Altura del rectángulo */
+    background-color: var(--dark-color);
+    border-radius: 15px; /* Bordes redondeados */
+    position: relative;
+    box-shadow: 
+        inset 1px 1px 4px var(--light-color);  /* Sombra interior para efecto hundido */
+
+}
+
+/* La bola */
+#ball-pong {
+    width: 20px;  /* El mismo tamaño que la altura del rectángulo */
+    height: 20px;
+    background: radial-gradient(circle at 30% 30%, #ffffff, #b3b3b3); 
+    border-radius: 50%; /* Hace que la bola sea redonda */
+    position: absolute;
+    top: 270px;
+    left: 50%; /* Posición inicial a la izquierda */
+    z-index: 20;
+    transition: top 1s ease, left 1s ease, transform 1s ease; /* Transición suave para el movimiento */
+}
+
+.pong-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-family: 'Orbitron', sans-serif;  /* Asegúrate de tener la fuente importada */
+    color: white;  /* Color del texto */
+    background-color: transparent; /* Fondo transparente */
+    border: none;
+    cursor: pointer;
+}
+
+.pong-button:hover {
+    color: var(--primary-color);
+    transform: scale(1.05); /* Efecto de agrandamiento */
+}
+
+#dLocalSettings {
+    display: flex;
+    justify-content: center; /* Centra los contenedores */
+    align-items: center;
+    flex-direction: row; /* Alinea los contenedores en fila */
+    transition: all 0.5s ease; /* Añade una transición suave para todos los cambios */
+}
+
+#sOpponentContainer, #sDifficultyContainer, #sNumPlayersContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center; /* Centra las opciones */
+    align-items: center;
+    transition: all 0.5s ease; /* Añade una transición suave */
+}
+
+#sOpponentContainer {
+    margin-right: 5px; /* Reduce el margen derecho */
+}
+
+#sDifficultyContainer {
+    flex-grow: 0; /* Inicialmente no ocupa espacio */
+    opacity: 0;
+    max-width: 0; /* Inicialmente colapsado horizontalmente */
+    overflow: hidden;
+    margin-left: 5px; /* Reduce el margen izquierdo */
+    transition: flex-grow 0.5s ease, opacity 0.5s ease, max-width 0.5s ease, margin-left 0.5s ease; /* Añade una transición suave */
+}
+
+#sDifficultyContainer.visible {
+    flex-grow: 1; /* Permite que el contenedor crezca */
+    opacity: 1;
+    max-width: 300px; /* Ajusta este valor según el contenido */
+}
+
+.option {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--accent-color);
+    font-size: small;
+    padding: 10px;
+    margin: 5px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.5s ease;
+}
+
+.option.selected {
+    background-color: none;
+    color: red;
+}
+
+#sDifficultyContainer .option {
+    color: var(--accent-color); 
+}
+
+#sDifficultyContainer .option.selected {
+    color: magenta; 
+}
+
+#dLocalSettings.centered #sOpponentContainer {
+    justify-content: center; /* Centra las opciones de oponente */
+    margin-right: 0; /* Elimina el margen derecho */
+}
+
+.container-players{
+    border-radius: 10px 10px 0 0;
+    width: 700px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container-players-inside{
+    display: block;
+    width: 300px;
+    justify-content: center;
+    flex: 1;
+}
+
+.container-players-inside-small {
+    flex: 0.2; /* El div del medio ocupará menos espacio */
+}
+
+.players-font {
+    font-family: "Orbitron", sans-serif;
+    font-size: medium;
+    color: cyan;
+}
+
+
+#gameContainer {
+    position: relative;
+}
+
+
+#chooseIndicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-family: "Bungee Tint", sans-serif;
+    font-size: 40px;
+    display: flex;
+    transform: translate(-50%, -50%);
+    gap: 10px; /* Espacio entre las palabras */
+}
+
+
+#board
+{
+	background-color: black;
+	border: 3px solid var(--accent-color);
+}
+
+#dStartGame {
+    position: absolute; /* Posicionamiento absoluto */
+    top: 50%; /* Ajusta según sea necesario */
+    left: 50%; /* Ajusta según sea necesario */
+    transform: translate(-50%, -50%); /* Centra el div */
+    z-index: 10; /* Asegura que el div esté por encima del canvas */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%; /* Asegura que el div tenga el mismo ancho que el canvas */
+    height: 100%;
+}
+
+.start-button {
+    position: absolute; /* Posicionamiento absoluto */
+    font-family: "Bungee Tint", sans-serif;
+    border-radius: 15px; /* Bordes redondeados */
+    background-color: transparent; /* Color de fondo */
+    padding: 10px 20px; /* Espaciado interno */
+    border: none; /* Borde con grosor y color */
+    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+    font-size: 50px; /* Tamaño de la fuente */
+    transition: background-color 0.3s; /* Transición suave para el cambio de color */
+}
+
+.title-cyan-big {
+    font-family: "Orbitron", sans-serif;
+    font-size: large;
+    color: cyan;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#sNumPlayersContainer {
+    margin-bottom: 20px;
+}
+
+
+#iNick {
+    border-radius: 10px; /* Bordes redondeados */
+    background-color: #333; /* Color de fondo oscuro */
+    font-family: "Orbitron", sans-serif;
+    color: white; /* Color del texto */
+    border: solid #555; /* Borde oscuro */
+    padding: 10px; /* Espaciado interno */
+    width: 100%; /* Ancho completo del contenedor */
+    box-sizing: border-box; /* Incluye el padding y el borde en el ancho total */
+}
+
+#iNick::placeholder {
+    color: #aaa; /* Color del texto del placeholder */
+}
+
+#lNickWarning {
+    color: red; /* Color rojo */
+    font-family: "Orbitron", sans-serif;
+    font-size: small;
+    background-color: transparent;
+} 
+
+.registerPlayer-button {
+    border-radius: 10px; /* Bordes redondeados */
+    background-color: transparent; /* Sin fondo */
+    border: solid #555; /* Borde oscuro para visibilidad */
+    color: cyan; /* Color del texto */
+    font-family: "Orbitron", sans-serif;
+    padding: 10px 20px; /* Espaciado interno */
+    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+}
+
+.registerPlayer-button:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Fondo ligeramente visible al pasar el cursor */
+}
+
+.custom-textarea {
+    text-align: center;
+    padding: auto;
+    background-color:#343a40;
+    font-family: "Orbitron", sans-serif;
+    color: cyan;
+    border-radius: 10px;
+    border: solid #555; /* Borde oscuro para visibilidad */
+}
+
+#customizationForm {
+    font-family: "Orbitron", sans-serif;
+    color: var(--light-color);
+}
+
+.custom-select {
+    background-color: transparent; /* Color de fondo del select */
+    color: cyan; /* Color del texto */
+    border: none; /* Sin borde */
+}
+
+.custom-select option {
+    background-color: #343a40; /* Color de fondo de las opciones */
+    color: var(--light-color); /* Color del texto de las opciones */
+    border: none; /* Sin borde */
+}
+
+
+#dMultiplayerSettings {
+    position: relative;
+}
+
+#pongCanvas {
+ /* Asegúrate de que el canvas esté visible */
+    width: 600px;
+    height: 600px;
+    background-color: black;
+    margin: 20px auto;
+    border: 3px solid var(--accent-color);
+}
+
+.scoreboard span {
+    margin-right: 10px;
+}
+
+.display-column-content {
+    display: flex;                /* Activar flexbox */
+    flex-direction: column;       /* Alinear los elementos en columna */
+    justify-content: center;      /* Centrar los elementos verticalmente */
+    align-items: center;          /* Centrar los elementos horizontalmente */
+}
+
+#d3DpongCanvas {
+    margin: 20px auto;
+    border: 3px solid var(--accent-color);
+    box-sizing: content-box;
+}
+
+#d3Dsettings {
+    position: relative;
+}

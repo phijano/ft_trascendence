@@ -4,8 +4,8 @@ export function Menu(){
 	//menu.classList.add("menu");
 	menu.id = "nMenu"
 	menu.innerHTML = `
-	<a class="px-3 text-white text-decoration-none" href="/">HOME</a>
-	<a class="px-3 text-white text-decoration-none" href="/pong">PONG</a>
+	<a class="px-3 text-decoration-none orbitron-font orbitron-font-large" href="/">HOME</a>
+	<a class="px-3 text-decoration-none orbitron-font orbitron-font-large" href="/pong">PLAY</a>
 	`;
 	return menu;
 }

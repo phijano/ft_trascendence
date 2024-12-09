@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Bungee+Tint&display=swap" rel="stylesheet">
 	{% load static %}
 	<link rel="stylesheet" href="{% static 'home/pong/pong.css' %}">
 </head>
@@ -14,118 +19,157 @@
 {% else %}
 	<input hidden id="hNick" value="">
 {% endif %}
-	<div class="container">
+	<div class="container-pong">
 		<div class="row">
 			<div class="col text-start">
-				<button id="bRules" type="button" onclick="pongShowRules()" onmouseover="pongSetRules()">Rules ></button>
+				<button id="bRules" type="button" class="orbitron-font" onclick="pongToggleRules()" onmouseover="pongSetRules()">Rules</button>
 			</div>
-			<div class="col">
-				<h1 class="text-info">PONG</h1>
+			<div class="slider-container">
+				<div class="slider">
+					<div id="ball-pong"></div>
+				</div>
 			</div>
 			<div class="col"></div>
 		</div>
-	</div>
-
-	<div hidden id="dSidePanel" class="sidepanel">
-  		<a href="javascript:void(0)" class="sideCloseButton text-black text-decoration-none" onclick="pongCloseRules()">&times;</a>
-		<div id="dSidePanelContent" class="sideContent">
-			Press D to activate the Freeze Flip power-up as the left player,
-			press Left Arrow as the right player.
-			The power-up can only be used once per round,
-			which resets after each goal is scored.
+		<div hidden id="dSidePanel" class="sidepanel">
+			<div id="dSidePanelContent" class="sideContent rationale-font">
+				Press "W" to move up, "S" to move down as the left player, and "D" to activate the Freeze Flip power-up.<br>
+				Press "Up Arrow" to move up, "Down Arrow" to move down as the right player, and "Left Arrow" to activate the Freeze Flip power-up.<br>
+				The power-up can only be used once per round, which resets after each goal is scored.
+			</div>
 		</div>
 	</div>
-
-	<p>
 		<div id="dStartOptions">
-			<button id="bLocalGame" type="button" onclick="pongStartLocal()">Local Game</button>
+			<button id="bLocalGame" type="button" class="pong-button" onclick="pongMoveball('left'); pongStartLocal()">Local Game</button>
 			{% if user.is_authenticated %}
-				<button id="bRemoteGame" type="button" onclick="pongStartRemote()">Remote Game</button>
+				<button id="bRemoteGame" type="button" class="pong-button" onclick="pongMoveball('center_1'); pongStartRemote()">Remote Game</button>
 			{% else %}
-				<button id="bRemoteGame" type="button" hidden>Remote Game</button>	
+				<button id="bRemoteGame" type="button" class="pong-button" hidden>Remote Game</button>	
 			{% endif %}
-			<button id="bTournament" type="button" onclick="pongStartTournamentMode()">Tournament</button>	
-			<button id="bSettings" type="button" onclick="pongShowCustomizationOptions()">Settings</button>
+			<button id="bTournament" type="button" class="pong-button" onclick="pongMoveball('center'); pongStartTournamentMode()">Tournament</button>	
+			<button id="bSettings" type="button" class="pong-button" onclick="pongMoveball('right'); pongShowCustomizationOptions()">Settings</button>
 		</div>
 		<div hidden id="dEndTournament">
-			<button type="button" onclick="pongEndTournament()">End Tournament</button>
+			<button type="button" class="pong-button" onclick="pongEndTournament()">End Tournament</button>
 		</div>
-	</p>
-		<div class="container mt-4" id="dLocalSettings" hidden>
-		<p>
-			<select id="sOpponent" onchange="pongSetOpponent()">
+	<div class="container" id="dLocalSettings" hidden>
+			<div id="sOpponentContainer">
+				<div class="option selected" data-value="0" onclick="pongSelectOption(this)">Player VS Player</div>
+				<div class="option" data-value="1" onclick="pongSelectOption(this)">Multiplayer</div>
+				<div class="option" data-value="2" onclick="pongSelectOption(this)">3D</div>
+				<div class="option" data-value="3" onclick="pongSelectOption(this)">Player Vs AI</div>
+			</div>
+			<select id="sOpponent" onchange="pongSetOpponent()" style="display: none;">
 				<option value="0" selected> Player Vs Player </option>
-				<option value="1"> Player Vs AI </option>
+				<option value="1"> Multiplayer </option>
+				<option value="2"> 3D </option>
+				<option value="3"> Player Vs AI </option>
 			</select>
-			<select id="sDifficulty" onchange="pongSetDifficulty()" style="visibility: hidden">
+			<div id="sDifficultyContainer">
+				<div class="option" data-value="0" onclick="pongSelectDifficulty(this)">Easy</div>
+				<div class="option selected" data-value="1" onclick="pongSelectDifficulty(this)">Medium</div>
+				<div class="option" data-value="2" onclick="pongSelectDifficulty(this)">Hard</div>
+				<div class="option" data-value="3" onclick="pongSelectDifficulty(this)">Impossible</div>
+			</div>
+			<select id="sDifficulty" onchange="pongSetDifficulty()" style="display: none;">
 				<option value="0"> Easy </option>
 				<option value="1" selected> Medium </option>
 				<option value="2"> Hard </option>
 				<option value="3"> Impossible </option>
 			</select>
-		</p>
 	</div>
-	<div class="container mt-4" id="dRemoteSettings" hidden>
-		<p>
-			<button id="bCreateRemote" type="button" onclick="pongCreateGame()">Create game</button>
-			<button id="bJoinRemote" type="button" onclick="pongJoinGame()">Join game</button>
-		</p>
+	<div class="container" id="dRemoteSettings" hidden>
+			<button id="bCreateRemote" class="button-remote" type="button" onclick="pongCreateGame()">Create game</button>
+			<button id="bJoinRemote" class="button-remote" type="button" onclick="pongJoinGame()">Join game</button>
 	</div>
-	<div class="bg-info container" id="dTournamentSettings" hidden>
-		<h4 class="p-4 text-white">CREATE TOURNAMENT</h4>
-		<p>
-			<select id="sNumPlayers" name="selectPlayers" onchange="pongSelectNumPlayers()">
+    <div id="dMultiplayerSettings" hidden>
+        <div class="display-column-content">
+            <div id ="multiplayerSpans" class="scoreboard mt-4">
+				<span class="players-font">Player 1: <span id="player1Score">0</span></span> 
+				<span class="players-font">Player 2: <span id="player2Score">0</span></span> 
+				<span class="players-font">Player 3: <span id="player3Score">0</span></span> 
+				<span class="players-font">Player 4: <span id="player4Score">0</span></span> 
+				<span class="players-font">Time: <span id="timeCountdown">0</span></span>
+            </div>
+			<div id="winnerMessage" class="players-font mt-4" style="display: none;">
+				<span id="winnerText"></span>
+			</div>
+            <canvas id="pongCanvas"></canvas>
+            <button id="start-button-multi" type="button" class="start-button" onclick="pongStartMultiReady()">Start</button>
+        </div>
+    </div>
+	<div id="d3Dsettings" hidden>
+		<div class="display-column-content">
+			<div id="d3Dscoreboard" class="scoreboard mt-4">
+				<span id="player1-score" class="players-font">Player 1: 0</span>
+				<span id="timer" class="players-font">Time: 0</span>
+				<span id="player2-score" class="players-font">Player 2: 0</span>
+			</div>
+			<div id="d3DwinnerMessage" class="players-font mt-4" style="display: none;">
+				<span id="d3DwinnerText"></span>
+			</div>
+			<div id="d3DpongCanvas"></div>
+			<button id="start-button-3D" type="button" class="start-button"  onclick="pongStartGame_3D()">Start</button>
+		</div>
+	</div>
+	<div class="bg-dark container" id="dTournamentSettings" hidden>
+			<h4 id="createTournament" class ="title-cyan-big">CREATE TOURNAMENT</h4>
+			<div id="sNumPlayersContainer">
+				<div class="option selected" data-value="4" onclick="pongSetNumPlayers(this)">4 Players</div>
+				<div class="option" data-value="8" onclick="pongSetNumPlayers(this)">8 Players</div>
+				<div class="option" data-value="16" onclick="pongSetNumPlayers(this)">16 Players</div>
+			</div>
+			<select id="sNumPlayers" name="selectPlayers" onchange="pongSelectNumPlayers()" style="display: none;">
 				<option value="4" selected> 4 Players </option>
-				<option value="8"> 8 Players </option>
+				<option value="8">  Players </option>
 				<option value="16"> 16 Players </option>
 			</select>
-		</p>
-		<div class="d-inline-flex flex-column">
+		<div class="e-flex flex-column">
 			<div class="d-inline-flex flex-row">
 				<div class="d-flex-column p-3 align-self-center">
 					<div class="d-inline-flex flex-row">
 						<div class="px-3">
-							<input id="iNick" class ="border-3" type="text" minlength="3" maxlength="12" placeholder="Enter nick"></input>
+							<input id="iNick" class ="border-3" type="text" minlength="3" maxlength="12" placeholder="Enter a Nick">
 						</div>
 						<div class="px-3">
-							<button id="bRegisterPlayer" type="button" onclick="pongAddPlayer()"> Add Player >> </button>
+							<button id="bRegisterPlayer" class ="registerPlayer-button border-3" type="button" onclick="pongAddPlayer()"> Add Player >> </button>
 						</div>
 					</div>
 					<div class="px-3 m-2 d-flex justify-content-start">
-						<label id="lNickWarning" class="bg-white text-danger">Nick too short</label>
+						<label id="lNickWarning">Nick too short</label>
 					</div>
 				</div>
 				<div>
-					<textarea class="border-3" id="tPlayers" cols="20" rows="16" readonly style="resize: none"></textarea>
+					<textarea class="custom-textarea border-3" id="tPlayers" cols="20" rows="16" readonly style="resize: none"></textarea>
 				</div>
 			</div>
 			<div class="p-3">
-				<button id="bCreate" style="visibility: hidden" type="button" onclick="pongStartTournament()">Start Tournament</button>
+				<button id="bCreate" style="visibility: hidden" class="registerPlayer-button" type="button" onclick="pongStartTournament()">Start Tournament</button>
 			</div>
 		</div>
 	</div>
 	<!-- Game Customization Menu -->
     <div hidden id="dCustomizationOptions">
-		<h2>Game Customization</h2>
+		<h2 class ="title-cyan-big">GAME CUSTOMIZATION</h2>
 		<form id="customizationForm">
 			<div class="container py-3">
 				<div class="row py-3">
-					<div class="col-sm"></div>
-					<div class="col-sm text-start">
+					<div class="col-sm border-top border-secondary text-danger">General</div>
+					<div class="col-sm text-start border-top border-secondary">
 						<label for="playerSize">Paddle Size:</label>
 					</div>
-					<div class="col-sm text-start">
-						<select id="playerSize">
+					<div class="col-sm text-start border-top border-secondary">
+						<select id="playerSize" class = "custom-select">
 							<option value=30>Small</option>
 							<option value=50 selected>Normal</option>
 							<option value=70>Big</option>
 						</select>
 					</div>
-					<div class="col-sm text-start">
+					<div class="col-sm text-start border-top border-secondary">
 						<label for="ballSpeed">Ball Start Speed:</label>
 					</div>
-					<div class="col-sm text-start">
-						<select id="ballSpeed">
+					<div class="col-sm text-start border-top border-secondary">
+						<select id="ballSpeed" class = "custom-select">
 							<option value=6>Slow</option>
 							<option value=7.5 selected>Normal</option>
 							<option value=10>Fast</option>
@@ -139,7 +183,7 @@
 						<label for="playerSpeed">Paddle Speed:</label>
 					</div>
 					<div class="col-sm text-start">
-						<select id="playerSpeed">
+						<select id="playerSpeed" class = "custom-select">
 							<option value=3>Slow</option>
 							<option value=5 selected>Normal</option>
 							<option value=7>Fast</option>
@@ -149,7 +193,7 @@
 						<label for="ballSpeedUp">Ball speed up:</label>
 					</div>
 					<div class="col-sm text-start">
-						<select id="ballSpeedUp">
+						<select id="ballSpeedUp" class = "custom-select">
 							<option value=1>None</option>
 							<option value=1.02 selected>Normal (2%)</option>
 							<option value=1.05>Fast (5%)</option>
@@ -160,21 +204,20 @@
 				<div class="row py-3">
 					<div class="col-sm"></div>
 					<div class="col-sm text-start">
-						<label for="pointsToWin">Points to win:</label>
+						<label for="boardSize">Board size:</label>
 					</div>
 					<div class="col-sm text-start">
-						<select id="pointsToWin">
-							<option value=1>1</option>
-							<option value=3 selected>3</option>
-							<option value=5>5</option>
-							<option value=10>10</option>
+						<select id="boardSize" class = "custom-select">
+							<option value="small">Small</option>
+							<option value="normal" selected>Normal</option>
+							<option value="big">Big</option>
 						</select>
 					</div>
 					<div class="col-sm text-start">
 						<label for="ballSize">Ball size:</label>
 					</div>
 					<div class="col-sm text-start">
-						<select id="ballSize">
+						<select id="ballSize" class = "custom-select">
 							<option value=8>Small</option>
 							<option value=10 selected>Normal</option>
 							<option value=13>Big</option>
@@ -183,65 +226,85 @@
 					<div class="col-sm"></div>
 				</div>
 				<div class="row py-3">
-					<div class="col-sm"></div>
-					<div class="col-sm text-start">
-						<label for="boardSize">Board size:</label>
+					<div class="col-sm border-top border-secondary text-danger">Two Players</div>
+					<div class="col-sm text-start border-top border-secondary">
+						<label for="pointsToWin">Points to win:</label>
 					</div>
-					<div class="col-sm text-start">
-						<select id="boardSize">
-							<option value="small">Small</option>
-							<option value="normal" selected>Normal</option>
-							<option value="big">Big</option>
+					<div class="col-sm text-start border-top border-secondary">
+						<select id="pointsToWin" class = "custom-select">
+							<option value=1>1</option>
+							<option value=3 selected>3</option>
+							<option value=5>5</option>
+							<option value=10>10</option>
 						</select>
 					</div>
-					<div class="col-sm text-start">
+
+					<div class="col-sm text-start border-top border-secondary">
 						<label for="allowFreezeFlip">Allow Freeze Flip power up:</label>
 					</div>
-					<div class="col-sm text-start">
+					<div class="col-sm text-start border-top border-secondary">
 						<input type="checkbox" id="allowFreezeFlip" />
 					</div>
 					<div class="col-sm"></div>
 				</div>
+				<div class="row py-3">
+					<div class="col-sm border-top border-secondary text-danger">Multiplayer - 3D</div>
+					<div class="col-sm text-start border-top border-secondary">
+						<label for="countdown">Countdown:</label>
+					</div>
+					<div class="col-sm text-start border-top border-secondary">
+						<select id="countdown" class = "custom-select">
+							<option value="20">20</option>
+							<option value="30" selected>30</option>
+							<option value="40">40</option>
+						</select>					
+					</div>
+					<div class="col-sm border-top border-secondary"></div>
+					<div class="col-sm border-top border-secondary"></div>
+					<div class="col-sm"></div>
+				</div>
 			</div>
-		</form>
-	</div>			
-	<p>
+		</form>	
+	</div>
+	
 		<div class="mt-4" hidden id="dMatchPlayers">
-			<div class="d-inline-flex flex-row align-self-center">
-				<div class="">
-					<h4><label class="bg-info" style="display:block;width:300px" id="lLeftPlayer">???</label></h4>
+			<div class="d-inline-flex flex-row align-self-center container-players">
+				<div class="container-players-inside">
+					<h4><label class="players-font" id="lLeftPlayer">???</label></h4>
 				</div>
-				<div class="">
-					<h4><label style="display:block;width:50px" id="lVs"> VS </label></h4>
+				<div class="container-players-inside container-players-inside-small">
+					<h4><label class="players-font" id="lVs"> VS </label></h4>
 				</div>
-				<div class="">
-					<h4><label class="bg-info" style="display:block;width:300px" id="lRightPlayer">???</label></h4>
+				<div class="container-players-inside">
+					<h4><label class="players-font" id="lRightPlayer">???</label></h4>
 				</div>
 			</div>
 		</div>
 		<div class="mt-4" hidden id="dWinner">
 			<div class="d-inline-flex flex-row align-self-center">
-					<h4 class="bg-info">&nbspWINNER&nbsp<label  id="lWinner"></label>&nbsp</h4>
+					<h4 class="players-font">&nbspWINNER&nbsp<label  id="lWinner"></label>&nbsp</h4>
 			</div>
 		</div>
 		<div class="mt-5" hidden id="dChampion">
 			<div class="d-inline-flex flex-row align-self-center">
 				<div>
-					<h1 class="bg-info">&nbspCHAMPION&nbsp<label  id="lChampion"></label>&nbsp</h4>
+					<h4 class="bg-info">&nbspCHAMPION&nbsp<label  id="lChampion"></label>&nbsp</h4>
 				</div>
 			</div>
 		</div>
-	</p>
-
-	<canvas id="board" style="visibility: hidden;" height="500" width="700"></canvas>
-	<div class="p-3" hidden id="dGameMessage">
-		<label class="text-danger" id="lGameMessage"></label>
-	</div>
-	<div class="p-3" hidden id="dStartGame">
-		<button type="button" onclick="pongStartPong()"> Start !! </button>
-	</div>
-	<div class="p-3" hidden id="dAdvance">
-		<button type="button" onclick="pongAdvance()"> Next Match </button>
+	<div id="gameContainer">
+		<span id="chooseIndicator"> Choose an option </span>
+		<canvas id="board" style="visibility: hidden;" height="500" width="700"></canvas>
+		<div class="p-3" hidden id="dStartGame">
+			<button type="button" class="start-button" onclick="pongStartPong()"> Start </button>
+		</div>
+		<div class="p-3" hidden id="dGameMessage">
+			<label class="text-danger" id="lGameMessage"></label>
+		</div>
+		<div class="p-3" hidden id="dAdvance">
+			<button type="button"  onclick="pongAdvance()"> Next Match </button>
+		</div>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 	</div>
 
 	<script>

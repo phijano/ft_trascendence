@@ -1,0 +1,157 @@
+@import url('nav.css');
+
+
+  .bungee-tint-regular {
+    font-family: "Bungee Tint", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+  /* Estilo para el contenedor */
+  .container-fluid {
+      background-color: var(--bs-dark);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: calc(100vh - 5.25rem);  
+      margin: 0; /* Elimina márgenes */
+      overflow: hidden; /* Evita que la pelota se salga del contenedor */
+    }
+    
+    /* Estilo para la pelota */
+    .bouncing-ball {
+      width: 30px;
+      height: 30px;
+      background: radial-gradient(circle at 30% 30%, #ffffff, #b3b3b33a); /* Degradado más oscuro */
+      border-radius: 50%;
+      position: absolute;
+      animation : bounce 8s cubic-bezier(1, 1, 1, 1) infinite;
+    }
+    
+    /* Animación para el rebote */
+  @keyframes bounce {
+      0% {
+          top: 0%;
+          left: 50%;
+          transform: translate(-50%, 0%);
+      }
+      25% {
+          top: 50%;
+          left: 100%;
+          transform: translate(-100%, -50%);
+      }
+      50% {
+          top: 100%;
+          left: 50%;
+          transform: translate(-50%, -100%);
+      }
+      75% {
+          top: 50%;
+          left: 0%;
+          transform: translate(0%, -50%);
+      }
+      100% {
+          top: 0%;
+          left: 50%;
+          transform: translate(-50%, 0%);
+      }
+  }
+  
+  
+  .pong-home {
+      position: absolute;
+      font-size: 3rem;
+      text-decoration: none;
+      text-align: center;
+      z-index: 10;
+      display: inline-block;
+      padding: 1rem 2rem; /* Espaciado interno para el botón */
+      border-radius: 1rem; /* Bordes redondeados */
+      border: 3px solid var(--primary-color); 
+      animation: scale 2s infinite;
+      transition: transform 0.3s ease; /* Transición para el efecto de escalado */
+  }
+  
+  
+    /* Animación de escala para el texto */
+    @keyframes scale {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+  
+    .line {
+      position: absolute;
+      background: radial-gradient(circle at 30% 30%, #ffffff, #e0e0e0 40%, #b3b3b3 70%, #808080 100%);
+    }
+    
+    /* Línea superior */
+    .line.top {
+      top: 0%;
+      left: 50%;
+      height: 8px; /* Línea delgada */
+      width: 90px;
+      animation: moveLineTop 8s infinite ease-in-out;
+    }
+    
+    
+    /* Línea derecha */
+    .line.right {
+      right: 0%;
+      top: 0%;
+      height: 90px;
+      width: 8px;
+      animation: moveLineRight 8s infinite ease-in-out;
+    }
+    
+    /* Línea inferior */
+    .line.bottom {
+      bottom: 0%;
+      left: 50%;
+      height: 8px; /* Línea delgada */
+      width: 90px;
+      animation: moveLineBottom 8s infinite ease-in-out;
+    }
+    
+    /* Línea izquierda */
+    .line.left {
+      left: 0%;
+      top: 50%;
+      width: 8px;
+      height: 90px; /* Ajusta la altura */
+      animation: moveLineLeft 8s infinite ease-in-out;
+    }
+    
+    /* Animaciones para las líneas */
+    @keyframes moveLineTop {
+      0% { left: 50%; transform: translateX(-50%); }
+      25% { left: 0%; transform: translateX(0%); }
+      50% { left: 50%; transform: translateX(-50%); }
+      75% { left: 100%; transform: translateX(-100%); }
+      100% { left: 50%; transform: translateX(-50%); }
+    }
+    
+    
+    @keyframes moveLineRight {
+      0% { top: 0%; transform: translateY(0%); }
+      25% { top: 50%; transform: translateY(-50%); }
+      50% { top: 100%; transform: translateY(-100%); }
+      75% { top: 50%; transform: translateY(-50%); }
+      100% { top: 0%; transform: translateY(0%); }
+    }
+    
+    @keyframes moveLineBottom {
+      0% { left: 50%; transform: translateX(-50%); }
+      25% { left: 100%; transform: translateX(-100%); }
+      50% { left: 50%; transform: translateX(-50%); }
+      75% { left: 0%; transform: translateX(0%); }
+      100% { left: 50%; transform: translateX(-50%); }
+    }
+    
+    @keyframes moveLineLeft {
+      0% { top: 100%; transform: translateY(-100%); }
+      25% { top: 50%; transform: translateY(-50%); }
+      50% { top: 0%; transform: translateY(0%); }
+      75% { top: 50%; transform: translateY(-50%); }
+      100% { top: 100%; transform: translateY(-100%); }
+    }
+

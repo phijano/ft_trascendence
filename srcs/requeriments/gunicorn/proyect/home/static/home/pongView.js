@@ -62,14 +62,32 @@ function startLocal() {
 	hideRemote();
 	hideTournament();
     hideCustomizationOptions();
-    setLocal();
+    // Obtén el valor de la opción seleccionada
+    const selectedOption = document.querySelector("#sOpponentContainer .option.selected");
+    const selectedValue = selectedOption ? selectedOption.getAttribute("data-value") : null;
+
+	hide3D();
+    // Ejecuta acciones según la opción seleccionada
+    if (selectedValue === "1"){  // Multiplayer seleccionado
+		show_multi();
+    } else if (selectedValue === "2") {  // 3D seleccionado
+		show_3D();
+	} else 
+	{  // Cualquier otro valor
+		hideMultiplayer();
+		hide3D();
+		setLocal();
+	}
 }
+
 
 function startRemote() {
     applySettings();
 	hideLocal();
 	hideTournament();
     hideCustomizationOptions();
+	hideMultiplayer();
+	hide3D();
     setRemote();
 }
 
@@ -78,6 +96,8 @@ function startTournamentMode() {
 	hideLocal();
 	hideRemote();
     hideCustomizationOptions();
+	hideMultiplayer();
+	hide3D();
     setTournament();
 }
 
@@ -87,6 +107,8 @@ function showCustomizationOptions() {
 	hideLocal();	
 	hideRemote();
 	hideTournament();
+	hideMultiplayer();
+	hide3D();
 	document.getElementById("bSettings").disabled = true;
     document.getElementById("dCustomizationOptions").hidden = false;
 }
@@ -98,6 +120,7 @@ function hideLocal() {
 	document.getElementById("dMatchPlayers").hidden = true;
 	document.getElementById("dStartGame").hidden = true;
 	document.getElementById("dWinner").hidden = true;
+	document.getElementById("chooseIndicator").hidden = true;
 }
 
 function hideRemote() {
@@ -108,17 +131,27 @@ function hideRemote() {
 	document.getElementById("dStartGame").hidden = true;
 	document.getElementById("dWinner").hidden = true;
 	document.getElementById("dGameMessage").hidden = true;
-
+	document.getElementById("chooseIndicator").hidden = true;
 }
 
 function hideTournament() {
 	document.getElementById("bTournament").disabled = false;
 	document.getElementById("dTournamentSettings").hidden = true;
+	document.getElementById("chooseIndicator").hidden = true;
+}
+
+function hideMultiplayer() {
+	document.getElementById("dMultiplayerSettings").hidden = true;
+}
+
+function hide3D() {
+	document.getElementById("d3Dsettings").hidden = true;
 }
 
 function hideCustomizationOptions() {
 	document.getElementById("bSettings").disabled = false;
     document.getElementById("dCustomizationOptions").hidden = true;
+	document.getElementById("chooseIndicator").hidden = true;
 }
 
 function setLocal() {
@@ -559,29 +592,202 @@ function setRules() {
 	document.getElementById("dSidePanel").hidden = false;
 }
 
-function showRules() {
-	const sidePanel = document.getElementById("dSidePanel");
 
-	sidePanel.style.transition = "0.5s, border 0s, color 0s 0.5s";
-	sidePanel.style.color = "black";
-	sidePanel.style.borderWidth = "2px";
-	sidePanel.style.width = "250px";
+function toggleRules() {
+    const sidePanel = document.getElementById("dSidePanel");
+    const header = document.querySelector('header'); // Seleccionar el elemento header
+    const rulesButton = document.getElementById("bRules");
+	const sidePanelHeight = sidePanel.scrollHeight;
+
+	if (sidePanel.style.opacity === "1" || sidePanel.style.height === `${sidePanelHeight}px`) {
+        // Ocultar el panel
+        sidePanel.style.height = "0"; // Colapsa el panel
+        sidePanel.style.opacity = "0"; // Hace el panel transparente
+		rulesButton.style.top = "0px"; // Ajusta esta altura según la altura de tu navbar
+
+    } else {
+        // Mostrar el panel
+		sidePanel.style.opacity = "1"; // Hace visible el panel
+        sidePanel.style.borderWidth = "2px";
+        sidePanel.style.height = `${sidePanelHeight}px`; // Cambia la altura para mostrar el panel
+ 
+        // Mueve el botón "Rules" justo debajo del panel después de un pequeño retraso
+        setTimeout(() => {
+            rulesButton.style.top = `${sidePanelHeight}px`; // Ajusta esta altura según la altura del panel y la navbar
+        }, 50); // Ajusta el retraso según sea necesario
+    }
 }
 
-function closeRules() {
-	const sidePanel = document.getElementById("dSidePanel");
-	sidePanel.style.width = "0";
-	sidePanel.style.transition = "0.5s, border 0.1s 0.5s ,color 0s";
-	sidePanel.style.borderWidth = "0px";
-	sidePanel.style.color="white";
+
+// function showRules() {
+//     const sidePanel = document.getElementById("dSidePanel");
+//     const header = document.querySelector('header'); // Seleccionar el elemento header
+//     const headerHeight = header ? header.offsetHeight : 0; // Obtener la altura del header
+// 	const rulesButton = document.getElementById("bRules");
+
+//     sidePanel.style.transition = "height 0.5s, top 0.5s, border 0s, color 0s 0.5s";
+//     sidePanel.style.color = "black";
+//     sidePanel.style.borderWidth = "2px";
+//     sidePanel.style.height = "250px"; // Cambia la altura para mostrar el panel
+//     sidePanel.style.top = `${headerHeight}px`; // Mueve el panel a la vista, justo debajo del header
+// 	sidePanel.style.visibility = "visible"; // Asegúrate de que el panel esté visible
+
+//     setTimeout(() => {
+//         rulesButton.style.top = "250px";
+//     }, 50); // Ajusta el retraso según sea necesario
+// }
+
+// function closeRules() {
+// 	const sidePanel = document.getElementById("dSidePanel");
+//     const header = document.querySelector('header'); // Seleccionar el elemento header
+//     const headerHeight = header ? header.offsetHeight : 0; // Obtener la altura del header
+// 	const rulesButton = document.getElementById("bRules");
+
+//     sidePanel.style.transition = "height 0.5s, top 0.5s, border 0s, color 0s, visibility 0s 0.3s";
+//     sidePanel.style.height = "0"; // Cambia la altura para ocultar el panel
+//     sidePanel.style.top = `${headerHeight}px`; // Mantiene el panel justo debajo del header
+//     sidePanel.style.borderWidth = "0px";
+//     sidePanel.style.color = "white";
+// 	sidePanel.style.visibility = "hidden"
+
+//     rulesButton.style.top = "0px";
+// }
+
+
+function moveBall(position) {
+    const ball = document.getElementById('ball-pong');
+	const remote =document.getElementById('bRemoteGame');
+
+	ball.style.top = '0px';
+
+    if (position === 'left') {
+        ball.style.left = '0'; // Extremo izquierdo
+	} else if (position === 'center_1') {
+		ball.style.left = '30.83%'; 
+	} else if (position === 'center') {
+        if (remote.hidden){
+			ball.style.left = '47.5%';
+		} else {
+			ball.style.left = '64.16%';
+		}
+    } else if (position === 'right') {
+        ball.style.left = '95%'; // Extremo derecho
+    }
+
+}
+
+function selectOption(element) {
+    // Remove 'selected' class from all options
+    const options = document.querySelectorAll('#sOpponentContainer .option');
+    options.forEach(option => option.classList.remove('selected'));
+
+    // Add 'selected' class to the clicked option
+    element.classList.add('selected');
+
+    // Update the hidden select element
+    const selectElement = document.getElementById('sOpponent');
+    selectElement.value = element.getAttribute('data-value');
+
+    // Trigger the onchange event
+    selectElement.dispatchEvent(new Event('change'));
+
+    const value = element.getAttribute('data-value');
+    const difficultyContainer = document.getElementById('sDifficultyContainer');
+    const localSettingsContainer = document.getElementById('dLocalSettings');
+    if (value === '0') {
+        difficultyContainer.classList.remove('visible');
+        localSettingsContainer.classList.add('centered');
+		pongStartLocal();
+    } else if (value === '1') { 
+		show_multi();
+	} else if (value === '2') {
+		show_3D();
+	} else if (value === '3') {
+        difficultyContainer.classList.add('visible');
+        localSettingsContainer.classList.remove('centered');
+		pongStartLocal();
+    } 
+}
+
+function show_3D(){
+    const difficultyContainer = document.getElementById('sDifficultyContainer');
+    const localSettingsContainer = document.getElementById('dLocalSettings');
+
+	document.getElementById("dLocalSettings").hidden = false;
+	difficultyContainer.classList.remove('visible');
+	localSettingsContainer.classList.add('centered');
+	document.getElementById("bLocalGame").disabled = false;
+	document.getElementById("board").style.visibility = "hidden";
+	document.getElementById("dMatchPlayers").hidden = true;
+	document.getElementById("dStartGame").hidden = true;
+	document.getElementById("dWinner").hidden = true;
+	document.getElementById("chooseIndicator").hidden = true;
+	canvasResize();
+	document.getElementById("dMultiplayerSettings").hidden = true;
+	document.getElementById("d3Dsettings").hidden = false;
+	window.pongInit_3D();
+}
+
+function show_multi(){
+    const difficultyContainer = document.getElementById('sDifficultyContainer');
+    const localSettingsContainer = document.getElementById('dLocalSettings');
+
+	document.getElementById("dLocalSettings").hidden = false;
+	difficultyContainer.classList.remove('visible');
+	localSettingsContainer.classList.add('centered');
+	document.getElementById("bLocalGame").disabled = false;
+	document.getElementById("board").style.visibility = "hidden";
+	document.getElementById("dMatchPlayers").hidden = true;
+	document.getElementById("dStartGame").hidden = true;
+	document.getElementById("dWinner").hidden = true;
+	document.getElementById("chooseIndicator").hidden = true;
+	document.getElementById("d3Dsettings").hidden = true;
+	canvasResize();
+	document.getElementById("dMultiplayerSettings").hidden = false;
+
+}
+
+function selectDifficulty(element) {
+	// Remove 'selected' class from all options
+	const options = document.querySelectorAll('#sDifficultyContainer .option');
+	options.forEach(option => option.classList.remove('selected'));
+
+	// Add 'selected' class to the clicked option
+	element.classList.add('selected');
+
+	// Update the hidden select element
+	const selectElement = document.getElementById('sDifficulty');
+	selectElement.value = element.getAttribute('data-value');
+
+	// Trigger the onchange event
+	selectElement.dispatchEvent(new Event('change'));
+}
+
+function setNumPlayers(element) {
+    // Remueve la clase 'selected' de todas las opciones
+    const options = document.querySelectorAll('#sNumPlayersContainer .option');
+    options.forEach(option => option.classList.remove('selected'));
+
+    // Agrega la clase 'selected' al elemento clicado
+    element.classList.add('selected');
+
+    // Actualiza el valor del select oculto
+    const select = document.getElementById('sNumPlayers');
+    select.value = element.getAttribute('data-value');
+
+	select.dispatchEvent(new Event('change'));
 }
 
 
 //menu
-window.pongStartLocal = startLocal
+window.pongStartLocal = startLocal;
 window.pongStartRemote = startRemote;
 window.pongStartTournamentMode = startTournamentMode;
 window.pongShowCustomizationOptions = showCustomizationOptions;
+window.pongMoveball = moveBall;
+window.pongSelectOption = selectOption;
+window.pongSelectDifficulty = selectDifficulty;
+window.pongSetNumPlayers = setNumPlayers;
 
 //local game
 window.pongSetOpponent = setOpponent;
@@ -607,6 +813,44 @@ window.dropGame = dropGame;
 //rules
 
 window.pongSetRules = setRules;
-window.pongShowRules = showRules;
-window.pongCloseRules = closeRules;
+window.pongToggleRules = toggleRules;
+//window.pongShowRules = showRules;
+//window.pongCloseRules = closeRules;
 
+
+
+
+
+
+//###########################################################MULTIPLAYER######################################################################
+
+
+function canvasResize() {
+	let canvas = document.getElementById("pongCanvas");
+	let canvasSize = document.getElementById("boardSize").value;
+	switch (canvasSize) 
+	{
+		case "small":
+			canvas.width = 400;
+			canvas.height = 400;
+			canvas.style.width = "400px";
+			canvas.style.height = "400px";
+			break;
+		case "normal":
+			canvas.width = 600;
+			canvas.height = 600;
+			canvas.style.width = "600px";
+			canvas.style.height = "600px";
+			break;
+		case "big":
+			canvas.width = 800;
+			canvas.height = 800;
+			canvas.style.width = "800px";
+			canvas.style.height = "800px";
+			break;
+		default:
+			canvas.width = 600;
+			canvas.height = 600;
+			break;
+	}
+}

@@ -3,8 +3,8 @@ export function userMenu(){
 	menu.id = "nUser";
 	menu.hidden = true;
 	menu.innerHTML = `
-	<a class="px-3 text-white text-decoration-none" href="/" onclick="logOut()">Log out</a>
-	<a class="px-3 text-white text-decoration-none" href="/profile">Profile/Imagen</a>
+	<a class="px-3 text-decoration-none orbitron-font" href="/" onclick="logOut()">Log out</a>
+	<a class="px-3 text-decoration-none orbitron-font" href="/profile">Profile/Imagen</a>
 	`;
 	return menu;
 }
