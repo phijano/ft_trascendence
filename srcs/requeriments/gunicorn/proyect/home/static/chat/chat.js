@@ -137,7 +137,8 @@ window.initializeChat = function() {
         
         if (isSender) {
 			//chang senderId with the correct id
-            creatorId = data.match_id.split("_")[1] 
+            creatorId = data.match_id.split("_")[1];
+            console.log("creatorId:", creatorId);
             pongJoinPrivateGame(creatorId);
         }
         else {
