@@ -245,6 +245,7 @@
 .title-cyan-big {
     font-family: "Orbitron", sans-serif;
     font-size: large;
+    text-transform: uppercase;
     color: cyan;
     margin-top: 20px;
     margin-bottom: 20px;

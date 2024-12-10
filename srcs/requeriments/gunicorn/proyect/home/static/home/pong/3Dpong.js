@@ -7,6 +7,7 @@ let timeLeft;
 let gameInterval;
 let playing = false;
 let initialized = false;
+let paddle_speed = 0;
 
 
 function generateRandom(min, max) {
@@ -25,6 +26,7 @@ function init() {
     // Asigna una velocidad y dirección aleatoria de la pelota
 
     let ball_speed = parseFloat(document.getElementById("ballSpeed").value);
+    paddle_speed = parseFloat(document.getElementById("playerSpeed").value);
 
     ballSpeed.x = generatePositiveNegative() * ball_speed * 0.5;
     ballSpeed.y = generatePositiveNegative() * ball_speed * 0.5;
@@ -100,7 +102,7 @@ function init() {
 
     if (initialized)
         {
-            console.log('3D Pong game already started man');
+            console.log('3D Pong game already started brother');
             return;
         } // Evitar múltiples inicializaciones
     
@@ -321,7 +323,7 @@ function startGame() {
 
 // Control de teclas para jugadores
 window.addEventListener('keydown', (event) => {
-    let paddle_speed = parseFloat(document.getElementById("playerSpeed").value);
+
     switch (event.key) {
         case 'w':
             player1Speed = paddle_speed;
