@@ -1,3 +1,5 @@
+@import url('../../../static/home/nav.css');
+
 /* ? -------------------------------------
 *    Estilo para el contenedor del chat 
    ? -------------------------------------*/
@@ -15,6 +17,7 @@
     margin: auto; /* Centra el contenedor horizontalmente */
     position: relative; /* Posiciona el contenedor de forma relativa */
 }
+
 
 /* Estilo para el área de mensajes */
 #boxMessages {
