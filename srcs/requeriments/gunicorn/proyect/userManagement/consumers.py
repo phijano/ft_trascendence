@@ -40,6 +40,10 @@ class WebConsumer(AsyncWebsocketConsumer):
         return userManagement.models.Profile.objects.get(id=profile_id)
 
     @database_sync_to_async
+    def get_user_by_user_id(self, user_id):
+        return userManagement.models.User.objects.get(id=user_id)
+
+    @database_sync_to_async
     def save_profile(self, profile):
         profile.save()
 
@@ -136,7 +140,9 @@ class WebConsumer(AsyncWebsocketConsumer):
             self.opponent = ""
             self.host = False
             if private == "yes":
-                self.opponent = str(json_data.get("opponent", ""))
+                opponent_user = await self.get_user_by_user_id(json_data.get("opponent",""))
+                opponent_profile = await self.get_user_profile(opponent_user)
+                self.opponent = str(opponent_profile.id)
                 await self.channel_layer.group_add("private" + self.opponent, self.channel_name)
                 self.private_channel = True
                 group = "private" + self.opponent
@@ -310,7 +316,7 @@ class WebConsumer(AsyncWebsocketConsumer):
                             "message":"join"
                         }
                     )
-            elif event["message"] == "create":
+            elif event["message"] == "created":
                 if self.profile_id != event["player"]:
                     await self.channel_layer.group_send(
                         "private" + event["player"] ,
