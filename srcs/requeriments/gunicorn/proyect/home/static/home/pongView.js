@@ -9,6 +9,17 @@ let gameMode;
 let opponent;
 let difficulty;
 
+let remoteTournaments = new Object();
+let remoteTourConfig = "";
+let remoteTourGamePlayers= "";
+let remoteTourGameHost = false;
+let joinedRemoteTournament = false;
+let viewingRemoteTournament = false;
+let notificatedRemoteTournament = false;
+let finalMatch = false;
+
+let currentToast;
+
 let gameConfig = // Initialize to normal settings
 {
 	playAI : false,
@@ -101,6 +112,26 @@ function startTournamentMode() {
     setTournament();
 }
 
+function startTournamentRemoteMode() {
+    applySettings();
+	hideLocal();
+	hideRemote();
+    hideCustomizationOptions();
+	hideMultiplayer();
+	hide3D();
+	gameMode = "remoteTour"
+	if (joinedRemoteTournament)
+	{
+		console.log("joined");
+		viewingRemoteTournament = true;
+		showRemoteTournament();
+	}
+	else {
+		console.log("not created/joined");
+		setRemoteTournament();
+	}
+}
+
 function showCustomizationOptions() {
 	dropGame();
 	stop();
@@ -135,6 +166,7 @@ function hideRemote() {
 }
 
 function hideTournament() {
+	viewingRemoteTournament = false;
 	document.getElementById("bTournament").disabled = false;
 	document.getElementById("dTournamentSettings").hidden = true;
 	document.getElementById("chooseIndicator").hidden = true;
@@ -184,6 +216,45 @@ function setTournament() {
 	tournament.reset();
 	addRegisteredPlayer();
 }
+
+function setRemoteTournament() {
+	dropGame();
+	stop();
+	document.getElementById("bTournament").disabled = true;
+	document.getElementById("dTournamentSettings").hidden = false;
+	document.getElementById("sNumPlayers").style.visibility = "visible";
+	const tournamentsInfo = document.getElementById("dTournamentsInfo");
+	tournamentsInfo.innerHTML = "";
+	viewingRemoteTournament = true;
+	sendMessageServer({app: "pong", action: "infoTournament"})
+}
+
+function showRemoteTournament() {
+	
+	const profileId = document.getElementById("hProfileId").value;
+	if (notificatedRemoteTournament == true){
+		notificatedRemoteTournament = false;
+		let players = []
+		for (var key in remoteTourGamePlayers) {
+			players.push(remoteTourGamePlayers[key])
+		}
+		document.getElementById("dStartOptions").hidden = true;
+		document.getElementById("bTournament").disabled = false;
+		document.getElementById("dTournamentSettings").hidden = true;
+		document.getElementById("board").style.visibility = "visible";
+		document.getElementById("dGameMessage").hidden = true;
+		document.getElementById("dWinner").hidden = true;
+		document.getElementById("dAdvance").hidden = true;
+		document.getElementById("lLeftPlayer").innerHTML = players[0];
+		document.getElementById("lRightPlayer").innerHTML = players[1];
+		document.getElementById("dMatchPlayers").hidden = false;
+		initPong(remoteTourConfig);
+	}
+	if (joinedRemoteTournament) {
+		sendMessageServer({player: profileId, app: "pong", action: "ready"})
+	}
+}
+
 
 function setRemote() {
 	stop();
@@ -298,15 +369,13 @@ function endMatch(lPlayerScore, rPlayerScore) {
 	document.getElementById("dMatchPlayers").hidden = true;
 	document.getElementById("dWinner").hidden = false;
 
-	if (gameMode == "local")
-	{
+	if (gameMode == "local") {
 		matchType = "Single Match";
 		document.getElementById("sOpponent").disabled = false;
 		document.getElementById("sDifficulty").disabled = false;
 		document.getElementById("dStartGame").hidden = false;
 	}
-	else if (gameMode == "tournament")
-	{
+	else if (gameMode == "tournament") {
 		matchType = "Tournament " + tournament.roundName;
 		tournament.addResult(winner.innerHTML, lPlayerScore, rPlayerScore);
 		if (tournament.champion)
@@ -323,8 +392,17 @@ function endMatch(lPlayerScore, rPlayerScore) {
 			document.getElementById("dAdvance").hidden = false;
 		}
 	}
+	else if (gameMode == "remoteTour") {
+		if (finalMatch) {
+			document.getElementById("dMatchPlayers").hidden = true;
+			document.getElementById("dWinner").hidden = true;
+			document.getElementById("board").style.visibility = "hidden";
+			document.getElementById("dChampion").hidden = false;
+			document.getElementById("lChampion").innerHTML = winner.innerHTML;
+		}
+	}
 	const nick = document.getElementById("hNick").value;
-	if (nick && gameMode != "remote") {
+	if (nick && gameMode != "remote" && gameMode != "remoteTour") {
 		if (nick == lPlayer) {
 			saveMatchResult(lPlayer, "", rPlayer, lPlayerScore, rPlayerScore, matchType);
 		}
@@ -454,6 +532,67 @@ function advance() {
 	showPlayers(tournament.matchPlayers);
 }
 
+
+//remote tournament
+
+
+function updateTournamentsInfo() {
+	const tournamentsInfo = document.getElementById("dTournamentsInfo");
+	let newInfo = "";
+
+	for (var key in remoteTournaments){
+
+		newInfo = newInfo + "<p> Tournament " + remoteTournaments[key][0] + "/" + remoteTournaments[key][1]  +"<button class=\"btn btn-danger btn-sm\" onclick=\"pongJoinRemoteTournament('"+ key +"')\">Join</button>" + "</p>";
+
+		console.log(remoteTournaments[key]);
+	}
+	try {
+	tournamentsInfo.innerHTML = newInfo;
+	} catch (error) {
+		console.log("tour update");
+	}
+
+}
+
+function createRemoteTournament() {
+	const numPlayers = document.getElementById("sNumPlayers");
+	const profileId = document.getElementById("hProfileId").value;
+	
+	setNotificationId();
+	remoteTourConfig = gameConfig;	
+	console.log("created");
+	joinedRemoteTournament = true;
+	document.getElementById("dTournamentSettings").hidden = true;
+	sendMessageServer({player: profileId, app: "pong", action: "createTournament", size: numPlayers.value, config: gameConfig})
+	//showRemoteTournament();
+}
+
+function joinRemoteTournament(tournamentId) {
+	const profileId = document.getElementById("hProfileId").value;
+
+	setNotificationId();
+	console.log("joined");
+	joinedRemoteTournament = true;
+	document.getElementById("dTournamentSettings").hidden = true;
+	sendMessageServer({player: profileId, app: "pong", action: "joinTournament", tournament: tournamentId});
+}
+
+function setNotificationId() {
+	const profileId = document.getElementById("hProfileId").value;
+	const notificationId = document.getElementById("hNotificationId");
+	
+	if (notificationId == null) {
+		const divNot = document.createElement('div');
+		divNot.id = "dNotification";
+		const hiddenId = document.createElement('input');
+		hiddenId.id = "hNotificationId";
+		hiddenId.hidden = true;
+		hiddenId.value = profileId;
+		divNot.append(hiddenId);
+		document.body.appendChild(divNot);
+	}
+}
+
 //remote game
 
 async function createGame() {
@@ -571,6 +710,96 @@ function serverPongMessage(message){
 		playing = false;
 		stopPongRemote();
 	}
+	else if (message.type == "tournament.info") {
+		if (message.active == message.size)
+			delete remoteTournaments[message.tournament]
+		else
+			remoteTournaments[message.tournament] = [message.active, message.size];
+		console.log("tournament_info");
+		updateTournamentsInfo();
+		for (var key in remoteTournaments){
+			console.log(remoteTournaments[key]);
+		}
+	}
+	else if (message.type == "joined.tournament") {
+		remoteTourConfig = message.config;
+	}
+	else if (message.type == "full.tournament") {
+		joinedRemoteTournament = false;
+		document.getElementById("dTournamentSettings").hidden = false;
+		console.log("full");
+	}
+	else if (message.type == "notification"){
+		const profileId = document.getElementById("hNotificationId").value;
+		remoteTourGamePlayers = message.players
+		for (var key in message.players) {
+			if (key == profileId) {
+				notification();
+				notificatedRemoteTournament = true;
+				if (viewingRemoteTournament == true) {
+					showRemoteTournament();
+				}
+			}    
+			console.log(key);
+		}
+		console.log("notification");
+	}
+	else if (message.type == "tourgame"){
+		ready = true;
+		if (message.gametype == "Final") {
+			finalMatch = true;
+		} else {
+			finalMatch = false;
+		}
+	}
+}
+
+function notification(){
+	currentToast = document.createElement('div');
+	currentToast.id = "dToast";
+	currentToast.classList.add('toast-container', 'position-absolute', 'top-0', 'end-0', 'p-3');
+
+	const toast = document.createElement('div');
+	toast.classList.add('toast', 'align-items-center', 'show');
+
+	const toastHeader = document.createElement('div');
+	toastHeader.classList.add('toast-header');
+
+	const toastHeaderMessage = document.createElement('strong');
+	toastHeaderMessage.innerText = 'Tournament Battle';
+
+	const toastHeaderClose = document.createElement('button');
+	toastHeaderClose.classList.add('btn-close');
+	toastHeaderClose.setAttribute('data-bs-dismiss','toast');
+	toastHeaderClose.setAttribute('aria-label','Close');
+	
+	toastHeader.appendChild(toastHeaderMessage);
+	toastHeader.appendChild(toastHeaderClose);
+
+	const toastBody = document.createElement('div');
+	toastBody.classList.add('toast-body');
+
+	const toastBodyButton = document.createElement('button');
+
+	toastBodyButton.classList.add('btn', 'btn-primary', 'btn-sm');
+	toastBodyButton.innerText = 'Go to play';
+	toastBodyButton.addEventListener('click', joinTournamentGame)
+
+	toastBody.appendChild(toastBodyButton);
+
+	toast.appendChild(toastHeader);
+	toast.appendChild(toastBody);
+
+	currentToast.appendChild(toast);
+	document.body.appendChild(currentToast);
+}
+
+async function joinTournamentGame() {
+	currentToast.remove();
+	if (viewingRemoteTournament == false) {
+		await router("/pong");
+		startTournamentRemoteMode();
+	}
 }
 
 
@@ -579,6 +808,14 @@ const sleep = function(ms) {
 }
 
 function dropGame() {
+	viewingRemoteTournament = false;
+	
+	if (joinedRemoteTournament == false) {
+		sendMessageServer({app: "pong", action: "stopinfoTournament"})
+	}
+	else {
+		sendMessageServer({app: "pong", action: "notready"})
+	}
 	if (playing) {
 		const profileId = document.getElementById("hProfileId").value;
 		sendMessageServer({player: profileId,  app: "pong", action: "drop", date: Date.now()});
@@ -783,6 +1020,7 @@ function setNumPlayers(element) {
 window.pongStartLocal = startLocal;
 window.pongStartRemote = startRemote;
 window.pongStartTournamentMode = startTournamentMode;
+window.pongStartTournamentRemoteMode = startTournamentRemoteMode;
 window.pongShowCustomizationOptions = showCustomizationOptions;
 window.pongMoveball = moveBall;
 window.pongSelectOption = selectOption;
@@ -801,6 +1039,10 @@ window.pongAddPlayer = addPlayer;
 window.pongStartTournament = startTournament;
 window.pongAdvance = advance;
 window.pongEndTournament = endTournament;
+
+//remote tournament
+window.pongCreateRemoteTournament = createRemoteTournament
+window.pongJoinRemoteTournament = joinRemoteTournament
 
 //remote game
 window.pongCreateGame = createGame;

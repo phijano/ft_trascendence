@@ -9,7 +9,6 @@ from channels.db import database_sync_to_async
 
 class WebConsumer(AsyncWebsocketConsumer):
 
-
     profile_id = ""
     profile_nick = ""
     host = False
@@ -19,6 +18,9 @@ class WebConsumer(AsyncWebsocketConsumer):
     games_channel = False
     host_channel = False
     private_channel = False
+    tour_game_channel = False
+    #tournament_info_chanel = False
+    tournament_channel = False
     #pong
     creating_game = 0
     pong_config = ""
@@ -30,6 +32,20 @@ class WebConsumer(AsyncWebsocketConsumer):
     width = ""
     yMax = ""
     serveSpeedMultiple = 0.3
+    #tournament
+    tournament_announcer = False
+    tournament_id = 0
+    game_type = ""
+    game_active = False
+    #joined_tournament = False
+    #playing_Tournament = False
+    num_players = 0
+    active_players = 0
+    players_status = {}
+    match_players = ""
+    tournament_players = ""
+    tournament_config = ""
+    tournament = ""
 
     @database_sync_to_async
     def get_user_profile(self, user):
@@ -56,6 +72,10 @@ class WebConsumer(AsyncWebsocketConsumer):
         match.opponent_score = rScore
         match.match_type = match_type
         match.save()
+
+    @database_sync_to_async
+    def save_tournament(self, tournament):
+        tournament.save()
 
     async def connect(self):
         if self.scope['user'].is_authenticated:
@@ -189,10 +209,11 @@ class WebConsumer(AsyncWebsocketConsumer):
                     self.host_channel = False
                     self.private_channel = False
         elif action == "keys":
+            group = "host"
             if self.private_channel:
                 group = "private"
-            else:
-                group = "host"
+            elif self.tour_game_channel:
+                group = "privtour"
             if self.host:
                 group += self.profile_id
             else:
@@ -204,6 +225,261 @@ class WebConsumer(AsyncWebsocketConsumer):
                     "player":self.profile_id, 
                     "keys":json_data.get("keys", "")
                 }
+            )
+        elif action == "infoTournament":
+            await self.channel_layer.group_add("tournaments", self.channel_name)
+            await self.channel_layer.group_send(
+                "tournaments",
+                {
+                    "type":"tournament.message",
+                    "message":"info"
+                }
+            )
+        elif action == "stopInfoTournament":
+            await self.channel_layer.group_discard("tournaments", self.channel_name)
+        elif action == "createTournament":
+            print("createTournament")
+            self.players_status = {str(self.profile_id): "ready"}
+            self.num_players = int(json_data.get("size", ""))
+            tournament = pong.models.Tournament()
+            tournament.size = self.num_players
+            await self.save_tournament(tournament)
+            self.tournament_id = str(tournament.id)
+            print(self.tournament_id)
+            self.active_players = 1
+            profile = await self.get_user_profile(self.scope['user'])
+            self.tournament_players = {self.profile_id:profile.nick}
+            self.tournament_announcer = True
+            self.tournament_config = json_data.get("config","")
+            #
+            self.tournament_config["startSpeed"] /= 15
+            self.tournament_config["playerSpeed"] /= 15
+            group = "tour" + self.tournament_id
+            await self.channel_layer.group_add(group, self.channel_name)
+            self.tournament_channel = True
+            await self.channel_layer.group_send(
+                "tournaments",
+                {
+                    "type":"tournament.message",
+                    "message":"update",
+                    "tournament": self.tournament_id,
+                    "size": self.num_players,
+                    "active": self.active_players
+                }
+            )
+
+        elif action == "joinTournament":
+            self.tournament_id = str(json_data.get("tournament", ""))
+            group = "tour" + self.tournament_id
+            await self.channel_layer.group_add(group, self.channel_name)
+            self.tournament_channel = True
+            await self.channel_layer.group_send(
+                group,
+                {
+                    "type":"tour.players",
+                    "player": self.profile_id,
+                    "message":"join",
+                }
+            )
+        elif action == "ready":
+            group = "tour" + self.tournament_id
+            await self.channel_layer.group_send(
+                group,
+                {
+                    "type":"tour.players",
+                    "player": self.profile_id,
+                    "message":"ready",
+                }
+            )
+        elif action == "notready":
+            group = "tour" + self.tournament_id
+            await self.channel_layer.group_send(
+                group,
+                {
+                    "type":"tour.players",
+                    "player": self.profile_id,
+                    "message":"notready",
+                }
+            )
+
+    async def tour_players(self, event):
+        print(event)
+        
+        if event["message"] == "join":
+            if self.tournament_announcer:
+                group = "tour" + self.tournament_id
+                if self.active_players < self.num_players and str(event["player"]) not in self.tournament_players.keys():
+                    self.players_status[str(event["player"])] = "ready"
+                    self.active_players += 1
+                    profile = await self.get_profile_by_id(event["player"])
+                    self.tournament_players[str(profile.id)] = profile.nick
+                    await self.channel_layer.group_send(
+                        group,
+                        {
+                            "type":"tour.players",
+                            "player": self.profile_id,
+                            "message":"accepted",
+                            "opponent": event["player"],
+                            "players": self.tournament_players,
+                            "config": self.tournament_config,
+                        }
+                    )
+                    await self.channel_layer.group_send(
+                        "tournaments",
+                        {
+                            "type":"tournament.message",
+                            "message":"update",
+                            "tournament": self.tournament_id,
+                            "size": self.num_players,
+                            "active": self.active_players
+                        }
+                    )
+                    if self.active_players == self.num_players:
+                        self.game_active = False
+                        self.tournament = self.Tournament(self.tournament_players)
+                        self.tournament.start()
+                        self.match_players = self.tournament.get_match_players()
+                        await self.channel_layer.group_send(
+                            group,
+                            {
+                                "type": "tour.players",
+                                "player": self.profile_id,
+                                "message":"notification",
+                                "players": self.match_players,
+                            }
+                        )
+                        keys = list(self.match_players.keys())
+                        if self.players_status.get(keys[0]) == "ready" and self.players_status.get(keys[1]) == "ready":
+                            self.game_active = True
+                            self.game_type = self.tournament.get_round_name()
+                            await self.channel_layer.group_send(
+                                group,
+                                {
+                                    "type": "tour.players",
+                                    "player": self.profile_id,
+                                    "message":"startgame",
+                                    "gametype":self.game_type,
+                                    "players": self.match_players,
+                                }
+                            )
+                else:
+                    await self.channel_layer.group_send(
+                        group,
+                        {
+                            "type":"tour.players",
+                            "player": self.profile_id,
+                            "message":"full",
+                            "opponent": event["player"],
+                        }
+                    )
+        elif event["message"] == "ready":
+            if self.tournament_announcer and self.game_active == False:
+                group = "tour" + self.tournament_id
+                self.players_status[str(event["player"])] = "ready"
+                keys = list(self.match_players.keys())
+                if self.players_status.get(keys[0]) == "ready" and self.players_status.get(keys[1]) == "ready":
+                    sef.game_active = True
+                    self.game_type = self.tournament.get_round_name()
+                    await self.channel_layer.group_send(
+                        group,
+                        {
+                            "type": "tour.players",
+                            "player": self.profile_id,
+                            "message":"startgame",
+                            "gametype":self.game_type,
+                            "players": self.match_players,
+                        }
+                    )
+        elif event["message"] == "notready":
+            if self.tournament_announcer:
+                self.players_status[str(event["player"])] = "away"
+        elif event["message"] == "notification":
+            await self.send(text_data=json.dumps(
+                    {
+                        "app":"pong",
+                        "type":"notification",
+                        "players":event["players"],
+                    }
+                )
+            )
+        elif event["message"] == "startgame":
+            status = "view"
+            self.game_type = event["gametype"]
+            if str(self.profile_id) in event["players"].keys():
+                group = "privtour" + list(event["players"].keys())[0]
+                await self.channel_layer.group_add(group, self.channel_name)
+                self.tour_game_channel = True
+                if str(self.profile_id) == list(event["players"].keys())[0]:
+                    status = "host"
+                    self.host = True
+                    self.opponent = list(event["players"].keys())[1]
+                    self.pong_config = self.tournament_config
+                else:
+                    status = "guest"
+                    self.host = False
+                    self.opponent = list(event["players"].keys())[0]
+            await self.send(text_data=json.dumps(
+                    {
+                        "app":"pong",
+                        "type":"tourgame",
+                        "status": status,
+                        "gametype": self.game_type,
+                        "players":event["players"],
+                    }
+                )
+            )
+            if str(self.profile_id) == list(event["players"].keys())[0]:
+                asyncio.create_task(self.pong_loop())
+                
+        elif event["message"] == "accepted":
+            if event["opponent"] == self.profile_id:
+                self.tournament_players = event["players"]
+                self.tournament_config = event["config"]
+                await self.send(text_data=json.dumps(
+                        {
+                            "app":"pong",
+                            "type":"joined.tournament",
+                            "players":self.tournament_players,
+                            "config":self.tournament_config,
+                        }
+                    )
+                )
+
+        elif event["message"] == "full":
+            if event["opponent"] == self.profile_id:
+                await self.channel_layer.group_discard("tour" + self.tournament_id, self.channel_name)
+                self.tournament_channel = True
+                await self.send(text_data=json.dumps(
+                        {
+                            "app":"pong",
+                            "type":"full.tournament",
+                        }
+                    )
+                )
+
+    async def tournament_message(self, event):
+        if event["message"] == "info":
+            if self.tournament_announcer:
+                await self.channel_layer.group_send(
+                    "tournaments",
+                    {
+                        "type":"tournament.message",
+                        "message":"update",
+                        "tournament": self.tournament_id,
+                        "size": self.num_players,
+                        "active": self.active_players
+                    }
+                )
+        elif event["message"] == "update":
+            await self.send(text_data=json.dumps(
+                    {
+                        "app":"pong",
+                        "type":"tournament.info",
+                        "tournament": event["tournament"],
+                        "size": event["size"],
+                        "active":event["active"]
+                    }
+                )
             )
 
     async def players_message(self, event):
@@ -380,6 +656,8 @@ class WebConsumer(AsyncWebsocketConsumer):
         group = "host"
         if self.private_channel:
             group = "private"
+        elif self.tour_game_channel:
+            group = "privtour"
         if self.host:
             await self.channel_layer.group_discard(group + self.profile_id, self.channel_name)
         else:
@@ -387,6 +665,24 @@ class WebConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_discard(group + self.opponent, self.channel_name)
         self.host_channel = False
         self.private_channel = False
+        self.tour_game_channel = False
+        if self.tournament_channel == True and self.host:
+            winner = self.profile_id
+            if event["lPlayer"]["score"] < event["rPlayer"]["score"]:
+                winner = self.opponent
+            print(winner)
+            await self.channel_layer.group_send(
+                group,
+                {
+                    "type": "tour.players",
+                    "player": self.profile_id,
+                    "message":"endgame",
+                    "winner":winner,
+                }
+            )
+
+
+
 
     async def drop_game(self, event):
         print(event)
@@ -490,6 +786,8 @@ class WebConsumer(AsyncWebsocketConsumer):
         group = "host"
         if self.private_channel:
             group = "private"
+        elif self.tour_game_channel:
+            group = "privtour"
         await self.channel_layer.group_send(
             group + self.profile_id ,
             {
@@ -505,7 +803,10 @@ class WebConsumer(AsyncWebsocketConsumer):
             self.playing = False
             user_profile = await self.get_profile_by_id(self.profile_id)
             guest_profile = await self.get_profile_by_id(self.opponent)
-            await self.save_match(user_profile, guest_profile, self.lPlayer["score"], self.rPlayer["score"], "Single Match")
+            game = "Single Match"
+            if self.tour_game_channel:
+                game = "Tournament " + self.game_type
+            await self.save_match(user_profile, guest_profile, self.lPlayer["score"], self.rPlayer["score"], game)
             await self.channel_layer.group_send(
             group + self.profile_id,
                 {
@@ -554,6 +855,8 @@ class WebConsumer(AsyncWebsocketConsumer):
         group = "host"
         if self.private_channel:
             group = "private"
+        elif self.tour_game_channel:
+            group = "privtour"
         await self.channel_layer.group_send(
             group + self.profile_id ,
             {
@@ -566,3 +869,100 @@ class WebConsumer(AsyncWebsocketConsumer):
             }
         )
         self.ball["yVel"] *= -1
+        
+    class Tournament:
+        def __init__(self, players):
+            self.players = players
+            self.rounds = []
+            self.current_round = 0
+            self.order = list(players.keys())
+
+        def start(self):
+            random.shuffle(self.order)
+            tour_round = self.Round(self.order)
+            self.rounds.append(tour_round)
+
+        def advance(self):
+            if self.rounds[self.current_round].get_length() == 1:
+                return False
+
+            if self.rounds[self.current_round].is_finished():
+                self.next_round()
+            else:
+                self.rounds[self.current_round].advance()
+            return True
+        
+        def next_round(self):
+            winners = self.rounds[self.current_round].get_winners()
+            tour_round = self.Round(winners)
+            self.rounds.push(tour_round)
+            self.current_round += 1
+
+        def set_winner(self, winner):
+            self.rounds[self.current_round].set_winner(winner)
+
+        def get_match_players(self):
+            players = self.rounds[self.current_round].get_match_players()
+            return {players[0]:self.players[players[0]], players[1]:self.players[players[1]]}
+        def get_champion(self):
+            pass
+        
+        def get_round_name(self):
+            length = self.rounds[self.current_round].get_length()
+            if length == 1:
+                return "Final"
+            elif length == 2:
+                return "Semifinal"
+            elif length == 4:
+                return "Quarter-final"
+            elif length == 8:
+                return "Round of 16"
+            else:
+                return "Match"
+
+        class Round:
+            def __init__(self, players):
+                players_index = 0
+                self.matches = []
+                for i in range(int(len(players)/2)):
+                    self.matches.append(self.Match(players[players_index], players[players_index + 1]))
+                    players_index += 2
+                self.current_match = 0
+
+            def advance(self):
+                self.current_match += 1
+
+            def set_winner(self, winner):
+                self.matches[self.current_match].set_winner(winner)
+
+            def get_length(self):
+                return len(self.matches)
+
+            def is_finished(self):
+                return self.current_match + 1 == len(this.matches)
+
+            def get_match_players(self):
+                return self.matches[self.current_match].get_players()
+
+            def get_winners(self):
+                winners = []
+                for i in range(len(self.matches)):
+                    winners.push(self.matches[i].get_winner())
+                return winners
+
+            class Match:
+
+                def __init__(self, l_player, r_player):
+                    self.winner = ""
+                    self.l_player = l_player
+                    self.r_player = r_player
+        
+                def set_winner(self, winner):
+                    self.winner = winner
+
+                def get_winner(self):
+                    return self.winner
+
+                def get_players(self):
+                    return [self.l_player, self.r_player]
+

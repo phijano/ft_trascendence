@@ -36,3 +36,6 @@ class Match(models.Model):
         else:
             text = text + " VS " + self.opponent_name
         return text + " " + self.match_type + " " + str(self.date)
+
+class Tournament(models.Model):
+    size = models.IntegerField()

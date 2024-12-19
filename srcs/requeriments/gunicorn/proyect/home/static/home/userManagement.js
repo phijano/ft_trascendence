@@ -26,8 +26,6 @@ function socketMessage(event) {
 	const message = JSON.parse(event.data);
 	if (message.app = "pong") {
 		serverPongMessage(message);
-	} else if (message.app = "chat") {
-		console.leg("datos servidor chat");
 	}
 }
 
@@ -185,9 +183,8 @@ function unsetUser() {
 	hidePlayer();
 	showRegister();
 	showMenu();
+	removeNotifications();
 }
-
-
 
 function showRegister() {
 	document.getElementById("nRegister").hidden = false;
@@ -221,6 +218,17 @@ function hidePlayer() {
 	document.getElementById("nPlayer").hidden = true;
 }
 
+function removeNotifications() {
+	const notDiv = document.getElementById("dNotification");
+	const toastDiv = document.getElementById("dToast");
+	if (notDiv != null) {
+		notDiv.remove();
+	}
+	if (toastDiv != null) {
+		toastDiv.remove();
+	}
+
+}
 
 
 function editAvatar() {
