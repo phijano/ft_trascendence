@@ -132,7 +132,6 @@ window.initializeChat = function() {
         
         console.log(user); 
         await router("/pong");
-        await sleep(400);
         pongStartRemote();
         
         if (isSender) {
@@ -145,11 +144,6 @@ window.initializeChat = function() {
             pongCreatePrivateGame();
         }
 
-    }
-
-    //borrar y hacerlo decente
-    const sleep = function(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
 

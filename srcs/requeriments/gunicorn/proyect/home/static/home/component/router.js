@@ -43,9 +43,9 @@ export const locationHandler = async() => {
     console.log("pagina cargada: ");
 };
 
-function buttonRouter(ref)
+async function buttonRouter(ref)
 {
-    router(window.location.origin + ref);
+    await router(window.location.origin + ref);
 }
 
 window.router = buttonRouter
