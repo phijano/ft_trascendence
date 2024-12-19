@@ -9,8 +9,8 @@ window.initializeChat = function() {
     
     // Modify WebSocket URL construction
     const wsUrl = isPrivate ? 
-        `ws://${window.location.host}/ws/chat/private/${room}/` :
-        `ws://${window.location.host}/ws/chat/${room}/`;
+        `wss://${window.location.host}/ws/chat/private/${room}/` :
+        `wss://${window.location.host}/ws/chat/${room}/`;
     
     var chatSocket = new WebSocket(wsUrl);
 

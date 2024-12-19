@@ -9,7 +9,7 @@ services:
       - .env
     build: ./requeriments/nginx/.
     ports:
-      - 8443:443
+      - 8080:443
     networks:
       - trascendencenet
     volumes:
