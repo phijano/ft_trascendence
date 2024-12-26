@@ -23,10 +23,6 @@ RUN cat conf >> /etc/vim/vimrc
 # Crear proyecto de prueba
 RUN django-admin startproject dummy
 
-# Copiar script wait-for-postgres
-COPY ./wait-for-postgres.sh /tools/wait-for-postgres.sh
-RUN chmod +x /tools/wait-for-postgres.sh
-
 # Copiar proyecto
 RUN mkdir /trascendence
 COPY ./proyect/ /trascendence/
