@@ -31,7 +31,7 @@ class Block(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('blocker', 'blocked')  # Evita bloqueos duplicados
+        unique_together = ('blocker', 'blocked')  # Prevent duplicate blocks
 
 class ChatInvitation(models.Model):
     sender = models.ForeignKey(User, related_name='sent_invites', on_delete=models.CASCADE)
@@ -41,5 +41,5 @@ class ChatInvitation(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        # Evita que existan múltiples invitaciones entre los mismos usuarios
+        # Prevent multiple invitations between the same users
         pass

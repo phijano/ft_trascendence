@@ -1,53 +1,8 @@
-{% comment %} {% extends 'chat.html' %}
-
-{% block content %}
-<div class="chat-container">
-    <div class="chat-header">
-        <h2>Chat Privado</h2>
-        <div class="chat-participants">
-            {% for user in room.users.all %}
-                {% if user != request.user %}
-                    Chateando con: {{ user.username }}
-                {% endif %}
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="boxMessages" class="chat-messages" 
-         data-room="{{ room_name }}"
-         data-user="{{ request.user.username }}"
-         data-avatar="{{ request.user.profile.avatar.url }}">
-        {% for message in messages %}
-            <!-- Template para mensajes existentes -->
-        {% endfor %}
-    </div>
-
-    <div class="chat-input">
-        <input type="text" id="inputMessage" placeholder="Escribe un mensaje...">
-        <button id="btnMessage">Enviar</button>
-    </div>
-</div>
-
-{% include 'chat/message_templates.html' %}
-{% endblock %}
-
-{% block scripts %}
-<script src="/static/chat/chat.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        window.initializeChat();
-    });
-</script>
-{% endblock %}
- {% endcomment %}
-
-<!-- private_chat.html -->
-<!-- private_chat.html -->
 {% extends 'chat.html' %}
 
 {% block content %}
 <div id="boxMessages" data-room="{{ room.id }}" data-user="{{ user.username }}" data-avatar="{{ user_avatar }}">
-    <!-- Mensajes del chat privado -->
+    <!-- Private chat messages -->
     {% for message in room.messages.all %}
         <div class="message">
             <strong>{{ message.user.username }}:</strong> {{ message.content }}
@@ -55,8 +10,8 @@
     {% endfor %}
 </div>
 <div class="chat-input">
-    <input type="text" id="inputMessage" placeholder="Escribe un mensaje...">
-    <button id="btnMessage">Enviar</button>
+    <input type="text" id="inputMessage" placeholder="Type a message...">
+    <button id="btnMessage">Send</button>
 </div>
 {% endblock %}
 

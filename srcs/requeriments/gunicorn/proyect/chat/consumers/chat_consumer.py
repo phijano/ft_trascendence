@@ -17,23 +17,23 @@ class ChatConsumer(
     UserMixin,
     BloquerUserMixin,
     WebsocketConsumer):
-    # Puedes dejar el método `connect` aquí o moverlo a ConnectionMixin
+    
     def connect(self):
-        super().connect()  # Llama a la implementación en ConnectionMixin
+        super().connect()  
         
-    # Cuando se acepta el chat privado
+# When private chat is accepted
 async def accept_private_chat(self, data):
     sender_id = data['sender_id']
     sender = User.objects.get(id=sender_id)
     receiver = self.user
     
-    # Crear o obtener sala privada
+    # Create or get private room
     room_name = f'private_{sender.id}_{receiver.id}_{int(time.time())}'
     room = Room.objects.create(
         name=room_name,
         is_private=True,
         status='accepted'
     )
-    # Agregar ambos usuarios a la sala
+    # Add both users to the room
     room.users.add(sender, receiver)
     room.save()

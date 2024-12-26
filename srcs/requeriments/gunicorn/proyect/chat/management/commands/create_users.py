@@ -2,17 +2,17 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 
 class Command(BaseCommand):
-    help = 'Crea un superusuario y tres usuarios normales con contraseñas específicas'
+    help = 'Create a superuser and three regular users with specific passwords'
 
     def handle(self, *args, **kwargs):
-        # Crear superusuario
+        # Create superuser
         if not User.objects.filter(username='admin').exists():
             User.objects.create_superuser('admin', 'admin@example.com', 'admin')
-            self.stdout.write(self.style.SUCCESS('Superusuario "admin" creado con éxito.'))
+            self.stdout.write(self.style.SUCCESS('Superuser "admin" created successfully.'))
         else:
-            self.stdout.write(self.style.WARNING('El superusuario "admin" ya existe.'))
+            self.stdout.write(self.style.WARNING('Superuser "admin" already exists.'))
 
-        # Crear usuarios normales
+        # Create regular users
         users = [
             {'username': 'agus', 'password': 'kali'},
             {'username': 'rdelicad', 'password': 'kali'},
@@ -23,8 +23,8 @@ class Command(BaseCommand):
             if not User.objects.filter(username=user['username']).exists():
                 try:
                     User.objects.create_user(user['username'], password=user['password'])
-                    self.stdout.write(self.style.SUCCESS(f'Usuario "{user["username"]}" creado con éxito con la contraseña "{user["password"]}".'))
+                    self.stdout.write(self.style.SUCCESS(f'User "{user["username"]}" created successfully with password "{user["password"]}".'))
                 except Exception as e:
-                    self.stdout.write(self.style.ERROR(f'Error creando el usuario "{user["username"]}": {e}'))
+                    self.stdout.write(self.style.ERROR(f'Error creating user "{user["username"]}": {e}'))
             else:
-                self.stdout.write(self.style.WARNING(f'El usuario "{user["username"]}" ya existe.'))
+                self.stdout.write(self.style.WARNING(f'User "{user["username"]}" already exists.'))

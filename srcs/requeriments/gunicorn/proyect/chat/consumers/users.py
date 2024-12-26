@@ -2,7 +2,7 @@ from asgiref.sync import async_to_sync
 from chat.models import *
 import json
 
-# Usar un diccionario para mantener usuarios por sala
+# Use a dictionary to maintain users by room
 connected_users_by_room = {}
 
 class UserMixin:
@@ -14,7 +14,7 @@ class UserMixin:
         }))
 
     def get_connected_users(self):
-        # Obtener usuarios conectados solo de la sala actual
+        # Get connected users only from the current room
         room_users = connected_users_by_room.get(self.id, set())
         user_list = []
         for user in room_users:
@@ -26,7 +26,7 @@ class UserMixin:
         return user_list
 
     def broadcast_user_list(self):
-        # Enviar lista actualizada a todos los usuarios en la sala
+        # Send updated list to all users in the room
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {

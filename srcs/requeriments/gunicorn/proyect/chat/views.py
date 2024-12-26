@@ -21,9 +21,9 @@ def home(request):
             'user_avatar': user_avatar,
         })
     except Room.DoesNotExist:
-        return render(request, 'chat/error.html', {'error': 'Sala no encontrada'}, status=404)
+        return render(request, 'chat/error.html', {'error': 'Room not found'}, status=404)
     except Exception as e:
-        return render(request, 'chat/error.html', {'error': 'Error interno'}, status=500)
+        return render(request, 'chat/error.html', {'error': 'Internal error'}, status=500)
     
 @login_required
 def private_chat_room(request, room_id):

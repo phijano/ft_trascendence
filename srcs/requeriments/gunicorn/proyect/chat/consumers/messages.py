@@ -7,7 +7,7 @@ class MessageMixin:
     def fetch_last_messages(self):
         last_messages = Message.objects.filter(room__name=self.id).order_by('-timestamp')[:3]
         for message in reversed(last_messages):
-            # Solo enviar mensajes que no sean de usuarios bloqueados
+            # Only send messages that are not from blocked users
             if not self.is_user_blocked(message.user.id):
                 self.send_last_message(message)
 
@@ -28,7 +28,7 @@ class MessageMixin:
         avatar = event['avatar']
         current_user_id = self.scope['user'].id
 
-        # Verificar bloqueos entre el remitente y el receptor
+        # Check blocks between sender and receiver
         self.check_blocked(sender_id, username, current_user_id)
         
         if sender_id != current_user_id:

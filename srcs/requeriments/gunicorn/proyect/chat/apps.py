@@ -1,26 +1,25 @@
-""" asegura que, después de aplicar las migraciones, 
-siempre habrá una sala llamada "public" en la aplicación chat. """
-
+""" Ensures that after applying migrations, 
+there will always be a room called "public" in the chat application. """
 
 from django.apps import AppConfig
 from django.db.models.signals import post_migrate
 from django.dispatch import receiver
 
-# Configuración de la aplicación 'chat'
+# Configuration for the 'chat' application
 class ChatConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'chat'
 
-    # Sobrescribe el método ready para conectar señales
+    # Override the ready method to connect signals
     def ready(self):
-        # Conecta la señal post_migrate a la función create_default_room
+        # Connect the post_migrate signal to the create_default_room function
         post_migrate.connect(create_default_room, sender=self)
 
-# Función que se ejecuta después de aplicar las migraciones
+# Function that runs after applying migrations
 @receiver(post_migrate)
 def create_default_room(sender, **kwargs):
-    # Comprueba si la señal proviene de la aplicación 'chat'
+    # Check if the signal comes from the 'chat' application
     if sender.name == 'chat':
         from .models import Room
-        # Crea una sala llamada 'public' si no existe
+        # Create a room called 'public' if it does not exist
         Room.objects.get_or_create(name='public')

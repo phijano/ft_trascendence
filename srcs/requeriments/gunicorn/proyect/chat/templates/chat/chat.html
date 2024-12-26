@@ -9,62 +9,62 @@
 </head>
 <body>
   <div class="chat-wrapper">
-    <!-- Título del chat -->
+    <!-- Chat title -->
     <h1 class="title-cyan-big mb-4">
       {% if is_private %}
-        Chat privado con {{ other_user.username }}
+        Private chat with {{ other_user.username }}
       {% else %}
         {{ room.name }} chat
       {% endif %}
     </h1>
   
-    <!-- Botón para abrir el modal de usuarios -->
+    <!-- Button to open the users modal -->
     <div id="topButtons" class="chat-actions">
       <button id="usersBtn" class="chat-btn" data-bs-toggle="modal" data-bs-target="#usersModal">USERS</button>
-      <!-- Eliminamos el botón View Profile de aquí -->
+      <!-- Removed the View Profile button from here -->
     </div>
     
-    <!-- Contenedor del chat -->
+    <!-- Chat container -->
     <div id="chat-container" class="container">
-        <!-- Contador de usuarios en línea -->
+        <!-- Online users counter -->
         {% include 'chat/partials/user_count_template.html' %}
   
           
-      <!-- Contenedor de los mensajes -->
+      <!-- Messages container -->
         <div id="boxMessages" class="mb-8" 
             data-room="{{ room.name }}" 
             data-user="{{ user.username }}" 
             data-avatar="{{ user_avatar }}">
-            <!-- Los mensajes se insertarán aquí -->
+            <!-- Messages will be inserted here -->
         </div>
   
-        <!-- Formulario para enviar mensajes -->
+        <!-- Form to send messages -->
         <div id="chat">
-            <input class="form-control" type="text" id="inputMessage" placeholder="Escribe tu mensaje..." />
-            <button class="btn btn-success mb-1 submit" id="btnMessage">Enviar</button>
+            <input class="form-control" type="text" id="inputMessage" placeholder="Type your message..." />
+            <button class="btn btn-success mb-1 submit" id="btnMessage">Send</button>
         </div>
       </div>
   </div>
   
-  <!-- Modal para mostrar usuarios conectados -->
+  <!-- Modal to show connected users -->
   <div class="modal fade" id="usersModal" tabindex="-1" aria-labelledby="usersModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content" style="background-color: #2c3949;">
         <div class="modal-header">
-          <h1 class="modal-title fs-5 orbitron-font-medium" id="usersModalLabel">Usuarios Conectados</h1>
+          <h1 class="modal-title fs-5 orbitron-font-medium" id="usersModalLabel">Connected Users</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body" id="connectedUsersList">
-          <!-- La lista de usuarios se generará dinámicamente aquí -->
+          <!-- The user list will be dynamically generated here -->
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
   </div>
   
-  <!-- Template modificado para incluir el botón Play -->
+  <!-- Modified template to include the Play button -->
   {% verbatim %}
   <template id="userItemTemplate">
     <div class="user-item d-flex justify-content-between align-items-center mb-2">
@@ -94,7 +94,7 @@
   </template>
   {% endverbatim %}
   
-  <!-- Incluir templates -->
+  <!-- Include templates -->
   {% include 'chat/partials/message_templates.html' %}
   {% include 'chat/partials/private_chat_invitations.html' %}
   {% include 'chat/partials/user_list_template.html' %}
