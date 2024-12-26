@@ -2,6 +2,9 @@
 *.pyc
 __pycache__/
 
+# Ignore compiled Python files from PyInstaller
+*/migrations/*.py
+
 # Ignore virtual environment configuration files
 venv/
 env/
