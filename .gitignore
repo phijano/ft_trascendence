@@ -1,62 +1,62 @@
-# Ignorar archivos compilados de Python
+# Ignore compiled Python files
 *.pyc
 __pycache__/
 
-# Ignorar archivos de configuración del entorno virtual
+# Ignore virtual environment configuration files
 venv/
 env/
 ENV/
 .venv/
 .ENV/
 
-# Ignorar archivos de configuración del editor
+# Ignore editor configuration files
 .vscode/
 .idea/
 *.sublime-project
 *.sublime-workspace
 
-# Ignorar archivos de configuración de sistema operativo
+# Ignore operating system configuration files
 .DS_Store
 Thumbs.db
 
-# Ignorar archivos de configuración de logs
+# Ignore log configuration files
 *.log
 
-# Ignorar archivos de configuración de bases de datos locales
+# Ignore local database configuration files
 db.sqlite3
 
-# Ignorar archivos de migraciones de Django
+# Ignore Django migration files
 */migrations/*
 
-# Ignorar archivos estáticos generados
+# Ignore generated static files
 staticfiles/
 media/
 
-# Ignorar archivos de configuración de despliegue
+# Ignore deployment configuration files
 *.env
 .env.*
 
-# Ignorar archivos JSON innecesarios
+# Ignore unnecessary JSON files
 *.json
 
-# Ignorar archivos de configuración de cobertura de pruebas
+# Ignore test coverage configuration files
 htmlcov/
 .coverage
 .coverage.*
 
-# Ignorar archivos de configuración de caché
+# Ignore cache configuration files
 .cache/
 *.cache
 
-# Ignorar archivos de configuración de pytest
+# Ignore pytest configuration files
 .pytest_cache/
 
-# Ignorar archivos de configuración de Jupyter Notebooks
+# Ignore Jupyter Notebooks configuration files
 .ipynb_checkpoints/
 
-# Ignorar archivos de configuración de Celery
+# Ignore Celery configuration files
 celerybeat-schedule
 celerybeat.pid
 
-# Ignorar archivos de configuración de Docker
+# Ignore Docker configuration files
 docker-compose.override.yml
