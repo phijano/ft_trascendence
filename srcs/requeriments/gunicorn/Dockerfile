@@ -1,38 +1,46 @@
+# Base Image
 FROM alpine:3.18.6
+
+# Instalar dependencias
 RUN apk -i update && apk -i upgrade \
   && apk -i add \
   python3 \
   py3-django \
   py3-gunicorn \
   py3-pip \
+  postgresql-client \
+  vim \
   && rm -rf /var/cache/apk/*
 
+# Instalar paquetes de Python
 RUN pip install uvicorn[standard]
+RUN pip install psycopg[binary] channels daphne
 
-#postgresql 
-RUN pip install psycopg[binary]
-
-
-
-# Development things
-RUN pip install channels
-RUN pip install daphne
-
-RUN apk -i add vim
+# Configurar Vim (opcional)
 COPY ./vim/conf /
-RUN cat conf >> etc/vim/vimrc
+RUN cat conf >> /etc/vim/vimrc
 
-#RUN django-admin startproject trascendence
+# Crear proyecto de prueba
 RUN django-admin startproject dummy
-#
+
+# Copiar script wait-for-postgres
+COPY ./wait-for-postgres.sh /tools/wait-for-postgres.sh
+RUN chmod +x /tools/wait-for-postgres.sh
+
+# Copiar proyecto
 RUN mkdir /trascendence
 COPY ./proyect/ /trascendence/
+
+# Ejecutar comandos de Django asegurando que PostgreSQL esté listo
 RUN python3 /trascendence/manage.py collectstatic --noinput
-RUN python3 /trascendence/manage.py makemigrations
+#RUN python3 /trascendence/manage.py makemigrations
+#RUN python3 /trascendence/manage.py migrate
 
-COPY ./tools/django.sh /
-RUN chmod +x django.sh
+# Copiar script de arranque
+COPY ./tools/django.sh /django.sh
+RUN chmod +x /django.sh
 
+# Comando predeterminado
 CMD ["/django.sh"]
 
 

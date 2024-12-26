@@ -2,9 +2,6 @@
 *.pyc
 __pycache__/
 
-# Ignore compiled Python files from PyInstaller
-*/migrations/*.py
-
 # Ignore virtual environment configuration files
 venv/
 env/
@@ -28,38 +25,10 @@ Thumbs.db
 # Ignore local database configuration files
 db.sqlite3
 
-# Ignore Django migration files
+# Ignore Django migration files except __init__.py
 */migrations/*
+!*/migrations/__init__.py
 
 # Ignore generated static files
 staticfiles/
 media/
-
-# Ignore deployment configuration files
-*.env
-.env.*
-
-# Ignore unnecessary JSON files
-*.json
-
-# Ignore test coverage configuration files
-htmlcov/
-.coverage
-.coverage.*
-
-# Ignore cache configuration files
-.cache/
-*.cache
-
-# Ignore pytest configuration files
-.pytest_cache/
-
-# Ignore Jupyter Notebooks configuration files
-.ipynb_checkpoints/
-
-# Ignore Celery configuration files
-celerybeat-schedule
-celerybeat.pid
-
-# Ignore Docker configuration files
-docker-compose.override.yml
