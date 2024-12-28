@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     #delele daphne in prod
+    'django_prometheus',
     'django.contrib.staticfiles',
     'channels',
     'home',
@@ -67,6 +68,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # Middleware para asegurar que los usuarios autenticados estén en la sala pública
     'chat.middleware.PublicRoomMiddleware',
+    'django_prometheus.middleware.PrometheusBeforeMiddleware',
+    'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
 
 ROOT_URLCONF = 'trascendence.urls'

@@ -15,6 +15,7 @@ RUN apk -i update && apk -i upgrade \
 # Instalar paquetes de Python
 RUN pip install uvicorn[standard]
 RUN pip install psycopg[binary] channels daphne
+RUN pip install django_prometheus
 
 # Configurar Vim (opcional)
 COPY ./vim/conf /

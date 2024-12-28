@@ -8,6 +8,9 @@ RUN apk -i update && apk -i upgrade \
 
 COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 COPY ./tools/ssl_nginx.sh /
+COPY ./tools/wait-for-it.sh /wait-for-it.sh
+
+RUN chmod +x /ssl_nginx.sh /wait-for-it.sh
 
 RUN chmod +x ssl_nginx.sh
 

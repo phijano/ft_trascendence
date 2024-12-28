@@ -3,6 +3,8 @@ services:
   nginx:
     depends_on:
       - gunicorn
+      - prometheus
+      - grafana
     image: nginx:42.version.1.0
     container_name: nginx
     env_file:
@@ -14,6 +16,8 @@ services:
       - trascendencenet
     volumes:
       - static:${STATIC_PATH}
+      - ./srcs/requeriments/nginx/tools/wait-for-it.sh:/wait-for-it.sh
+    entrypoint: ["/bin/sh", "-c", "/wait-for-it.sh prometheus:9090 -- nginx -g 'daemon off;'"]
     restart: always
 
   gunicorn:
@@ -50,6 +54,60 @@ services:
       - database:${DATABASE_PATH}
     restart: always
 
+    # Monitoring
+  prometheus:
+    image: prometheus:42.version.1.0
+    container_name: prometheus
+    env_file:
+      - .env
+    build: ./requeriments/monitoring/prometheus
+    ports:
+      - "${PROMETHEUS_PORT}:9090"
+    networks:
+      - trascendencenet
+    volumes:
+      - ./requeriments/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./requeriments/monitoring/prometheus/alert_rules.yml:/etc/prometheus/alert_rules.yml
+      - ${HOST_PROMETHEUS_DATA_PATH}:/prometheus
+    restart: always
+
+  grafana:
+    image: grafana/grafana:42.version.1.0
+    container_name: grafana
+    env_file:
+      - .env
+    build: ./requeriments/monitoring/grafana
+    ports:
+      - "${GRAFANA_PORT}:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+    networks:
+      - trascendencenet
+    volumes:
+      - ${HOST_GRAFANA_DATA_PATH}:/var/lib/grafana
+    restart: always
+
+  node_exporter:
+    image: prom/node-exporter
+    ports:
+      - "${NODE_EXPORTER_PORT}:9100"
+    networks:
+      - trascendencenet
+    restart: always
+
+  postgres_exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: postgres_exporter
+    env_file:
+      - .env
+    ports:
+      - "9187:9187"
+    networks:
+      - trascendencenet
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${DB_USER}:${DB_PASSWORD}@postgre:5432/${DB_NAME}?sslmode=disable"
+    restart: always
 
 networks:
   trascendencenet:
@@ -72,4 +130,16 @@ volumes:
     driver_opts:
       type: none
       device: ${HOST_DATABASE_PATH}
+      o: bind
+  prometheus:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${HOST_PROMETHEUS_DATA_PATH}
+      o: bind
+  grafana:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${HOST_GRAFANA_DATA_PATH}
       o: bind
