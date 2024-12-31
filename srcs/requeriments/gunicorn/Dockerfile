@@ -10,6 +10,7 @@ RUN apk -i update && apk -i upgrade \
   py3-pip \
   postgresql-client \
   vim \
+  gettext \
   && rm -rf /var/cache/apk/*
 
 # Instalar paquetes de Python
