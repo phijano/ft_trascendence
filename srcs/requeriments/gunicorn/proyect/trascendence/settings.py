@@ -155,7 +155,15 @@ TIME_ZONE = 'Europe/Madrid'
 USE_I18N = True
 
 USE_TZ = True
-
+USE_L10N = True
+LANGUAGE_CODE = "es-us"
+LANGUAGES = [
+    ('en', 'English'),
+    ('es', 'Español'),
+]
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale/'),
+]
 
 
 # Default primary key field type

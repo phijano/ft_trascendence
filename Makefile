@@ -13,7 +13,7 @@ clean:
 fclean: clean
 	docker system prune -af --volumes
 	rm -rf $(HOST_STATIC_PATH)/*
-	rm -rf $(HOST_BACKEND_PATH)/*
+	
 	rm -rf $(HOST_DATABASE_PATH)/*
 
 re: fclean all
