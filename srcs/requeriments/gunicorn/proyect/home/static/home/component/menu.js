@@ -1,11 +1,16 @@
-export function Menu(){
-	const menu = document.createElement("nav");
+import { getTranslation } from "../../../../../../utils";
 
-	//menu.classList.add("menu");
-	menu.id = "nMenu"
-	menu.innerHTML = `
-	<a class="px-3 text-decoration-none orbitron-font orbitron-font-large" href="/">HOME</a>
-	<a class="px-3 text-decoration-none orbitron-font orbitron-font-large" href="/pong">PLAY</a>
-	`;
-	return menu;
+export function Menu() {
+  const menu = document.createElement("nav");
+  const lang = window.settings.language_code; // Assuming settings.py exposes the language setting to the frontend
+
+  const homeText = getTranslation("home", lang);
+  const playText = getTranslation("play", lang);
+
+  menu.id = "nMenu";
+  menu.innerHTML = `
+    <a class="px-3 text-decoration-none orbitron-font orbitron-font-large" href="/">${homeText}</a>
+    <a class="px-3 text-decoration-none orbitron-font orbitron-font-large" href="/pong">${playText}</a>
+  `;
+  return menu;
 }

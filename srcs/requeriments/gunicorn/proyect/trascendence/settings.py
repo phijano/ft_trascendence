@@ -93,6 +93,14 @@ TEMPLATES = [
     },
 ]
 
+# Add this context processor to expose LANGUAGE_CODE to the frontend
+def language_code(request):
+    return {
+        'language_code': LANGUAGE_CODE,
+    }
+
+TEMPLATES[0]['OPTIONS']['context_processors'].append('trascendence.settings.language_code')
+
 WSGI_APPLICATION = 'trascendence.wsgi.application'
 ASGI_APPLICATION = 'trascendence.asgi.application'
 
