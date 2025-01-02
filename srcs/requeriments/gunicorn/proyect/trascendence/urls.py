@@ -19,6 +19,7 @@ from django.urls import path, include
 #Media for development
 from django.conf import settings
 from django.conf.urls.static import static
+from home import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,4 +28,5 @@ urlpatterns = [
     path('accounts/', include("django.contrib.auth.urls")),
     path('pongApp/', include("pong.urls")),
     path('appChat/', include("chat.urls")),  # Mantener como appChat
+    path('get_language/', views.get_language, name='get_language'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
