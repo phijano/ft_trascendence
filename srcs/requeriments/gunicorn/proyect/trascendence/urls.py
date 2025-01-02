@@ -28,5 +28,4 @@ urlpatterns = [
     path('accounts/', include("django.contrib.auth.urls")),
     path('pongApp/', include("pong.urls")),
     path('appChat/', include("chat.urls")),  # Mantener como appChat
-    path('get_language/', views.get_language, name='get_language'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

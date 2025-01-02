@@ -20,7 +20,3 @@ def get_translation(request, tag, lang):
     if item:
         return JsonResponse({ 'translation': item.get(lang, item['en']) }) # Default to English if the language is not found
     return JsonResponse({ 'error': 'Tag not found' }, status=404)
-
-def get_language(request):
-    from django.conf import settings
-    return JsonResponse({'language_code': settings.LANGUAGE_CODE})
