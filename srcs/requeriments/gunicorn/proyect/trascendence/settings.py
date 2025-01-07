@@ -30,6 +30,9 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '0.0.0.0',
+    'gunicorn',
+    'gunicorn:8081',
+    '*',
 ]
 
 #Fix this, no idea what should add

@@ -15,11 +15,11 @@ scrape_configs:
 
   - job_name: 'django'
     static_configs:
-      - targets: ['django:8000']
+      - targets: ['gunicorn:8081']
 
   - job_name: 'nginx'
     static_configs:
-      - targets: ['nginx:8080/status']
+      - targets: ['nginx:443']
 
   - job_name: 'postgres_exporter'
     static_configs:
