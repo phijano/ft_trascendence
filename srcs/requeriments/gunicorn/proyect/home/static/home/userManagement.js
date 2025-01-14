@@ -387,4 +387,3 @@ window.changeNick = changeNick
 window.cancelNick = cancelNick
 
 window.sendMessageServer = sendMessageServer
-

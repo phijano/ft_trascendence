@@ -17,3 +17,9 @@ grafana         localhost:3000	http://grafana:3000
 gunicorn	    localhost:8082	http://gunicorn:8081
 node-exporter   localhost:9100	http://srcs-node_exporter-1:9100
 postgres        No expuesto     http://postgre:5432
+
+
+web         https://localhost:8080
+grafana     https://localhost:8080/grafana/    Usa la barra final
+prometheus  https://localhost:8080/prometheus/graph
+ 
