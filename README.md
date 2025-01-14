@@ -22,4 +22,7 @@ postgres        No expuesto     http://postgre:5432
 web         https://localhost:8080
 grafana     https://localhost:8080/grafana/    Usa la barra final
 prometheus  https://localhost:8080/prometheus/graph
+conectar grafana con prometheus http://prometheus:9090
+Import dasboard 11074 o 1804 para Node-exporter
+
  
