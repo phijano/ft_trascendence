@@ -10,35 +10,26 @@ RUN apk -i update && apk -i upgrade \
   py3-pip \
   postgresql-client \
   vim \
+  curl \
   && rm -rf /var/cache/apk/*
 
 # Install Python packages
-RUN pip install uvicorn[standard]
-RUN pip install psycopg[binary] channels daphne
-RUN pip install django_prometheus
-
-# Configure Vim (optional)
-COPY ./vim/conf /
-RUN cat conf >> /etc/vim/vimrc
-
-# Create test project
-RUN django-admin startproject dummy
+RUN pip install uvicorn[standard] psycopg[binary] channels daphne django_prometheus
 
 # Copy project
 RUN mkdir /trascendence
 COPY ./proyect/ /trascendence/
 
-# Run Django commands ensuring PostgreSQL is ready
-RUN python3 /trascendence/manage.py collectstatic --noinput
-#RUN python3 /trascendence/manage.py makemigrations
-#RUN python3 /trascendence/manage.py migrate
-
 # Copy startup script
-COPY ./tools/django.sh /django.sh
-RUN chmod +x /django.sh
+COPY ./tools/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+RUN python3 /trascendence/manage.py collectstatic --noinput
 
 # Default command
-CMD ["/django.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["gunicorn", "-b", "0.0.0.0:8081", "--chdir", "/trascendence", "trascendence.asgi:application", "-k", "uvicorn.workers.UvicornWorker"]
+
 
 
 #CMD ["gunicorn", "-b", "0.0.0.0:8081", "--chdir", "dummy", "dummy.asgi:application", "-k", "uvicorn.workers.UvicornWorker", "--access-logfile", "/var/log/access.log", "--error-logfile", "/var/log/error.log"]

@@ -2,9 +2,8 @@ services:
 
   nginx:
     depends_on:
-      - gunicorn
-      - prometheus
-      - grafana
+      gunicorn:
+        condition: service_healthy
     image: nginx:42.version.1.0
     container_name: nginx
     env_file:
@@ -16,17 +15,25 @@ services:
       - trascendencenet
     volumes:
       - static:${STATIC_PATH}
-      - ./requeriments/nginx/tools/wait-for-it.sh:/wait-for-it.sh
-    entrypoint: ["/bin/sh", "-c", "/wait-for-it.sh prometheus:9090 -- /ssl_nginx.sh"]
+    entrypoint: ["/bin/sh", "-c", "/ssl_nginx.sh"]
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8081/health/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
 
   gunicorn:
     depends_on:
-      - postgre
+      postgre:
+        condition: service_healthy
     image: gunicorn:42.version.1.0
     container_name: gunicorn
     env_file:
       - .env
+    environment:
+      DJANGO_SETTINGS_MODULE: trascendence.settings
     build: ./requeriments/gunicorn/.
     expose:
       - 8081    
@@ -38,6 +45,12 @@ services:
       - static:${STATIC_PATH}
       - backend:${BACKEND_PATH}
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8081/health/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
 
   postgre:
     image: postgres:42.version.1.0
@@ -52,6 +65,12 @@ services:
     volumes:
       - database:${DATABASE_PATH}
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h postgre -U ${DB_USER} -d ${DB_NAME} || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
 
   prometheus:
     image: prometheus:42.version.1.0
