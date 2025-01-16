@@ -13,7 +13,7 @@ In browser: http://localhost:8082
 
 web         https://localhost:8080
 grafana     https://localhost:8080/grafana/    # Use the trailing slash
-prometheus  https://localhost:8080/prometheus/graph
+prometheus  https://localhost:8080/prometheus/graph   // Estatus/target
 connect grafana with prometheus http://prometheus:9090
 Import dashboard 11074 or 1804 for Node-exporter
 
