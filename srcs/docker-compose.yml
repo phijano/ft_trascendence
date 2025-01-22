@@ -108,7 +108,7 @@ services:
   node_exporter:
     image: prom/node-exporter
     ports:
-      - "${NODE_EXPORTER_PORT}:9100"
+      - "9300:9100"
     networks:
       - trascendencenet
     restart: always
