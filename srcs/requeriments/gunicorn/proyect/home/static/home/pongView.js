@@ -238,6 +238,15 @@ function showRemoteTournament() {
 		for (var key in remoteTourGamePlayers) {
 			players.push(remoteTourGamePlayers[key])
 		}
+		console.log("show_remote_playes");
+		
+		let lPlayer = remoteTourGamePlayers[remoteTourGamePlayers['lPlayer']];
+		let rPlayer = remoteTourGamePlayers[remoteTourGamePlayers['rPlayer']];
+		//let lPlayer = remoteTourGamePlayers[remoteTourGamePlayers['lPlayer']]
+		
+		//let rPlayer = remoteTourGamePlayers[remoteTourGamePlayers['rPlayer']]
+		//conole.log("lplayer" + lPlayer);
+		//console.log("rplayer" + rPlayer);
 		document.getElementById("dStartOptions").hidden = true;
 		document.getElementById("bTournament").disabled = false;
 		document.getElementById("dTournamentSettings").hidden = true;
@@ -245,8 +254,8 @@ function showRemoteTournament() {
 		document.getElementById("dGameMessage").hidden = true;
 		document.getElementById("dWinner").hidden = true;
 		document.getElementById("dAdvance").hidden = true;
-		document.getElementById("lLeftPlayer").innerHTML = players[0];
-		document.getElementById("lRightPlayer").innerHTML = players[1];
+		document.getElementById("lLeftPlayer").innerHTML = lPlayer;
+		document.getElementById("lRightPlayer").innerHTML = rPlayer;
 		document.getElementById("dMatchPlayers").hidden = false;
 		initPong(remoteTourConfig);
 	}
@@ -731,7 +740,8 @@ function serverPongMessage(message){
 	}
 	else if (message.type == "notification"){
 		const profileId = document.getElementById("hNotificationId").value;
-		remoteTourGamePlayers = message.players
+		remoteTourGamePlayers = message.players;
+		console.log(message.players);
 		for (var key in message.players) {
 			if (key == profileId) {
 				notification();
@@ -744,6 +754,11 @@ function serverPongMessage(message){
 		}
 		console.log("notification");
 	}
+	else if (message.type == "champion"){
+		console.log("champion_notif")
+		notification(message.champion);
+		joinedRemoteTournament = false;
+	}
 	else if (message.type == "tourgame"){
 		ready = true;
 		if (message.gametype == "Final") {
@@ -752,13 +767,20 @@ function serverPongMessage(message){
 			finalMatch = false;
 		}
 	}
+	else if (message.type == "eliminated")
+	{
+		console.log("player_eliminated");
+		notification(null, message.loser);
+	}
 }
 
-function notification(){
-	currentToast = document.createElement('div');
-	currentToast.id = "dToast";
-	currentToast.classList.add('toast-container', 'position-absolute', 'top-0', 'end-0', 'p-3');
-
+function notification(champion, eliminated){
+	if (!currentToast)
+	{
+		currentToast = document.createElement('div');
+		currentToast.id = "dToast";
+		currentToast.classList.add('toast-container', 'position-absolute', 'top-0', 'end-0', 'p-3');
+	}
 	const toast = document.createElement('div');
 	toast.classList.add('toast', 'align-items-center', 'show');
 
@@ -766,10 +788,18 @@ function notification(){
 	toastHeader.classList.add('toast-header');
 
 	const toastHeaderMessage = document.createElement('strong');
-	toastHeaderMessage.innerText = 'Tournament Battle';
-
+	if (champion) {
+		console.log("champion");
+		toastHeaderMessage.innerText = 'CHAMPION';
+	}
+	else if (eliminated) {	
+		toastHeaderMessage.innerText = 'Player Eliminated';
+	}
+	else {
+		toastHeaderMessage.innerText = 'Tournament Battle';
+	}
 	const toastHeaderClose = document.createElement('button');
-	toastHeaderClose.classList.add('btn-close');
+	toastHeaderClose.classList.add('btn-close', 'text-end');
 	toastHeaderClose.setAttribute('data-bs-dismiss','toast');
 	toastHeaderClose.setAttribute('aria-label','Close');
 	
@@ -777,16 +807,27 @@ function notification(){
 	toastHeader.appendChild(toastHeaderClose);
 
 	const toastBody = document.createElement('div');
-	toastBody.classList.add('toast-body');
+	toastBody.classList.add('toast-body', 'text-dark');
+	if (champion) {
 
-	const toastBodyButton = document.createElement('button');
+		const toastBodyMessage = document.createElement('strong');
+		toastBodyMessage.innerText = champion;
+		toastBody.appendChild(toastBodyMessage);
+	}
+	else if (eliminated) {
+		const toastBodyMessage = document.createElement('strong');
+		toastBodyMessage.innerText = eliminated;
+		toastBody.appendChild(toastBodyMessage);
+	}
+	else {
+		const toastBodyButton = document.createElement('button');
 
-	toastBodyButton.classList.add('btn', 'btn-primary', 'btn-sm');
-	toastBodyButton.innerText = 'Go to play';
-	toastBodyButton.addEventListener('click', joinTournamentGame)
+		toastBodyButton.classList.add('btn', 'btn-primary', 'btn-sm');
+		toastBodyButton.innerText = 'Go to play';
+		toastBodyButton.addEventListener('click', joinTournamentGame)
 
-	toastBody.appendChild(toastBodyButton);
-
+		toastBody.appendChild(toastBodyButton);
+	}
 	toast.appendChild(toastHeader);
 	toast.appendChild(toastBody);
 
