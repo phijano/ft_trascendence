@@ -37,8 +37,6 @@ class WebConsumer(AsyncWebsocketConsumer):
     tournament_id = 0
     game_type = ""
     game_active = False
-    #joined_tournament = False
-    #playing_Tournament = False
     num_players = 0
     active_players = 0
     players_status = {}
@@ -92,7 +90,7 @@ class WebConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         if self.scope['user'].is_authenticated:
             user_profile = await self.get_user_profile(self.scope['user'])
-            user_profile.connections = user_profile.connections - 1
+            user_profile.connections = 0
             await self.save_profile(user_profile)
             if self.host_channel:
                 group = ""
@@ -116,6 +114,19 @@ class WebConsumer(AsyncWebsocketConsumer):
                 await self.channel_layer.group_discard(group, self.channel_name)
             if self.games_channel:
                 await self.channel_layer.group_discard("games", self.channel_name)
+            if self.tournament_info_chanel:
+                await self.channel_layer.group_discard("tournaments", self.channel_name)
+            if self.tournament_channel:
+                group = "tour" + self.tournament_id
+                await self.channel_layer.group_send(
+                    group,
+                    {
+                        "type": "tour.players",
+                        "player": self.profile_id,
+                        "message":"drop",
+                    }
+                )
+                await self.channel_layer.group_discard(group, self.channel_name)
  
     async def receive(self, text_data):
         json_data = json.loads(text_data)
@@ -123,8 +134,6 @@ class WebConsumer(AsyncWebsocketConsumer):
             await self.userActions(json_data)
 
     async def userActions(self, json_data):
-        print(json_data)
-        print(json_data.get("date", ""))
         action = json_data.get("action", "")
         private = json_data.get("privateGame","")
         group = ""
@@ -134,12 +143,10 @@ class WebConsumer(AsyncWebsocketConsumer):
             self.opponent = ""
             self.host = True
             self.pong_config = json_data.get("config","")
-            #
             self.pong_config["startSpeed"] /= 15
             self.pong_config["playerSpeed"] /= 15
             if private == "yes": 
                 await self.channel_layer.group_add("private" + self.profile_id, self.channel_name)
-                #self.host_channel = True
                 self.private_channel = True
                 group = "private" + self.profile_id
                 communication = "opponent.message"
@@ -185,7 +192,6 @@ class WebConsumer(AsyncWebsocketConsumer):
         elif action == "drop":
             if self.games_channel:
                 if  json_data.get("date", "") > self.creating_game:
-                    print("discarting channel")
                     await self.channel_layer.group_discard("games", self.channel_name)
                     self.games_channel = False
             if self.host_channel or self.private_channel or self.tour_game_channel:
@@ -246,20 +252,17 @@ class WebConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_discard("tournaments", self.channel_name)
             self.tournament_info_chanel = False
         elif action == "createTournament":
-            print("createTournament")
             self.players_status = {str(self.profile_id): "ready"}
             self.num_players = int(json_data.get("size", ""))
             tournament = pong.models.Tournament()
             tournament.size = self.num_players
             await self.save_tournament(tournament)
             self.tournament_id = str(tournament.id)
-            print(self.tournament_id)
             self.active_players = 1
             profile = await self.get_user_profile(self.scope['user'])
             self.tournament_players = {self.profile_id:profile.nick}
             self.tournament_announcer = True
             self.tournament_config = json_data.get("config","")
-            #
             self.tournament_config["startSpeed"] /= 15
             self.tournament_config["playerSpeed"] /= 15
             group = "tour" + self.tournament_id
@@ -311,8 +314,6 @@ class WebConsumer(AsyncWebsocketConsumer):
             )
 
     async def tour_players(self, event):
-        print(event)
-        
         if event["message"] == "join":
             if self.tournament_announcer:
                 group = "tour" + self.tournament_id
@@ -390,6 +391,7 @@ class WebConsumer(AsyncWebsocketConsumer):
                 self.players_status[str(event["player"])] = "ready"
                 keys = list(self.match_players.keys())
                 if self.players_status.get(keys[0]) == "ready" and self.players_status.get(keys[1]) == "ready":
+                    self.tournament_matches[str(keys[0]) + str(keys[1])] = "started"
                     self.game_active = True
                     self.game_type = self.tournament.get_round_name()
                     await self.channel_layer.group_send(
@@ -405,6 +407,9 @@ class WebConsumer(AsyncWebsocketConsumer):
         elif event["message"] == "notready":
             if self.tournament_announcer:
                 self.players_status[str(event["player"])] = "away"
+        elif event["message"] == "drop":
+            if self.tournament_announcer:
+                self.players_status[str(event["player"])] = "drop"
         elif event["message"] == "notification":
             self.drop = False
             await self.send(text_data=json.dumps(
@@ -416,7 +421,6 @@ class WebConsumer(AsyncWebsocketConsumer):
                 )
             )
         elif event["message"] == "champion":
-            print("champion_notif")
             self.drop = False
             await self.send(text_data=json.dumps(
                     {
@@ -427,7 +431,6 @@ class WebConsumer(AsyncWebsocketConsumer):
                 )
             )
         elif event["message"] == "eliminated":
-            print("elim_notif")
             self.drop = False
             await self.send(text_data=json.dumps(
                     {
@@ -469,7 +472,6 @@ class WebConsumer(AsyncWebsocketConsumer):
                 asyncio.create_task(self.pong_loop())
 
         elif event["message"] == "endgame":
-            print("endgame")
             if self.tournament_announcer:
                 group = "tour" + self.tournament_id
                 await asyncio.sleep(10)
@@ -524,12 +526,10 @@ class WebConsumer(AsyncWebsocketConsumer):
                         }
                     )
         elif event["message"] == "endtour":
-            print("endtour")
             await self.channel_layer.group_discard("tour" + self.tournament_id, self.channel_name)
             self.tournament_channel = False
             await self.channel_layer.group_discard("tournaments", self.channel_name)
             self.tournament_info_chanel = False
-            pass
         elif event["message"] == "accepted":
             if event["opponent"] == self.profile_id:
                 self.tournament_players = event["players"]
@@ -582,8 +582,6 @@ class WebConsumer(AsyncWebsocketConsumer):
             )
 
     async def players_message(self, event):
-        print(event)
-        print(str(self.profile_id))
         if self.host:
             if event["message"] == "join":
                 await self.channel_layer.group_send(
@@ -615,8 +613,6 @@ class WebConsumer(AsyncWebsocketConsumer):
                     )
                        
     async def opponent_message(self, event):
-        print(event)
-        print(str(self.profile_id))
         if self.host:
             if event["message"] == "join":
                 if not self.opponent:
@@ -746,8 +742,6 @@ class WebConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(event))
 
     async def end_game(self, event):
-        print(event)
-        print(str(self.profile_id))
         await self.send(text_data=json.dumps(event))
         if self.games_channel:
             await self.channel_layer.group_discard("games", self.channel_name)
@@ -769,7 +763,6 @@ class WebConsumer(AsyncWebsocketConsumer):
             winner = self.profile_id
             if event["lPlayer"]["score"] < event["rPlayer"]["score"]:
                 winner = self.opponent
-            print(winner)
             await self.channel_layer.group_send(
                 "tour" + self.tournament_id,
                 {
@@ -781,13 +774,10 @@ class WebConsumer(AsyncWebsocketConsumer):
             )
 
     async def drop_game(self, event):
-        print(event)
-        print(str(self.profile_id))
         await self.send(text_data=json.dumps(event))
         self.playing = False
         if self.games_channel:
             if int(event["date"]) > self.creating_game:
-                print("discarting channel")
                 await self.channel_layer.group_discard("games", self.channel_name)
                 self.games_channel = False
         if self.host_channel or self.private_channel:
@@ -823,10 +813,8 @@ class WebConsumer(AsyncWebsocketConsumer):
                 )
 
     async def countdown(self, lPlayer, rPlayer): 
-        #await asyncio.sleep(2)
         await asyncio.sleep(60)
         if self.tournament_matches[str(lPlayer) + str(rPlayer)] == "wait":
-            print("countdown passed")
             winner = lPlayer
             loser_id = rPlayer
             if self.players_status.get(rPlayer) == "ready":
@@ -857,7 +845,6 @@ class WebConsumer(AsyncWebsocketConsumer):
         self.playing = True
         while (self.playing):
             await self.updatePong()
-            #await asyncio.sleep(0.015) 
             await asyncio.sleep(0.001)
             if  self.keyState["powerUpInUse"] == True:
                 await asyncio.sleep(0.75)
@@ -963,7 +950,6 @@ class WebConsumer(AsyncWebsocketConsumer):
                     "powerUp":self.keyState["powerUpInUse"],
                 }
             )
-            print("end")
         if reset:
             self.resetPong(reset)
 
