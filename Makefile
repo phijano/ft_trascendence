@@ -4,15 +4,14 @@ export $(shell sed 's/=.*//' srcs/.env)
 all: .docker_up
 
 .docker_up:
-	@if [ ! -f .docker_up ]; then \
-		mkdir -p $(HOST_STATIC_PATH); \
-		mkdir -p $(HOST_BACKEND_PATH); \
-		mkdir -p $(HOST_DATABASE_PATH); \
-		mkdir -p $(HOST_PROMETHEUS_DATA_PATH); \
-		mkdir -p $(HOST_GRAFANA_DATA_PATH); \
-		docker compose -f ./srcs/docker-compose.yml up --build -d; \
-		touch .docker_up; \
-	fi
+	
+	mkdir -p $(HOST_STATIC_PATH); 
+	mkdir -p $(HOST_BACKEND_PATH); 
+	mkdir -p $(HOST_DATABASE_PATH); 
+	mkdir -p $(HOST_PROMETHEUS_DATA_PATH); 
+	mkdir -p $(HOST_GRAFANA_DATA_PATH); 
+	docker compose -f ./srcs/docker-compose.yml up --build -d; 
+	
 
 clean:
 	docker compose -f ./srcs/docker-compose.yml down -v

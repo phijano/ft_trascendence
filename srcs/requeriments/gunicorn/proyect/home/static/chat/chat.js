@@ -404,6 +404,12 @@ window.initializeChat = function() {
             const privateBtn = template.querySelector('[data-action="private"]');
             const playBtn = template.querySelector('[data-action="play"]');
             
+            blockBtn.id = `block-${userObj.id}`;
+            unblockBtn.id = `unblock-${userObj.id}`;
+            unblockBtn.style.backgroundColor= 'rgb(114, 19, 28)';
+            
+
+            
             // Configure the buttons
             profileBtn.onclick = () => viewProfile(userObj.username);
             blockBtn.onclick = () => blockUser(userObj.id);
@@ -425,6 +431,7 @@ window.initializeChat = function() {
 
     // Add function to invite to play
     function inviteToGame(userId) {
+      closeModal();
         chatSocket.send(JSON.stringify({
             'type': 'game_invitation',
             'target_user_id': userId
@@ -487,6 +494,8 @@ window.initializeChat = function() {
             'type': 'block_user',
             'user_id': userId,
         }));
+        document.getElementById(`block-${userId}`).style.backgroundColor= '#775900';
+        document.getElementById(`unblock-${userId}`).style.backgroundColor= '#dc3545';
         const username = Array.from(connectedUserMap.keys()).find(u => connectedUserMap.get(u) === userId);
         if (username) {
             blockedUsers.add(username); // Add to the list of blocked users
@@ -499,6 +508,8 @@ window.initializeChat = function() {
             'type': 'unblock_user',
             'user_id': userId,
         }));
+        document.getElementById(`unblock-${userId}`).style.backgroundColor= '#72131c';
+        document.getElementById(`block-${userId}`).style.backgroundColor= '#ffc107';
         const username = Array.from(connectedUserMap.keys()).find(u => connectedUserMap.get(u) === userId);
         if (username) {
             blockedUsers.delete(username); // Remove from the list of blocked users
