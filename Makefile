@@ -1,5 +1,5 @@
-include srcs/.env
-export $(shell sed 's/=.*//' srcs/.env)
+include .env
+export $(shell sed 's/=.*//' .env)
 
 all: .docker_up
 
@@ -10,12 +10,11 @@ all: .docker_up
 	mkdir -p $(HOST_DATABASE_PATH); 
 	mkdir -p $(HOST_PROMETHEUS_DATA_PATH); 
 	mkdir -p $(HOST_GRAFANA_DATA_PATH); 
-	docker compose -f ./srcs/docker-compose.yml up --build -d; 
+	docker compose -f ./docker-compose.yml up --build -d; 
 	
 
 clean:
-	docker compose -f ./srcs/docker-compose.yml down -v
-	rm -f .docker_up
+	docker compose -f ./docker-compose.yml down -v
 
 fclean: clean
 	docker system prune -af --volumes
@@ -28,9 +27,9 @@ fclean: clean
 re: fclean all
 
 stop:
-	docker compose -f ./srcs/docker-compose.yml stop
+	docker compose -f ./docker-compose.yml stop
 
 restart:
-	docker compose -f ./srcs/docker-compose.yml restart
+	docker compose -f ./docker-compose.yml restart
 
 .PHONY: all clean fclean re stop restart

@@ -1,0 +1,163 @@
+services:
+
+  nginx:
+    depends_on:
+      gunicorn:
+        condition: service_healthy
+    image: nginx:42.version.1.0
+    container_name: nginx
+    env_file:
+      - .env
+    build: ./srcs/requeriments/nginx/.
+    ports:
+      - 8080:443
+    networks:
+      - trascendencenet
+    volumes:
+      - static:${STATIC_PATH}
+    entrypoint: [ "/bin/sh", "-c", "/ssl_nginx.sh" ]
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8081/health/ || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  gunicorn:
+    depends_on:
+      postgre:
+        condition: service_healthy
+    image: gunicorn:42.version.1.0
+    container_name: gunicorn
+    env_file:
+      - .env
+    environment:
+      DJANGO_SETTINGS_MODULE: trascendence.settings
+    build: ./srcs/requeriments/gunicorn/.
+    expose:
+      - 8081
+    ports:
+      - 8082:8082
+    networks:
+      - trascendencenet
+    volumes:
+      - static:${STATIC_PATH}
+      - backend:${BACKEND_PATH}
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8081/health/ || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  postgre:
+    image: postgres:42.version.1.0
+    container_name: postgre
+    env_file:
+      - .env
+    build: ./srcs/requeriments/postgre/.
+    expose:
+      - 5432
+    networks:
+      - trascendencenet
+    volumes:
+      - database:${DATABASE_PATH}
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -h postgre -U ${DB_USER} -d ${DB_NAME} || exit 1" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+  prometheus:
+    image: prometheus:42.version.1.0
+    container_name: prometheus
+    env_file:
+      - .env
+    build: ./srcs/requeriments/monitoring/prometheus
+    ports:
+      - "${PROMETHEUS_PORT}:9090"
+    networks:
+      - trascendencenet
+    volumes:
+      - ./srcs/requeriments/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./srcs/requeriments/monitoring/prometheus/alert_rules.yml:/etc/prometheus/alert_rules.yml
+      - ${HOST_PROMETHEUS_DATA_PATH}:/prometheus
+    restart: always
+
+  grafana:
+    image: grafana/grafana:42.version.1.0
+    container_name: grafana
+    env_file:
+      - .env
+    build: ./srcs/requeriments/monitoring/grafana
+    ports:
+      - "${GRAFANA_PORT}:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+    networks:
+      - trascendencenet
+    volumes:
+      - ${HOST_GRAFANA_DATA_PATH}:/var/lib/grafana
+    restart: always
+
+  node_exporter:
+    image: prom/node-exporter
+    ports:
+      - "9300:9100"
+    networks:
+      - trascendencenet
+    restart: always
+
+  postgres_exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: postgres_exporter
+    env_file:
+      - .env
+    ports:
+      - "9187:9187"
+    networks:
+      - trascendencenet
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${DB_USER}:${DB_PASSWORD}@postgre:5432/${DB_NAME}?sslmode=disable"
+    restart: always
+
+networks:
+  trascendencenet:
+
+
+volumes:
+  static:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${HOST_STATIC_PATH}
+      o: bind
+  backend:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${HOST_BACKEND_PATH}
+      o: bind
+  database:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${HOST_DATABASE_PATH}
+      o: bind
+  prometheus:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${HOST_PROMETHEUS_DATA_PATH}
+      o: bind
+  grafana:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${HOST_GRAFANA_DATA_PATH}
+      o: bind
