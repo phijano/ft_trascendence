@@ -184,6 +184,8 @@ function unsetUser() {
 	showRegister();
 	showMenu();
 	removeNotifications();
+	closeChat();
+	console.log("unset user");
 }
 
 function showRegister() {
