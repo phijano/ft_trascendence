@@ -46,13 +46,9 @@
     transition: height 0.5s ease, top 0.5s ease, opacity 0.5s ease;
 }
 
-/* .sidepanel .sideCloseButton {
-  position: absolute;
-  top: 0;
-  right: 25px;
-  font-size: 36px;
-  margin-left: 50px;
-} */
+#dSidePanelContent {
+    text-align: left;
+}
 
 .sidepanel .sideContent {
   padding: 8px 8px 8px 8px;
@@ -85,7 +81,7 @@
     position: absolute;
     top: 270px;
     left: 50%; /* Posición inicial a la izquierda */
-    z-index: 20;
+    /*z-index: 20;*/
     transition: top 1s ease, left 1s ease, transform 1s ease; /* Transición suave para el movimiento */
 }
 

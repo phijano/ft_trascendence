@@ -333,9 +333,11 @@ window.addEventListener('keydown', (event) => {
             break;
         case 'ArrowUp':
             player2Speed = paddle_speed;
+            event.preventDefault();
             break;
         case 'ArrowDown':
             player2Speed = -paddle_speed;
+            event.preventDefault();
             break;
     }
 });

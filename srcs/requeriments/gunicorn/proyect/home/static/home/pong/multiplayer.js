@@ -338,9 +338,11 @@ function startMultiReady() {
 				break;
 			case 'ArrowUp':
 				paddle3.moveUp = true;
+				event.preventDefault();
 				break;
 			case 'ArrowDown':
 				paddle3.moveDown = true;
+				event.preventDefault();
 				break;
 		}
 	});
