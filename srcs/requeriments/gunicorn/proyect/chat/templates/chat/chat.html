@@ -99,52 +99,40 @@
       </div>
     </div>
 
-    <!-- Modified template to include the Play button -->
+    
     {% verbatim %}
     <template id="userItemTemplate">
-      <div
-        class="user-item d-flex justify-content-between align-items-center mb-2"
-      >
-        <span data-content="username"></span>
-        <div class="user-actions">
-          <button class="btn btn-sm btn-info" data-action="profile">
-            Profile
-          </button>
-          <button class="btn btn-sm btn-primary" data-action="private">
-            Private
-          </button>
-          <button class="btn btn-sm btn-success" data-action="play">
-            Play
-          </button>
-          <button class="btn btn-sm btn-warning" data-action="block">
-            Block
-          </button>
-          <button class="btn btn-sm btn-danger" data-action="unblock">
-            Unblock
-          </button>
+        <div class="user-item d-flex justify-content-between align-items-center mb-2">
+            <span data-content="username"></span>
+            <div class="user-actions">
+                <button class="btn btn-sm btn-info" data-action="profile">Profile</button>
+                <button class="btn btn-sm btn-primary" data-action="private">Private</button>
+                <button class="btn btn-sm btn-success" data-action="play">Play</button>
+                <button class="btn btn-sm btn-warning" data-action="block">Block</button>
+                <button class="btn btn-sm btn-danger" data-action="unblock">Unblock</button>
+            </div>
         </div>
-      </div>
-    </template>
-    {% endverbatim %} {% verbatim %}
-    <template id="gameStartTemplate">
-      <div class="message-container">
-        <div class="game-start-notification alert alert-success">
-          <p data-content="message"></p>
-          <button class="btn btn-primary" data-action="start-game">
-            Start Game
-          </button>
-        </div>
-        <div class="user-info" style="margin-top: -10px; margin-left: 50px">
-          <small class="text-muted">System</small>
-        </div>
-      </div>
     </template>
     {% endverbatim %}
 
-    <!-- Include templates -->
-    {% include 'chat/partials/message_templates.html' %} {% include
-    'chat/partials/private_chat_invitations.html' %} {% include
-    'chat/partials/user_list_template.html' %} {% include
-    'chat/partials/game_invitation_template.html'%}
+    {% verbatim %}
+    <template id="gameStartTemplate">
+        <div class="message-container">
+            <div class="game-start-notification alert alert-success">
+                <p data-content="message"></p>
+                <button class="btn btn-primary" data-action="start-game">Start Game</button>
+            </div>
+            <div class="user-info" style="margin-top: -10px; margin-left: 50px">
+                <small class="text-muted">System</small>
+            </div>
+        </div>
+    </template>
+    {% endverbatim %}
+
+    <!-- Include templates (fuera de verbatim) -->
+    {% include 'chat/partials/message_templates.html' %}
+    {% include 'chat/partials/private_chat_invitations.html' %}
+    {% include 'chat/partials/user_list_template.html' %}
+    {% include 'chat/partials/game_invitation_template.html' %}
   </body>
 </html>

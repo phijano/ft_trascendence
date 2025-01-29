@@ -270,7 +270,7 @@ window.initializeChat = function() {
         }
     
         // Create new WebSocket connection for the private room
-        const wsUrl = `ws://${window.location.host}/ws/chat/private/${data.room_id}/`;
+        const wsUrl = `wss://${window.location.host}/wss/chat/private/${data.room_id}/`;
         chatSocket = new WebSocket(wsUrl);
         
         // Reinitialize WebSocket events
