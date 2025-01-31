@@ -40,6 +40,7 @@ class WebConsumer(AsyncWebsocketConsumer):
     game_active = False
     num_players = 0
     active_players = 0
+    tournament_filled = False
     players_status = {}
     match_players = ""
     tournament_players = ""
@@ -383,6 +384,7 @@ class WebConsumer(AsyncWebsocketConsumer):
                         }
                     )
                     if self.active_players == self.num_players:
+                        self.tournament_filled = True
                         self.game_active = False
                         self.tournament = self.Tournament(self.tournament_players, self.players_order)
                         self.tournament.start()
@@ -445,6 +447,7 @@ class WebConsumer(AsyncWebsocketConsumer):
                 self.players_status = event["status"]
                 self.active_players = event["active_players"]
                 if self.active_players == self.num_players:
+                    self.tournament_filled = True
                     self.game_active = False
                     self.tournament = self.Tournament(self.tournament_players, self.players_order)
                     self.tournament.start()
@@ -565,7 +568,7 @@ class WebConsumer(AsyncWebsocketConsumer):
 
 
         elif event["message"] == "ready":
-            if self.game_active == False:
+            if self.game_active == False and self.tournament_filled:
                 self.players_status[str(event["player"])] = "ready"
                 if self.tournament_announcer:
                     group = "tour" + self.tournament_id
@@ -617,6 +620,7 @@ class WebConsumer(AsyncWebsocketConsumer):
         elif event["message"] == "endtour":
             self.tournament_announcer = False
             self.joined_tour = False
+            self.tournament_filled = False
             await self.channel_layer.group_discard("tour" + self.tournament_id, self.channel_name)
             self.tournament_channel = False
             await self.channel_layer.group_discard("tournaments", self.channel_name)

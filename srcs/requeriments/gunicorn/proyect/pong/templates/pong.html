@@ -33,14 +33,9 @@
 		</div>
 		<div hidden id="dSidePanel" class="sidepanel">
 			<div id="dSidePanelContent" class="sideContent rationale-font">
-				- Player 1: "W" to move up, "S" to move down and "D" to activate the Freeze Flip power-up.<br>
-				- Player 2: "Up Arrow" to move up, "Down Arrow" to move down and "Left Arrow" to activate the Freeze Flip power-up.<br>
-				The power-up can only be used once per round, which resets after each goal is scored.<br><br>
-				Multiplayer:<br>
-				- Player 1: "W" to move up, "S" to move down.<br>
-				- Player 2: "1" to move left, "2" to move right.<br>
-				- Player 3: "Up Arrow" to move up, "Down Arrow" to move down.<br>
-				- Player 4: "9" to move left, "0" to move right.<br>
+				Press "W" to move up, "S" to move down as the left player, and "D" to activate the Freeze Flip power-up.<br>
+				Press "Up Arrow" to move up, "Down Arrow" to move down as the right player, and "Left Arrow" to activate the Freeze Flip power-up.<br>
+				The power-up can only be used once per round, which resets after each goal is scored.
 			</div>
 		</div>
 	</div>
@@ -190,7 +185,8 @@
 
 		{% endif %}
 	</div>
-		
+	<div hidden class ="py-5 text-danger" id="dTournamentsMessage">
+	</div>	
 	<!-- Game Customization Menu -->
     <div hidden id="dCustomizationOptions">
 		<h2 class ="title-cyan-big">GAME CUSTOMIZATION</h2>
